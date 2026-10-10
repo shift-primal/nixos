@@ -9,11 +9,11 @@
       xwayland.enable = true;
     };
 
-    gpu-screen-recorder.enable = {
+    gpu-screen-recorder = {
       enable = true;
     };
 
-    dconf.enable = {
+    dconf = {
       enable = true;
     };
   };
@@ -21,7 +21,6 @@
   security.rtkit.enable = true;
 
   services = {
-
     pipewire = {
       enable = true;
       alsa.enable = true;
