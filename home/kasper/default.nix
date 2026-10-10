@@ -1,11 +1,11 @@
 {
   imports = [
-    ./desktop.nix
-    ./dotfiles.nix
-    ./noctalia.nix
-    ./packages.nix
-    ./shell.nix
-  ];
+  ./desktop.nix
+  ./dotfiles.nix
+  ./noctalia.nix
+  ./packages
+  ./shell.nix
+];
 
   home.username = "kasper";
   home.homeDirectory = "/home/kasper";
