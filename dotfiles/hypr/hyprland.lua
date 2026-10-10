@@ -1,0 +1,10 @@
+require("hyprland.autostart")
+require("hyprland.base")
+require("hyprland.monitors")
+require("hyprland.input")
+require("hyprland.animations")
+require("hyprland.keybinds")
+require("hyprland.rules")
+require("hyprland.cursor")
+
+require("noctalia").apply_theme()

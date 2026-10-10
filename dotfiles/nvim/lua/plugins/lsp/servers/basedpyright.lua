@@ -1,0 +1,22 @@
+return {
+	-- settings = {
+	-- 	basedpyright = {
+	-- 		analysis = {
+	-- 			autoSearchPaths = true,
+	-- 			diagnosticMode = "openFilesOnly",
+	-- 			useLibraryCodeForTypes = true,
+	-- 			typeCheckingMode = "all",
+	-- 			diagnosticSeverityOverrides = {
+	-- 				reportAny = false,
+	-- 				reportMissingTypeArgument = false,
+	-- 				reportMissingTypeStubs = false,
+	-- 				reportUnknownArgumentType = false,
+	-- 				reportUnknownMemberType = false,
+	-- 				reportUnknownParameterType = false,
+	-- 				reportUnknownVariableType = false,
+	-- 				reportUnusedCallResult = false,
+	-- 			},
+	-- 		},
+	-- 	},
+	-- },
+}
