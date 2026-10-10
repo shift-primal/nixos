@@ -1,10 +1,10 @@
 { pkgs, ... }:
 
 {
-  home.packages = with pkgs; [
-    (python3.withPackages (ps: [ ps.debugpy ]))
-    pyright
-    ruff
-    black
-  ];
+    home.packages = with pkgs; [
+        (python3.withPackages (ps: [ ps.debugpy ]))
+        pyright
+        ruff
+        black
+    ];
 }

@@ -14,6 +14,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
+-- nixfmt only emits spaces; keep this in sync with --indent in ~/nixos/treefmt.toml
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "nix",
+	callback = function()
+		vim.opt_local.expandtab = true
+		vim.opt_local.shiftwidth = 4
+		vim.opt_local.tabstop = 4
+		vim.opt_local.softtabstop = 4
+	end,
+})
+
 -- Disable spell-checking in markdown
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "markdown", "text" },

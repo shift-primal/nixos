@@ -1,0 +1,5 @@
+[formatter.nixfmt]
+command = "nixfmt"
+options = ["--width=100", "--indent=4"]
+includes = ["*.nix"]
+excludes = ["hardware-configuration.nix"]

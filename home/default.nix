@@ -1,21 +1,21 @@
 { vars, ... }:
 
 {
-  imports = [
-    ./apps
-    ./cli
-    ./desktop
-    ./dev
-    ./shell
-    ./dotfiles.nix
-    ./vars-lua.nix
-  ];
+    imports = [
+        ./apps
+        ./cli
+        ./desktop
+        ./dev
+        ./shell
+        ./dotfiles.nix
+        ./vars-lua.nix
+    ];
 
-  home = {
-    username = vars.user.name;
-    homeDirectory = vars.user.home;
-    inherit (vars) stateVersion;
-  };
+    home = {
+        username = vars.user.name;
+        homeDirectory = vars.user.home;
+        inherit (vars) stateVersion;
+    };
 
-  programs.home-manager.enable = true;
+    programs.home-manager.enable = true;
 }

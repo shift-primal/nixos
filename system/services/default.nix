@@ -1,8 +1,8 @@
 _:
 
 {
-  imports = [
-    ./docker.nix
-    ./steam.nix
-  ];
+    imports = [
+        ./docker.nix
+        ./steam.nix
+    ];
 }

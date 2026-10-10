@@ -1,9 +1,9 @@
 _:
 
 {
-  imports = [
-    ./fonts.nix
-    ./hyprland.nix
-    ./portal.nix
-  ];
+    imports = [
+        ./fonts.nix
+        ./hyprland.nix
+        ./portal.nix
+    ];
 }

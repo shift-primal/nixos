@@ -1,10 +1,10 @@
 { vars, ... }:
 
 {
-  imports = [
-    ./hardware-configuration.nix
-    ../../system
-  ];
+    imports = [
+        ./hardware-configuration.nix
+        ../../system
+    ];
 
-  system.stateVersion = vars.stateVersion;
+    system.stateVersion = vars.stateVersion;
 }

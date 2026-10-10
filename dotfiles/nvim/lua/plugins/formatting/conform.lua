@@ -33,6 +33,8 @@ return {
 			cs = { "csharpier" },
 			sql = { "sqlfluff" },
 			toml = { "tombi" },
+			-- treefmt.toml owns the nixfmt options and the hardware-config exclude
+			nix = { "treefmt" },
 			javascript = pick(biome_js),
 			javascriptreact = pick(biome_js),
 			typescript = pick(biome_js),

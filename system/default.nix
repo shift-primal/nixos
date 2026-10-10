@@ -1,11 +1,11 @@
 _:
 
 {
-  imports = [
-    ./core
-    ./hardware
-    ./desktop
-    ./services
-    ./home-manager.nix
-  ];
+    imports = [
+        ./core
+        ./hardware
+        ./desktop
+        ./services
+        ./home-manager.nix
+    ];
 }

@@ -1,6 +1,6 @@
 { pkgs, ... }:
 
 {
-  # conform.lua formats toml with tombi.
-  home.packages = [ pkgs.tombi ];
+    # conform.lua formats toml with tombi.
+    home.packages = [ pkgs.tombi ];
 }

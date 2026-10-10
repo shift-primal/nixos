@@ -1,5 +1,5 @@
 { pkgs, ... }:
 
 {
-  home.packages = [ pkgs.sqlfluff ];
+    home.packages = [ pkgs.sqlfluff ];
 }

@@ -1,10 +1,10 @@
 { pkgs, ... }:
 
 {
-  home.packages = with pkgs; [
-    rustc
-    cargo
-    rustfmt
-    clippy
-  ];
+    home.packages = with pkgs; [
+        rustc
+        cargo
+        rustfmt
+        clippy
+    ];
 }

@@ -1,12 +1,12 @@
 { pkgs, ... }:
 
 {
-  imports = [ ./defaults.nix ];
+    imports = [ ./defaults.nix ];
 
-  home.packages = with pkgs; [
-    chromium
-    bitwarden-desktop
-    filezilla
-    vlc
-  ];
+    home.packages = with pkgs; [
+        chromium
+        bitwarden-desktop
+        filezilla
+        vlc
+    ];
 }

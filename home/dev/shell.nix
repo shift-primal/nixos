@@ -1,5 +1,5 @@
 { pkgs, ... }:
 
 {
-  home.packages = [ pkgs.shfmt ];
+    home.packages = [ pkgs.shfmt ];
 }

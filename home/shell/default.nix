@@ -1,8 +1,8 @@
 _:
 
 {
-  imports = [
-    ./tools.nix
-    ./zsh.nix
-  ];
+    imports = [
+        ./tools.nix
+        ./zsh.nix
+    ];
 }
