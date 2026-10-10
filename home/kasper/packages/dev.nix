@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   # LazyVim extras expect these on PATH. Mason's prebuilt binaries use
@@ -38,6 +38,8 @@
     csharpier
     fantomas
     netcoredbg
+
+    inputs.nix-claude-code.packages.${pkgs.system}.stable
 
     vtsls
     vue-language-server

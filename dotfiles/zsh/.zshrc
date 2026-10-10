@@ -13,9 +13,6 @@ if [[ -r $hm_init ]]; then
 fi
 
 alias nvimcfg='cd ~/.config/nvim && nvim .'
-alias cfg='cd ~/.config && nvim .'
 alias py='python'
-alias yay='paru'
 alias ff='fastfetch'
 alias ls='eza'
-alias restartnoc='pkill qs && qs -c noctalia-shell & disown'
