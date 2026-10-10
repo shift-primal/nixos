@@ -7,7 +7,27 @@ local function vue_plugin_location()
 		return nil
 	end
 	local out = vim.fn.fnamemodify(vim.fn.resolve(bin), ":h:h")
-	return out .. "/lib/language-tools/packages/language-server"
+	local location = out .. "/lib/language-tools/packages/language-server"
+	if vim.fn.isdirectory(location) == 0 then
+		return nil
+	end
+	return location
+end
+
+-- The Vue extra calls LazyVim.get_pkg_path("vue-language-server") while
+-- building lspconfig opts. That looks under Mason and warns when the package
+-- is absent. Return the Nix package so the lookup succeeds.
+if LazyVim and type(LazyVim.get_pkg_path) == "function" then
+	local get_pkg_path = LazyVim.get_pkg_path
+	function LazyVim.get_pkg_path(pkg, path, opts)
+		if pkg == "vue-language-server" then
+			local location = vue_plugin_location()
+			if location then
+				return location
+			end
+		end
+		return get_pkg_path(pkg, path, opts)
+	end
 end
 
 return {

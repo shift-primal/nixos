@@ -1,38 +1,50 @@
 { pkgs, ... }:
+
 {
   hardware.graphics.enable = true;
 
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
+  programs = {
+    hyprland = {
+      enable = true;
+      xwayland.enable = true;
+    };
+
+    gpu-screen-recorder.enable = {
+      enable = true;
+    };
+
+    dconf.enable = {
+      enable = true;
+    };
   };
-
-  # Setcap wrapper so region recording works without a portal prompt.
-  programs.gpu-screen-recorder.enable = true;
-
-  programs.dconf.enable = true;
 
   security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
+
+  services = {
+
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+
+    upower = {
+      enable = true;
+    };
+
+    power-profiles-daemon = {
+      enable = true;
+    };
   };
 
-  # Hyprland already installs its own portal. GTK covers file dialogs.
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
-  # Noctalia's control center talks to these.
   hardware.bluetooth.enable = true;
-  services.upower.enable = true;
-  services.power-profiles-daemon.enable = true;
 
-  # noto-fonts-extra was merged into noto-fonts.
-  # noto-fonts-emoji was renamed to noto-fonts-color-emoji.
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans

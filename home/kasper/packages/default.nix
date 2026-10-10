@@ -3,7 +3,7 @@
 {
   imports = [
     ./cli.nix
-    ./dev.nix
+    ./dev
     ./apps.nix
     ./wayland.nix
   ];

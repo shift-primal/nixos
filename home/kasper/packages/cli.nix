@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   home.packages = with pkgs; [
@@ -20,5 +20,8 @@
     unzip
     zip
     _7zz
+    gowall
+    (callPackage ./grok.nix { })
+    inputs.nix-claude-code.packages.${pkgs.system}.stable
   ];
 }
