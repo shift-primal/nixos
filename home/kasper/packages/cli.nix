@@ -11,8 +11,14 @@
     eza
     fastfetch
     lazygit
+    gh
     trash-cli
     sqlite
+    lazysql
+    rbw
+    tree
     unzip
+    zip
+    _7zz
   ];
 }

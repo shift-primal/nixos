@@ -10,5 +10,13 @@
     useOSProber = true;
   };
 
+  # All three monitors are 2560x1440, which this theme calls 2k.
+  boot.loader.grub2-theme = {
+    enable = true;
+    theme = "stylish";
+    footer = true;
+    screen = "2k";
+  };
+
   boot.kernelPackages = pkgs.linuxPackages_latest;
 }

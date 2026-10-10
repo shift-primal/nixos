@@ -14,5 +14,7 @@ in
     bitwarden-desktop
     thunderbird
     betterbird
+    filezilla
+    vlc
   ];
 }

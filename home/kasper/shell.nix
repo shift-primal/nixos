@@ -39,15 +39,7 @@
       _ZO_DOCTOR = "0";
     };
 
-    shellAliases = {
-      nvimcfg = "cd ~/.config/nvim && nvim .";
-      cfg = "cd ~/.config && nvim .";
-      py = "python";
-      yay = "paru";
-      ff = "fastfetch";
-      ls = "eza";
-      restartnoc = "pkill qs && qs -c noctalia-shell & disown";
-    };
+    # Aliases live in ~/nixos/dotfiles/zsh/.zshrc, which is the linked rc.
 
     oh-my-zsh = {
       enable = true;
@@ -85,6 +77,11 @@
     '';
   };
 
+  # programs.zsh would install its own .zshrc. dotfiles.nix links that path
+  # to ~/nixos/dotfiles/zsh/.zshrc, which sources the file below.
+  home.file.".config/zsh/.zshrc".enable = lib.mkForce false;
+  home.file.".config/zsh/hm-init.zsh".text = config.programs.zsh.initContent;
+
   # `eval "$(direnv hook zsh)"` from the old dot_zshrc.
   programs.direnv = {
     enable = true;
@@ -95,8 +92,10 @@
 
   programs.starship = {
     enable = true;
-    # Kitty uses Monaspace Neon NF, so the nerd-font preset renders.
-    presets = [ "nerd-font-symbols" ];
+    # Config is ~/nixos/dotfiles/starship.toml, linked to
+    # ~/.config/starship.toml. Leaving presets empty keeps Home Manager
+    # from writing a second file over that link. The toml already includes
+    # the nerd-font symbols preset plus the Noctalia palette.
   };
 
   # Ctrl-R history, Ctrl-T files, Alt-C directories. fzf is already installed.

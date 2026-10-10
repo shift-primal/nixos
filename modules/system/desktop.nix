@@ -31,6 +31,17 @@
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
 
+  # noto-fonts-extra was merged into noto-fonts.
+  # noto-fonts-emoji was renamed to noto-fonts-color-emoji.
+  fonts.packages = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    noto-fonts-color-emoji
+  ];
+
+  programs.steam.enable = true;
+
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     LIBVA_DRIVER_NAME = "nvidia";

@@ -24,6 +24,7 @@
       "video"
       "render"
       "input"
+      "docker"
     ];
   };
 }

@@ -3,6 +3,7 @@
   imports = [
     ./boot.nix
     ./desktop.nix
+    ./docker.nix
     ./home-manager.nix
     ./locale.nix
     ./networking.nix
