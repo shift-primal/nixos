@@ -1,5 +1,0 @@
-hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
-hl.env("XDG_SESSION_TYPE", "wayland")
-hl.env("XDG_SESSION_DESKTOP", "Hyprland")
--- Bitwarden desktop SSH agent, for GUI apps too (not just zsh)
-hl.env("SSH_AUTH_SOCK", os.getenv("HOME") .. "/.bitwarden-ssh-agent.sock")

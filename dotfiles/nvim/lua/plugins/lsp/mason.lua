@@ -1,5 +1,5 @@
--- Nix provides the language servers, formatters, and debug adapters.
--- Mason must not install its own copies or prepend them to PATH.
+-- Nix provides the language servers, formatters, and debug adapters
+-- (~/nixos/home/dev). Mason is disabled entirely.
 
 local function vue_plugin_location()
 	local bin = vim.fn.exepath("vue-language-server")
@@ -31,37 +31,13 @@ if LazyVim and type(LazyVim.get_pkg_path) == "function" then
 end
 
 return {
-	{
-		"mason-org/mason.nvim",
-		opts = {
-			PATH = "skip",
-		},
-		config = function(_, opts)
-			opts.ensure_installed = nil
-			require("mason").setup(opts)
-		end,
-	},
-	{
-		"jay-babu/mason-nvim-dap.nvim",
-		opts = {
-			automatic_installation = false,
-			ensure_installed = {},
-		},
-	},
+	-- LazyVim checks for these before using them, so it falls back to PATH.
+	{ "mason-org/mason.nvim", enabled = false },
+	{ "mason-org/mason-lspconfig.nvim", enabled = false },
+	{ "jay-babu/mason-nvim-dap.nvim", enabled = false },
 	{
 		"neovim/nvim-lspconfig",
 		opts = function(_, opts)
-			opts.servers = opts.servers or {}
-			for name, server in pairs(opts.servers) do
-				if name ~= "*" then
-					if type(server) ~= "table" then
-						server = {}
-						opts.servers[name] = server
-					end
-					server.mason = false
-				end
-			end
-
 			local location = vue_plugin_location()
 			local plugins = vim.tbl_get(opts.servers, "vtsls", "settings", "vtsls", "tsserver", "globalPlugins")
 			if location and type(plugins) == "table" then

@@ -1,7 +1,6 @@
-local theme = "Bibata-Modern-Classic"
-local size = 24
+local cursor = require("hyprland.vars").cursor
 
-hl.env("HYPRCURSOR_THEME", theme)
-hl.env("HYPRCURSOR_SIZE", tostring(size))
-hl.env("XCURSOR_THEME", theme)
-hl.env("XCURSOR_SIZE", tostring(size))
+hl.env("HYPRCURSOR_THEME", cursor.name)
+hl.env("HYPRCURSOR_SIZE", tostring(cursor.size))
+hl.env("XCURSOR_THEME", cursor.name)
+hl.env("XCURSOR_SIZE", tostring(cursor.size))

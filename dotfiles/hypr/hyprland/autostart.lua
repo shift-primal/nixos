@@ -11,8 +11,5 @@ hl.on("hyprland.start", function()
 
 	hl.exec_cmd("v4l2-ctl -d /dev/video0 --set-ctrl=focus_automatic_continuous=0")
 
-	hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP SSH_AUTH_SOCK")
-	hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP SSH_AUTH_SOCK")
-
 	hl.exec_cmd("hyprctl reload")
 end)

@@ -1,16 +1,8 @@
 local MOD = "SUPER"
 local NOC = "noctalia msg"
 
-local apps = {
-	terminal = "kitty",
-	editor = "nvim",
-	sysmonitor = "btop",
-	explorer = "yazi",
-	browser = "firefox",
-	discord = "vesktop",
-	email = "betterbird",
-	spotify = "spotify_player",
-}
+-- terminal, editor, browser, ... are picked in ~/nixos/vars.nix
+local apps = require("hyprland.vars").apps
 
 local function noctalia(cmd)
 	return hl.dsp.exec_cmd(NOC .. " " .. cmd)

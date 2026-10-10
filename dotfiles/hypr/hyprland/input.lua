@@ -1,7 +1,9 @@
+local keyboard = require("hyprland.vars").keyboard
+
 hl.config({
 	input = {
-		kb_layout = "no",
-		kb_variant = "nodeadkeys",
+		kb_layout = keyboard.layout,
+		kb_variant = keyboard.variant,
 		-- kb_options = "caps:swapescape",
 		accel_profile = "flat",
 		sensitivity = -0.2,

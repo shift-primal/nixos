@@ -14,11 +14,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    grub2-themes = {
-      url = "github:vinceliuice/grub2-themes";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-claude-code = {
       url = "github:ryoppippi/nix-claude-code";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,19 +21,15 @@
   };
 
   outputs =
+    { nixpkgs, ... }@inputs:
+    let
+      vars = import ./vars.nix;
+    in
     {
-      nixpkgs,
-      grub2-themes,
-      nix-claude-code,
-      ...
-    }@inputs:
-    {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./configuration.nix
-          grub2-themes.nixosModules.default
-        ];
+      # Named after the hostname so `nixos-rebuild switch --flake ~/nixos` picks it.
+      nixosConfigurations.${vars.hostname} = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs vars; };
+        modules = [ ./hosts/${vars.hostname} ];
       };
     };
 }
