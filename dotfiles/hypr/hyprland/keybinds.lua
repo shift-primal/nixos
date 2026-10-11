@@ -86,6 +86,8 @@ hl.bind(MOD .. " + CONTROL + L", noctalia("session lock"), { description = "Lock
 
 hl.bind("CTRL + ALT + DELETE", noctalia("panel-toggle session"), { description = "Power menu" })
 
+hl.bind(MOD .. " + SHIFT + M", hl.dsp.exit())
+
 -- Clipboard
 
 hl.bind(MOD .. " + C", hl.dsp.send_shortcut({ mods = "CTRL", key = "Insert" }), { description = "Universal copy" })
