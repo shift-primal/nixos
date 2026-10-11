@@ -7,6 +7,8 @@
         ./hardware-configuration.nix
         ./boot.nix
         ./greetd.nix
+        ./intel.nix
+        ./plymouth.nix
         ../../system
     ];
 

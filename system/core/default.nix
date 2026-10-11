@@ -10,5 +10,6 @@ _:
         ./packages.nix
         ./reboot-to.nix
         ./users.nix
+        ./zram.nix
     ];
 }
