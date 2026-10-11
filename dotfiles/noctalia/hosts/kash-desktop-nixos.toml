@@ -1,4 +1,15 @@
-# Monitor- and path-specific settings for the desktop; layered over config.toml (host.toml loads after it).
+config_version = 15
+
+[bar.default]
+background_opacity = 0.69999998435378075
+contact_shadow = true
+font_family = "Monaspace Neon NF"
+font_weight = 600
+margin_ends = 0
+radius = 0
+thickness = 40
+widget_spacing = 12
+
 [lockscreen_widgets]
 enabled = false
 schema_version = 2
@@ -89,6 +100,57 @@ widget_order = [ "lockscreen-login-box@DP-3", "lockscreen-login-box@DP-2", "lock
         show_session_buttons = true
         show_unlock_hint = true
         show_weather = true
+
+[shell]
+font_family = "DejaVu Sans"
+
+    [[shell.session.actions]]
+    action = "lock"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "1"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "logout"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "2"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "lock_and_suspend"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "3"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "reboot"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "4"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "shutdown"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "5"
+    variant = "destructive"
+
+    [[shell.session.actions]]
+    action = "command"
+    command = "notify-send 'Noctalia' 'Custom session entry'"
+    countdown_seconds = 0.0
+    enabled = true
+    variant = "default"
+
+[theme]
+builtin = "Ayu"
+community_palette = "Oxocarbon"
+mode = "dark"
+source = "builtin"
 
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers-converted"

@@ -13,9 +13,7 @@ let
     links = {
         "hypr" = "hypr";
         "kitty" = "kitty";
-        # host.toml loads after config.toml, so per-machine keys (monitors, wallpapers) win.
         "noctalia/config.toml" = "noctalia/config.toml";
-        "noctalia/host.toml" = "noctalia/hosts/${vars.hostname}.toml";
         "nvim" = "nvim";
         "starship.toml" = "starship.toml";
         "zsh/.zshrc" = "zsh/.zshrc";
@@ -23,4 +21,11 @@ let
 in
 {
     xdg.configFile = lib.mapAttrs (_: source: { source = link source; }) links;
+
+    # Noctalia writes anything it saves to settings.toml (loaded after config.toml) and follows
+    # symlinks, so pointing it at the host file keeps those changes in the repo.
+    xdg.stateFile."noctalia/settings.toml" = {
+        source = link "noctalia/hosts/${vars.hostname}.toml";
+        force = true;
+    };
 }

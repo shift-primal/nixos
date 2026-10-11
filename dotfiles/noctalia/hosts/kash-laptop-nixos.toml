@@ -1,1 +1,1 @@
-# Laptop-specific Noctalia settings; layered over config.toml.
+# GUI-managed: ~/.config/noctalia/config.toml is the shared base, and Noctalia writes anything Noctalia saves (panel, IPC) lands here (linked as settings.toml in home/dotfiles.nix).
