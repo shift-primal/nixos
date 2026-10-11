@@ -20,18 +20,10 @@ in
         }
     ];
 
-    services.greetd = {
-        enable = true;
-        settings = {
-            initial_session = {
-                command = session;
-                user = vars.user.name;
-            };
-            # Shown after logging out of the autologin session.
-            default_session = {
-                command = "${lib.getExe pkgs.tuigreet} --time --remember --cmd '${session}'";
-                user = "greeter";
-            };
-        };
+    # The login screen itself is system/desktop/greeter.nix. After logging out of the
+    # autologin session greetd falls back to it.
+    services.greetd.settings.initial_session = {
+        command = session;
+        user = vars.user.name;
     };
 }
