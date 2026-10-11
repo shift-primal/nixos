@@ -8,3 +8,10 @@ require("hyprland.rules")
 require("hyprland.cursor")
 
 require("noctalia").apply_theme()
+
+local vars = require("hyprland.vars")
+local host = "hyprland.hosts." .. vars.hostname
+
+if package.searchpath(host, package.path) then
+	require(host)
+end

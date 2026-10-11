@@ -4,7 +4,6 @@ hl.config({
 	input = {
 		kb_layout = keyboard.layout,
 		kb_variant = keyboard.variant,
-		-- kb_options = "caps:swapescape",
 		accel_profile = "flat",
 		sensitivity = -0.2,
 

@@ -1,5 +1,3 @@
-local vars = require("hyprland.vars")
-
 local monitors = {
 	left = "desc:HP Inc. HP S270n",
 	right = "desc:HP Inc. OMEN by HP 27",
@@ -7,27 +5,6 @@ local monitors = {
 
 	laptop = "eDP-1",
 }
-
--- Folder names in ~/nixos/hosts/.
-if vars.hostname == "kash-laptop-nixos" then
-	hl.monitor({
-		output = monitors.laptop,
-		mode = "1920x1200@60.0",
-		position = "auto",
-		scale = "1.25",
-	})
-
-	-- Anything plugged in goes to the right of the built-in screen.
-	hl.monitor({
-		output = "",
-		mode = "preferred",
-		position = "auto-right",
-		scale = "1.0",
-	})
-
-	hl.workspace_rule({ workspace = "1", monitor = monitors.laptop, default = true })
-	return
-end
 
 -- Left
 hl.monitor({
