@@ -1,8 +1,12 @@
 { pkgs, ... }:
 
 {
-    # Secure Boot key tooling; Limine signing is not set up yet.
-    environment.systemPackages = [ pkgs.sbctl ];
+    # sbctl: Secure Boot key tooling; Limine signing is not set up yet.
+    # efibootmgr: list and remove stale UEFI boot entries.
+    environment.systemPackages = with pkgs; [
+        sbctl
+        efibootmgr
+    ];
 
     boot.loader = {
         systemd-boot.enable = false;
@@ -14,16 +18,13 @@
             maxGenerations = 10;
             extraEntries = ''
                 /Arch Linux
-                  comment: Arch, booted directly from its own ext4 /boot
+                  comment: Arch kernel and initramfs copied to /boot/arch on the ESP
                   protocol: linux
-                  path: guid(6d7539dc-0539-4f0e-adc9-4d70e8e99d65):/boot/vmlinuz-linux
+                  # Limine could not open the kernel on Arch's own ext4 /boot (guid() and uuid() both
+                  # failed), so Arch's files are copied here. Keep them in sync after Arch kernel updates.
+                  path: boot():/arch/vmlinuz-linux
                   cmdline: root=UUID=36ac46bc-091d-486e-a9a1-a6fd7cb1e4ca rw loglevel=3 quiet nvidia_drm.modeset=1 nvidia_drm.fbdev=1
-                  module_path: guid(6d7539dc-0539-4f0e-adc9-4d70e8e99d65):/boot/initramfs-linux.img
-
-                /Arch Linux (GRUB)
-                  comment: Arch GRUB, fallback until the entry above is tested
-                  protocol: efi
-                  path: boot():///EFI/GRUB/grubx64.efi
+                  module_path: boot():/arch/initramfs-linux.img
 
                 /Windows
                   comment: Windows Boot Manager
