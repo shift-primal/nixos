@@ -1,13 +1,16 @@
 # NixOS config
 
-Flake for one host (`kash-nixos`) with Home Manager as a NixOS module.
+Flake for two hosts, `kash-nixos` (desktop) and `kash-laptop-nixos` (laptop), with
+Home Manager as a NixOS module.
 `/etc/nixos` links here. Apply with `sudo nixos-rebuild switch --flake ~/nixos`.
 
 ## Rules
 
 1. **One source of truth.** A value used in more than one place lives in
-   `vars.nix` (user, hostname, paths, locale, keyboard, cursor, default apps)
-   and is read from there, never retyped. Modules get it as the `vars`
+   `vars.nix` (user, paths, locale, keyboard, cursor, default apps)
+   and is read from there, never retyped. Per-machine values (`stateVersion`)
+   live in `hosts/<hostname>/vars.nix`; `flake.nix` merges them over `vars.nix`
+   and adds `hostname` from the folder name. Modules get it as the `vars`
    argument (passed through `specialArgs` and `extraSpecialArgs`). Never
    hard-code `kasper`, `/home/kasper`, the hostname or `~/nixos`; use
    `vars.user.name`, `vars.user.home`, `vars.hostname`, `vars.flakeDir`.
@@ -30,13 +33,14 @@ Flake for one host (`kash-nixos`) with Home Manager as a NixOS module.
 ## Layout
 
 ```
-flake.nix            inputs, one nixosConfiguration named vars.hostname
-vars.nix             single source of truth
-hosts/<hostname>/    hardware-configuration.nix + stateVersion; imports ../../system
+flake.nix            inputs, one nixosConfiguration per folder in hosts/
+vars.nix             single source of truth (shared by all hosts)
+hosts/<hostname>/    hardware-configuration.nix, vars.nix (stateVersion), boot.nix,
+                     GPU drivers and other machine-only modules; imports ../../system
 pkgs/                overlay of packages not in nixpkgs (pkgs/default.nix), one file each
 system/              NixOS modules
   core/              boot, nix settings, locale, networking, users, base packages + EDITOR
-  hardware/          nvidia, audio, bluetooth
+  hardware/          audio, bluetooth
   desktop/           hyprland, portal, fonts
   services/          docker, steam
   home-manager.nix   wires home/ in for vars.user.name
@@ -59,6 +63,10 @@ dotfiles/            live-edited configs
 - CLI tool: `home/cli/default.nix`.
 - New language: new `home/dev/<lang>.nix`, imported in `home/dev/default.nix`.
 - System service or hardware: a new file in the matching `system/` folder.
+  If it only applies to one machine (GPU, bootloader, monitors), put it in
+  `hosts/<hostname>/` and import it from that host's `default.nix`.
+- New machine: `hosts/<hostname>/` with `default.nix`, `vars.nix`, `boot.nix`
+  and a `hardware-configuration.nix` generated on that machine.
 - Package not in nixpkgs: `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
 - New dotfile dir: put it in `dotfiles/` and add it to `links` in `home/dotfiles.nix`.
 
@@ -74,7 +82,7 @@ dotfiles/            live-edited configs
 ## Working here
 
 - The flake only sees files git tracks. `git add` new files before building.
-- Verify with `nix build --no-link .#nixosConfigurations.kash-nixos.config.system.build.toplevel`,
+- Verify with `nix build --no-link .#nixosConfigurations.<hostname>.config.system.build.toplevel`,
   and compare against the running system with
   `nix store diff-closures /run/current-system <result>`.
 - Edits under `dotfiles/` go live immediately. Hyprland hot-reloads, so a Lua

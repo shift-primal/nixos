@@ -10,7 +10,7 @@
 #   dofile(os.getenv("HOME") .. "/.config/nixos-vars/vars.lua")
 let
     luaVars = {
-        inherit (vars) keyboard;
+        inherit (vars) hostname keyboard;
         cursor = { inherit (vars.cursor) name size; };
         # Commands, not package names: { browser = "firefox", spotify = "spotify_player", ... }
         apps = lib.mapAttrs (_: name: pkgs.${name}.meta.mainProgram) vars.apps;

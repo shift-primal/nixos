@@ -23,13 +23,23 @@
     outputs =
         { nixpkgs, ... }@inputs:
         let
-            vars = import ./vars.nix;
+            inherit (nixpkgs) lib;
+
+            # One nixosConfiguration per folder in hosts/, named after it, so
+            # `nixos-rebuild switch --flake ~/nixos` picks the one matching the hostname.
+            mkHost =
+                hostname:
+                let
+                    vars = import ./vars.nix // import ./hosts/${hostname}/vars.nix // { inherit hostname; };
+                in
+                lib.nixosSystem {
+                    specialArgs = { inherit inputs vars; };
+                    modules = [ ./hosts/${hostname} ];
+                };
+
+            hosts = lib.attrNames (lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./hosts));
         in
         {
-            # Named after the hostname so `nixos-rebuild switch --flake ~/nixos` picks it.
-            nixosConfigurations.${vars.hostname} = nixpkgs.lib.nixosSystem {
-                specialArgs = { inherit inputs vars; };
-                modules = [ ./hosts/${vars.hostname} ];
-            };
+            nixosConfigurations = lib.genAttrs hosts mkHost;
         };
 }

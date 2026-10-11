@@ -4,10 +4,7 @@
 #
 # Dotfiles read these through ~/.config/nixos-vars/vars.lua (home/vars-lua.nix).
 rec {
-    hostname = "kash-nixos";
-
-    # Release the system and home were first installed with. Do not bump on upgrades.
-    stateVersion = "26.05";
+    # hostname and stateVersion are per machine: see hosts/<hostname>/vars.nix.
 
     user = {
         name = "kasper";
