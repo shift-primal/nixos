@@ -4,6 +4,6 @@ hl.monitor({ output = "", mode = "preferred", position = "auto-right", scale = "
 
 hl.config({
 	input = {
-		-- kb_options = "caps:swapescape",
+		kb_options = "caps:swapescape",
 	},
 })
