@@ -2,8 +2,6 @@ local monitors = {
 	left = "desc:HP Inc. HP S270n",
 	right = "desc:HP Inc. OMEN by HP 27",
 	main = "desc:AOC Q27G4ZR XZ1S1HA010862",
-
-	laptop = "eDP-1",
 }
 
 -- Left

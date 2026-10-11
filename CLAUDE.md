@@ -65,6 +65,9 @@ dotfiles/            live-edited configs
 - System service or hardware: a new file in the matching `system/` folder.
   If it only applies to one machine (GPU, bootloader, monitors), put it in
   `hosts/<hostname>/` and import it from that host's `default.nix`.
+- Hyprland setting for one machine (monitors, input tweaks):
+  `dotfiles/hypr/hyprland/hosts/<hostname>.lua`. It loads last from `hyprland.lua`,
+  so set only the keys that differ; the shared files stay as they are.
 - New machine: `hosts/<hostname>/` with `default.nix`, `vars.nix`, `boot.nix`
   and a `hardware-configuration.nix` generated on that machine.
 - Package not in nixpkgs: `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
