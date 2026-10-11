@@ -1,6 +1,6 @@
 # NixOS config
 
-Flake for two hosts, `kash-nixos` (desktop) and `kash-laptop-nixos` (laptop), with
+Flake for two hosts, `kash-desktop-nixos` (desktop) and `kash-laptop-nixos` (laptop), with
 Home Manager as a NixOS module.
 `/etc/nixos` links here. Apply with `sudo nixos-rebuild switch --flake ~/nixos`.
 
