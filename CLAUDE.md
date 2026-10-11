@@ -2,7 +2,7 @@
 
 Flake for two hosts, `kash-desktop-nixos` (desktop) and `kash-laptop-nixos` (laptop), with
 Home Manager as a NixOS module.
-`/etc/nixos` links here. Apply with `sudo nixos-rebuild switch --flake ~/nixos`.
+`/etc/nixos` links here (`system/core/flake-link.nix`). Apply with `sudo nixos-rebuild switch --flake ~/nixos`.
 
 ## Rules
 
@@ -69,7 +69,9 @@ dotfiles/            live-edited configs
   `dotfiles/hypr/hyprland/hosts/<hostname>.lua`. It loads last from `hyprland.lua`,
   so set only the keys that differ; the shared files stay as they are.
 - New machine: `hosts/<hostname>/` with `default.nix`, `vars.nix`, `boot.nix`
-  and a `hardware-configuration.nix` generated on that machine.
+  and a `hardware-configuration.nix` generated on that machine. First switch:
+  `sudo nixos-rebuild switch --flake ~/nixos#<hostname>`; move the installer's
+  `/etc/nixos` away so the link can be created.
 - Package not in nixpkgs: `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
 - New dotfile dir: put it in `dotfiles/` and add it to `links` in `home/dotfiles.nix`.
 
