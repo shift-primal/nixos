@@ -6,6 +6,7 @@ let
         "qv4l2"
         "qvidcap"
         "nvidia-settings"
+        "uuctl"
     ];
 in
 {
