@@ -8,5 +8,7 @@
         bitwarden-desktop
         filezilla
         vlc
+        mpv
+        inkscape
     ];
 }

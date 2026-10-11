@@ -21,6 +21,8 @@
             "render"
             "input"
             "docker"
+            "i2c" # ddcutil
+            "wireshark"
         ];
     };
 }

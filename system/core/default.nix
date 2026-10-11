@@ -8,6 +8,7 @@ _:
         ./networking.nix
         ./nix.nix
         ./packages.nix
+        ./reboot-to.nix
         ./users.nix
     ];
 }

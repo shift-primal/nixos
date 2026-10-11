@@ -39,6 +39,6 @@ rec {
         browser = "firefox";
         discord = "vesktop";
         email = "thunderbird";
-        spotify = "spotify-player";
+        spotify = "spotatui";
     };
 }

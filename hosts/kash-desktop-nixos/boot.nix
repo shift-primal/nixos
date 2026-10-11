@@ -1,6 +1,9 @@
-_:
+{ pkgs, ... }:
 
 {
+    # Secure Boot key tooling; Limine signing is not set up yet.
+    environment.systemPackages = [ pkgs.sbctl ];
+
     boot.loader = {
         systemd-boot.enable = false;
 

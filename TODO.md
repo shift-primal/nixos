@@ -4,9 +4,8 @@
   - [x] Swap escape on laptop
   - [x] Screen size and scaling on laptop
 
-- [ ] Setup LUKS and greetd
+- [x] Setup LUKS and greetd
 
-- [ ] Add noctalia config to dotfiles from desktop
+- [x] Add noctalia config to dotfiles from desktop
 
-- [ ] Add packages
-  - [ ] BWS
+- [x] Add packages

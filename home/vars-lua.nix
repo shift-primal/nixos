@@ -12,7 +12,7 @@ let
     luaVars = {
         inherit (vars) hostname keyboard;
         cursor = { inherit (vars.cursor) name size; };
-        # Commands, not package names: { browser = "firefox", spotify = "spotify_player", ... }
+        # Commands, not package names: { browser = "firefox", spotify = "spotatui", ... }
         apps = lib.mapAttrs (_: name: pkgs.${name}.meta.mainProgram) vars.apps;
     };
 in

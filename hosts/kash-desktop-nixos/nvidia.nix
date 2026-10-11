@@ -11,7 +11,8 @@
         powerManagement.finegrained = false;
         open = true;
         nvidiaSettings = true;
-        package = config.boot.kernelPackages.nvidiaPackages.stable;
+        # gpu-screen-recorder (the recording keybind) needs NVENC API 13.1; the stable 595 driver only has 13.0.
+        package = config.boot.kernelPackages.nvidiaPackages.latest;
     };
 
     environment.sessionVariables = {

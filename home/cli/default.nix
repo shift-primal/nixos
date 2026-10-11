@@ -13,7 +13,18 @@
         sqlite
         lazysql
         rbw
+        # Noctalia plugins: bitwarden talks to `bw serve`, claude-cockpit uses jq and curl.
+        bitwarden-cli
+        bws # Bitwarden Secrets Manager CLI
+        jq
+        curl
         tree
+        libnotify # notify-send, used by Noctalia plugins and its session menu
+        dnsutils # dig, nslookup
+        yt-dlp
+        ddcutil # external monitor brightness, needs hardware.i2c (system/hardware/i2c.nix)
+        gocryptfs
+        git-filter-repo
         unzip
         zip
         _7zz

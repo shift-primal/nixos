@@ -1,0 +1,2 @@
+# GUI-managed: Noctalia writes anything it saves here (panel, IPC), linked as settings.toml in
+# home/dotfiles.nix. It loads last and wins; fold keys into config.toml or hosts/ and delete them here.

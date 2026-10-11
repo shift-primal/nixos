@@ -6,5 +6,6 @@
         pyright
         ruff
         black
+        pipx
     ];
 }

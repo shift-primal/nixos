@@ -1,1 +1,1 @@
-# GUI-managed: ~/.config/noctalia/config.toml is the shared base, and Noctalia writes anything Noctalia saves (panel, IPC) lands here (linked as settings.toml in home/dotfiles.nix).
+# Laptop only: keys that differ from config.toml (monitors, wallpaper paths). Loaded after config.toml.

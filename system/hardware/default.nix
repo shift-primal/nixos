@@ -5,5 +5,7 @@ _:
     imports = [
         ./audio.nix
         ./bluetooth.nix
+        ./i2c.nix
+        ./logitech.nix
     ];
 }
