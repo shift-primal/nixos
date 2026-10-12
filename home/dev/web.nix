@@ -16,6 +16,11 @@
         pnpm
         sassc
 
+        # Native addons without a prebuilt binary (@discordjs/opus) fall back to a source build, which
+        # needs node-gyp and make alongside gcc (c.nix) and python (python.nix).
+        node-gyp
+        gnumake
+
         oxfmt
         oxlint
         biome
