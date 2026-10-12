@@ -9,6 +9,7 @@ _:
         ./nix-ld.nix
         ./nix.nix
         ./packages.nix
+        ./plymouth.nix
         ./reboot-to.nix
         ./rebuild.nix
         ./users.nix

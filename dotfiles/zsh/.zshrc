@@ -12,6 +12,12 @@ if [[ -r $hm_init ]]; then
   source "$hm_init"
 fi
 
+# Vite+ shims on PATH plus the `vp` function `vp env use` needs. After hm-init so compdef exists.
+vp_env="$HOME/.config/vite-plus/env"
+if [[ -r $vp_env ]]; then
+  source "$vp_env"
+fi
+
 alias nvimcfg='cd ~/.config/nvim && nvim .'
 alias py='python'
 alias ff='fastfetch'

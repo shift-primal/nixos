@@ -1,4 +1,9 @@
-{ lib, pkgs, ... }:
+{
+    inputs,
+    lib,
+    pkgs,
+    ...
+}:
 
 {
     # Set on zsh, not home.sessionVariables: that one is sourced once per login, so a rebuild never
@@ -17,6 +22,7 @@
         vtsls
         tailwindcss-language-server
         vue-language-server
+        inputs.nix-vite-plus.packages.${pkgs.stdenv.hostPlatform.system}.vp
 
         vscode-js-debug
         # LazyVim's typescript extra starts the adapter as `js-debug-adapter`.
