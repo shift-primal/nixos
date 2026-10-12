@@ -50,7 +50,11 @@ return {
 			less = pick({}),
 		})
 
+		-- conform prefers node_modules/.bin/biome, a generic-linux binary NixOS cannot run
 		opts.formatters = vim.tbl_extend("force", opts.formatters or {}, {
+			biome = { command = "biome" },
+			["biome-check"] = { command = "biome" },
+			["biome-organize-imports"] = { command = "biome" },
 			stylua = {
 				prepend_args = { "--indent-type", "Tabs", "--indent-width", "4" },
 			},

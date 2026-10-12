@@ -6,6 +6,7 @@ _:
         ./flake-link.nix
         ./locale.nix
         ./networking.nix
+        ./nix-ld.nix
         ./nix.nix
         ./packages.nix
         ./reboot-to.nix

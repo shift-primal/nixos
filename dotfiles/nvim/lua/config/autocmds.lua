@@ -52,3 +52,16 @@ vim.api.nvim_create_autocmd("InsertLeave", {
 		end
 	end,
 })
+
+-- markview skips tables wider than the window while wrap is on, and does not
+-- reliably redraw when wrap is toggled; redraw so wide tables appear
+vim.api.nvim_create_autocmd("OptionSet", {
+	pattern = "wrap",
+	callback = function()
+		if vim.bo.filetype == "markdown" then
+			vim.schedule(function()
+				pcall(vim.cmd, "Markview render")
+			end)
+		end
+	end,
+})

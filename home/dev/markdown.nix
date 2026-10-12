@@ -2,5 +2,8 @@
 
 {
     # conform.lua formats markdown with prettier outside ox projects.
-    home.packages = [ pkgs.prettier ];
+    home.packages = with pkgs; [
+        prettier
+        marksman
+    ];
 }
