@@ -29,7 +29,11 @@
         zip
         _7zz
         gowall
+
+        railway
+
         grok-cli
+        skills # skills.sh CLI for third-party skills; own skills are linked by home/claude-skills.nix
         inputs.nix-claude-code.packages.${pkgs.stdenv.hostPlatform.system}.stable
     ];
 }

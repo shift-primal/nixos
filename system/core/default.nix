@@ -10,6 +10,7 @@ _:
         ./nix.nix
         ./packages.nix
         ./reboot-to.nix
+        ./rebuild.nix
         ./users.nix
         ./zram.nix
     ];

@@ -2,6 +2,7 @@ _:
 
 {
     imports = [
+        ./askpass.nix
         ./clipboard.nix
         ./cursor.nix
         ./entries.nix

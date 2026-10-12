@@ -7,6 +7,7 @@
         ./desktop
         ./dev
         ./shell
+        ./claude-skills.nix
         ./dotfiles.nix
         ./vars-lua.nix
     ];
