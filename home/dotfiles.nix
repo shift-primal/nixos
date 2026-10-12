@@ -17,6 +17,8 @@ let
         # Loads after config.toml, so it only holds what differs on this machine.
         "noctalia/host.toml" = "noctalia/hosts/${vars.hostname}.toml";
         "nvim" = "nvim";
+        # Fallback oxfmt/oxlint config for projects without their own (see nvim config/ox.lua).
+        "oxc" = "oxc";
         "starship.toml" = "starship.toml";
         "zsh/.zshrc" = "zsh/.zshrc";
     };
