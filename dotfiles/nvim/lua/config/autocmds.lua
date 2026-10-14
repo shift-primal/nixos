@@ -25,6 +25,16 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- Treesitter indent puts the line after a braceless `if (x) return;` at column 0;
+-- fall back to autoindent + smartindent for JS/TS
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+	callback = function()
+		vim.opt_local.indentexpr = ""
+		vim.opt_local.smartindent = true
+	end,
+})
+
 -- Disable spell-checking in markdown
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "markdown", "text" },

@@ -5,29 +5,24 @@ background_opacity = 0.69999998435378075
 capsule_radius = 80
 capsule_thickness = 0.74999998696148396
 contact_shadow = true
-end = [ "media", "group:dev", "group:g3", "group:g2", "group:g1", "notifications", "tray", "session" ]
+end = [ "media", "group:dev", "group:g3", "group:g5", "group:g1", "group:g2" ]
 font_family = "Monaspace Neon NF"
 font_weight = 600
 margin_ends = 0
 radius = 0
-start = [ "launcher", "wallpaper", "workspaces", "sysmon" ]
+start = [ "group:g4", "sysmon", "nightwatch75/claude-cockpit:widget" ]
 thickness = 32
-widget_spacing = 12
+widget_spacing = 14
 
     [[bar.default.capsule_group]]
-    accordion = true
+    accordion = false
     accordion_direction = "end"
     border = ""
     border_width = 1.0
     enabled = true
     fill = "surface_variant"
     id = "dev"
-    members = [
-        "nightwatch75/claude-cockpit:widget",
-        "raycursive/github-prs:bar",
-        "8bury/mini-docker:mini-docker",
-        "mindnbytes/nix-status:status"
-    ]
+    members = [ "raycursive/github-prs:bar", "8bury/mini-docker:mini-docker", "mindnbytes/nix-status:status" ]
     opacity = 1.0
     padding = 8.0
     widget_spacing = 10
@@ -44,18 +39,19 @@ widget_spacing = 12
     padding = 6.0
 
     [[bar.default.capsule_group]]
-    accordion = true
+    accordion = false
     accordion_direction = "end"
     border_width = 1.0
     enabled = true
     fill = "surface_variant"
     id = "g2"
-    members = [ "network", "bluetooth" ]
+    members = [ "notifications", "tray", "session" ]
     opacity = 1.0
     padding = 6.0
+    radius = 80.0
 
     [[bar.default.capsule_group]]
-    accordion = true
+    accordion = false
     accordion_direction = "end"
     border_width = 1.0
     enabled = true
@@ -64,6 +60,30 @@ widget_spacing = 12
     members = [ "clipboard", "gamaraan/mx-control:mx" ]
     opacity = 1.0
     padding = 6.0
+
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_variant"
+    id = "g4"
+    members = [ "launcher", "wallpaper", "workspaces" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 80.0
+
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_variant"
+    id = "g5"
+    members = [ "network", "bluetooth" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 80.0
 
 [lockscreen_widgets]
 enabled = false

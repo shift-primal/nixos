@@ -7,6 +7,7 @@ _:
         ./printing.nix
         ./steam.nix
         ./tailscale.nix
+        ./teamviewer.nix
         ./wireshark.nix
     ];
 }
