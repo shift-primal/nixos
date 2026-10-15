@@ -287,22 +287,22 @@ mode = "dark"
 source = "builtin"
 
 [wallpaper]
-directory = "/home/kasper/Pictures/wallpapers-converted"
+directory = "/home/kasper/Pictures/wallpapers"
 
     [wallpaper.default]
-    path = "/home/kasper/Pictures/wallpapers-converted/nix-1.png"
+    path = "/home/kasper/Pictures/wallpapers/nix-1.png"
 
     [wallpaper.last]
-    path = "/home/kasper/Pictures/wallpapers-converted/nix-1.png"
+    path = "/home/kasper/Pictures/wallpapers/nix-1.png"
 
     [wallpaper.monitors.DP-1]
-    path = "/home/kasper/Pictures/wallpapers-converted/nix-1.png"
+    path = "/home/kasper/Pictures/wallpapers/nix-1.png"
 
     [wallpaper.monitors.DP-2]
-    path = "/home/kasper/Pictures/wallpapers-converted/nix-1.png"
+    path = "/home/kasper/Pictures/wallpapers/nix-1.png"
 
     [wallpaper.monitors.DP-3]
-    path = "/home/kasper/Pictures/wallpapers-converted/nix-1.png"
+    path = "/home/kasper/Pictures/wallpapers/nix-1.png"
 
 [widget.clock]
 tooltip_format = "{:%a %d. %b - %y}"

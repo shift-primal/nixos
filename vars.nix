@@ -36,7 +36,7 @@ rec {
         editor = "neovim";
         sysmonitor = "btop";
         explorer = "yazi";
-        browser = "firefox";
+        browser = "google-chrome";
         discord = "vesktop";
         email = "thunderbird";
         spotify = "spotatui";

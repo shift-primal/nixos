@@ -18,6 +18,7 @@
         bws # Bitwarden Secrets Manager CLI
         jq
         curl
+        openssl
         tree
         libnotify # notify-send, used by Noctalia plugins and its session menu
         dnsutils # dig, nslookup
@@ -31,6 +32,7 @@
         gowall
 
         railway
+        stripe-cli
 
         grok-cli
         skills # skills.sh CLI for third-party skills; own skills are linked by home/claude-skills.nix
