@@ -27,9 +27,10 @@ in
     xdg.configFile = lib.mapAttrs (_: source: { source = link source; }) links;
 
     # Noctalia writes anything it saves to settings.toml (loaded last) and follows symlinks, so
-    # pointing it at the repo keeps GUI changes visible in git.
+    # pointing it at the repo keeps GUI changes visible in git. One file per host, so changes made
+    # in the GUI on one machine don't carry over to the other.
     xdg.stateFile."noctalia/settings.toml" = {
-        source = link "noctalia/settings.toml";
+        source = link "noctalia/settings/${vars.hostname}.toml";
         force = true;
     };
 }
