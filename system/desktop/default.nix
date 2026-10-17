@@ -5,6 +5,7 @@ _:
         ./fonts.nix
         ./greeter.nix
         ./hyprland.nix
+        ./keyring.nix
         ./portal.nix
     ];
 }

@@ -10,6 +10,9 @@ rec {
         name = "kasper";
         fullName = "Kasper Haugestøl";
         home = "/home/${user.name}";
+        # Personal SSH key, used for every machine. The private half lives in
+        # Bitwarden and is served by its SSH agent (SSH_AUTH_SOCK in home/shell/zsh.nix).
+        sshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKKCQ78itQutj3zwTn6g+2RwSi8zl7+mssOGsQyeekZB kash-ssh-key";
     };
 
     # /etc/nixos links here. Dotfiles are linked out of the store from dotfiles/.

@@ -8,6 +8,7 @@
         ./boot.nix
         ./greetd.nix
         ./intel.nix
+        ./keyring.nix
         ./plymouth.nix
         ../../system
     ];
