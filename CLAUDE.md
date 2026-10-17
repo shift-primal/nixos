@@ -29,6 +29,13 @@ Home Manager as a NixOS module.
    is disabled in `dotfiles/nvim/lua/plugins/lsp/mason.lua`. When Neovim needs a
    language server, formatter, linter or debugger, add it to the matching
    `home/dev/<language>.nix`.
+6. **No secrets in the repo; it is public.** Never commit passwords, API keys,
+   tokens, private keys, Wi-Fi passphrases, password hashes or anything else
+   that grants access. That includes `dotfiles/`, since everything there is
+   tracked too. Do not put secrets in Nix strings either: they end up in the
+   world-readable `/nix/store`. Keep them outside the repo (e.g. Bitwarden via
+   `bws`) and read them at runtime from a file or command. Before committing,
+   check the diff for anything secret-looking, and stop and ask if unsure.
 
 ## Layout
 
