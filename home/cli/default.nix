@@ -1,7 +1,7 @@
 { inputs, pkgs, ... }:
 
 {
-    # The terminal, editor, btop and yazi are default apps, see vars.nix.
+    # kitty, neovim, btop and yazi are default apps, see vars.nix.
     home.packages = with pkgs; [
         ripgrep
         fd
@@ -13,17 +13,18 @@
         sqlite
         lazysql
         rbw
-        # Noctalia plugins: bitwarden talks to `bw serve`, claude-cockpit uses jq and curl.
         bitwarden-cli
-        bws # Bitwarden Secrets Manager CLI
+        bws
+        obsidian-headless
         jq
         curl
         openssl
         tree
-        libnotify # notify-send, used by Noctalia plugins and its session menu
-        dnsutils # dig, nslookup
+        libnotify
+        dnsutils
         yt-dlp
-        ddcutil # external monitor brightness, needs hardware.i2c (system/hardware/i2c.nix)
+        ffmpeg
+        ddcutil
         gocryptfs
         git-filter-repo
         unzip
@@ -35,7 +36,7 @@
         stripe-cli
 
         grok-cli
-        skills # skills.sh CLI for third-party skills; own skills are linked by home/claude-skills.nix
+        skills
         inputs.nix-claude-code.packages.${pkgs.stdenv.hostPlatform.system}.stable
     ];
 }

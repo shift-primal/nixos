@@ -12,6 +12,7 @@ docs/teardown/<slug>/
 ```
 
 Format rules:
+
 - Plain language, same output style as the other skills.
 - Each fact lives once. `index.md` links to details rather than repeating them.
 - Only what is known. No `n/a` or empty fields; leave a field out when there is nothing to say.
@@ -30,12 +31,12 @@ Format rules:
 
 ## At a glance
 
-| ID | Feature | Area | Verdict |
-|----|---------|------|---------|
-| F-001 | Sign up with email | Account | improve |
-| F-002 | Project board | Projects | keep |
-| F-031 | Offline drafts | Editor | new |
-| … | … | … | … |
+| ID    | Feature            | Area     | Verdict |
+| ----- | ------------------ | -------- | ------- |
+| F-001 | Sign up with email | Account  | improve |
+| F-002 | Project board      | Projects | keep    |
+| F-031 | Offline drafts     | Editor   | new     |
+| …     | …                  | …        | …       |
 
 **Counts:** <n> features · <k> keep · <i> improve · <c> cut · <w> new
 
@@ -94,6 +95,7 @@ Group by area, in nav order. One section per feature:
 ## <Area>
 
 ### F-007 Filter the task list · improve
+
 **Job:** find the tasks that matter right now without scrolling.
 **Where:** Projects › Board, filter button in the toolbar; also `F` shortcut.
 **How it works:** <what the user does and what happens, step by step, in plain words>.
@@ -115,6 +117,7 @@ For `cut`: replace **Improve** with **Why cut:**. For `new`: **Where**, **How it
 # Core flows: <Product name>
 
 ## 1. <Flow name, e.g. Sign up to first value>
+
 **Who:** <role> · **Goal:** <what they want at the end> · **Features:** F-001, F-002, F-010
 
 1. <step: where, what the user does, what they see>
@@ -132,10 +135,10 @@ For `cut`: replace **Improve** with **Why cut:**. For `new`: **Where**, **How it
 
 ## Entities
 
-| Entity | Key fields | Belongs to | Has many | Evidence |
-|--------|-----------|------------|----------|----------|
-| Workspace | name, plan | | Projects, Members | seen |
-| Task | title, status, due date, assignee | Project | Comments, Attachments | seen |
+| Entity    | Key fields                        | Belongs to | Has many              | Evidence |
+| --------- | --------------------------------- | ---------- | --------------------- | -------- |
+| Workspace | name, plan                        |            | Projects, Members     | seen     |
+| Task      | title, status, due date, assignee | Project    | Comments, Attachments | seen     |
 
 ## Lifecycles
 
@@ -143,10 +146,10 @@ For `cut`: replace **Improve** with **Why cut:**. For `new`: **Where**, **How it
 
 ## Roles and permissions
 
-| Action | Owner | Admin | Member | Guest |
-|--------|-------|-------|--------|-------|
-| Invite people | yes | yes | no | no |
-| Delete project | yes | yes | no | no |
+| Action         | Owner | Admin | Member | Guest |
+| -------------- | ----- | ----- | ------ | ----- |
+| Invite people  | yes   | yes   | no     | no    |
+| Delete project | yes   | yes   | no     | no    |
 
 <Note which cells are seen and which are inferred.>
 ```
@@ -157,27 +160,34 @@ For `cut`: replace **Improve** with **Why cut:**. For `new`: **Where**, **How it
 # Design language: <Product name>
 
 ## Layout
+
 <App shell (sidebar, top bar), grid, spacing rhythm, density, how it adapts to narrow screens.>
 
 ## Visual feel
+
 <Color roles (background, surface, accent, danger), light and dark mode, type feel (sizes, weights, one family or two), corner radius, shadows, icon style. Describe, don't copy exact brand assets.>
 
 ## Components
-| Component | Where seen | Variants and states | Notes |
-|-----------|-----------|---------------------|-------|
-| Button | everywhere | primary, secondary, ghost, danger; loading, disabled | |
-| Command palette | Cmd+K | | |
+
+| Component       | Where seen | Variants and states                                  | Notes |
+| --------------- | ---------- | ---------------------------------------------------- | ----- |
+| Button          | everywhere | primary, secondary, ghost, danger; loading, disabled |       |
+| Command palette | Cmd+K      |                                                      |       |
 
 ## Motion and feedback
+
 <Transitions, toasts, optimistic updates, skeletons.>
 
 ## Tone of voice
+
 <How the copy talks: formal or casual, microcopy examples in short quotes.>
 
 ## Accessibility
+
 <Keyboard reachability, visible focus, contrast problems, missing labels, what a screen reader would struggle with.>
 
 ## Keep, change
+
 <What to keep from this design language, what to change in the new version.>
 ```
 
@@ -191,6 +201,7 @@ For `cut`: replace **Improve** with **Why cut:**. For `new`: **Where**, **How it
 **Written to:** `docs/teardown/<slug>/`
 
 **Top opportunities**
+
 1. <name>: <one line>
 2. …
 3. …

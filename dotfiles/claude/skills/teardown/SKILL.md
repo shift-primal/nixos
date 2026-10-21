@@ -1,12 +1,13 @@
 ---
 name: teardown
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Agent, AskUserQuestion, WebFetch, WebSearch, ToolSearch
-description: "Run /teardown <url> to reverse engineer an existing website or web app into a full feature teardown in docs/teardown/<product>/: every screen, every feature, what it is for, how it behaves, its rules, data, flows, design language, weak spots, and how a better version would do it. Drives the real site in Chrome. The output is the input for /scope (and later /architect) to rebuild a new, improved version of the product. Use it whenever you want to clone, rebuild, replace, compete with, modernize, or \"do a better version of\" an existing site or app, or ask for a feature breakdown, product teardown, competitor analysis, or design sheet of a live website, even if you do not say teardown."
+description: 'Run /teardown <url> to reverse engineer an existing website or web app into a full feature teardown in docs/teardown/<product>/: every screen, every feature, what it is for, how it behaves, its rules, data, flows, design language, weak spots, and how a better version would do it. Drives the real site in Chrome. The output is the input for /scope (and later /architect) to rebuild a new, improved version of the product. Use it whenever you want to clone, rebuild, replace, compete with, modernize, or "do a better version of" an existing site or app, or ask for a feature breakdown, product teardown, competitor analysis, or design sheet of a live website, even if you do not say teardown.'
 ---
 
 ## Output style (plain words, no dashes, no hyphens)
 
 <!-- OUTPUT-STYLE:START -->
+
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
@@ -28,7 +29,7 @@ Pipeline position:
 
 - **Stable feature IDs (`F-001`, …)** so `/scope`, `/architect`, and you can point at one feature without ambiguity, across sessions.
 - **Seen vs inferred.** You can only observe the UI. Anything about the backend (limits, permissions, data rules, jobs that run on a schedule) is a guess. Mark each fact `seen` or `inferred` so later skills know what is proven and what still needs a decision.
-- **Tool agnostic recommendations.** The teardown may *record* what the original uses (observed tech, third party services) as a fact, but it never *recommends* a library, framework, host, or provider. That choice belongs to `/architect`, and naming tools here makes the scope rot.
+- **Tool agnostic recommendations.** The teardown may _record_ what the original uses (observed tech, third party services) as a fact, but it never _recommends_ a library, framework, host, or provider. That choice belongs to `/architect`, and naming tools here makes the scope rot.
 - **A verdict on every feature** (`keep`, `improve`, `cut`, `new`) so the improved version is a set of explicit calls, not a copy.
 - **A brief for /scope** at the end of `index.md`, written as a product idea, because `/scope` takes a product idea as input.
 
@@ -129,6 +130,7 @@ Finally write the **Brief for /scope** section: one paragraph product idea for t
 Write the files in the shape `teardown-template.md` gives. One folder per product. Keep `index.md` scannable: someone should grasp the product and the rebuild plan in two minutes from it alone. For a large product (roughly 60 or more features), split `features.md` into `features/<area>.md` with `index.md` linking each.
 
 Before finishing, check your own output:
+
 - Every screen on the map is either covered or listed under **Not covered** with the reason.
 - Every feature has a verdict and an evidence tag.
 - No tool, library, framework, or provider is recommended anywhere (observed tech in the Observed tech section is fine).

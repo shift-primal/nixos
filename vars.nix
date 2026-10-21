@@ -33,7 +33,7 @@ rec {
     };
 
     # Default apps, as nixpkgs attribute names. Each one is installed by
-    # home/apps/defaults.nix and its command is handed to the Hyprland keybinds.
+    # home/apps/default-apps.nix and its command is handed to the Hyprland keybinds.
     apps = {
         terminal = "kitty";
         editor = "neovim";

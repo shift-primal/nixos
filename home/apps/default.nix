@@ -1,10 +1,11 @@
 { pkgs, ... }:
 
 {
-    imports = [ ./defaults.nix ];
+    imports = [ ./default-apps.nix ];
 
     home.packages = with pkgs; [
         bitwarden-desktop
+        obsidian
         filezilla
         vlc
         mpv

@@ -7,10 +7,16 @@
         slurp # region picker for the screen recording keybind
         grim # screenshots, used by satty and the screen toolkit
         satty # screenshot annotation
-        hyprpicker
+        hyprpicker # color picker
+        imagemagick # screen toolkit's color-picker.sh and palette/lens scripts call magick
         wev # key event viewer
-        (tesseract.override { enableLanguages = [ "eng" "nor" ]; }) # OCR in the screen toolkit
+        (tesseract.override {
+            enableLanguages = [
+                "eng"
+                "nor"
+            ];
+        }) # OCR in the screen toolkit
         zbar # QR codes
-        gifski
+        gifski # convert videos to gif
     ];
 }

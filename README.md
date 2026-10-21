@@ -3,10 +3,10 @@
 My NixOS setup as a flake: Hyprland with the Noctalia shell, Home Manager as a
 NixOS module, and live-editable dotfiles. It builds two machines:
 
-| Host                 | Machine | Notes                                                             |
-| -------------------- | ------- | ----------------------------------------------------------------- |
-| `kash-desktop-nixos` | Desktop | NVIDIA, Limine, triple boot with Windows and Arch                 |
-| `kash-laptop-nixos`  | Laptop  | Intel graphics, systemd-boot, LUKS, autologin into Hyprland       |
+| Host                 | Machine | Notes                                                       |
+| -------------------- | ------- | ----------------------------------------------------------- |
+| `kash-desktop-nixos` | Desktop | NVIDIA, Limine, triple boot with Windows and Arch           |
+| `kash-laptop-nixos`  | Laptop  | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
 
 Tracks `nixos-unstable`. Unfree packages are allowed.
 
@@ -100,18 +100,18 @@ machine-specific values:
 The repo is public, so nothing secret is in it. These have to be set up by hand
 after the first boot:
 
-| What                       | How                                                                                                         |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| What                       | How                                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | SSH keys                   | Bitwarden desktop's SSH agent. Turn it on in Bitwarden's settings; zsh points `SSH_AUTH_SOCK` at `~/.bitwarden-ssh-agent.sock`. |
-| Bitwarden CLIs             | `rbw config set email <email>` then `rbw login`; `bw login` for the Noctalia Bitwarden plugin.              |
-| Secrets for scripts        | Bitwarden Secrets Manager through `bws`, with the access token supplied at runtime, never in a file here.   |
-| Tailscale                  | `sudo tailscale up`                                                                                          |
-| GitHub, Claude, Railway, … | `gh auth login`, `claude`, `railway login` and so on. Tokens stay in their own config dirs.                  |
-| Wallpapers                 | Not in the repo. The desktop expects them in `~/Pictures/wallpapers-converted`.                              |
-| Neovim plugins             | Downloaded by lazy.nvim on first start, pinned by `dotfiles/nvim/lazy-lock.json`.                           |
-| Noctalia plugins           | Downloaded by Noctalia from the list in `dotfiles/noctalia/config.toml`.                                    |
-| Desktop: Arch and Windows  | Share the 1 GB ESP. Arch's kernel and initramfs are copied to `/boot/arch` by hand after each Arch kernel update. |
-| Firmware                   | `fwupdmgr refresh && fwupdmgr update`                                                                        |
+| Bitwarden CLIs             | `rbw config set email <email>` then `rbw login`; `bw login` for the Noctalia Bitwarden plugin.                                  |
+| Secrets for scripts        | Bitwarden Secrets Manager through `bws`, with the access token supplied at runtime, never in a file here.                       |
+| Tailscale                  | `sudo tailscale up`                                                                                                             |
+| GitHub, Claude, Railway, … | `gh auth login`, `claude`, `railway login` and so on. Tokens stay in their own config dirs.                                     |
+| Wallpapers                 | Not in the repo. The desktop expects them in `~/Pictures/wallpapers-converted`.                                                 |
+| Neovim plugins             | Downloaded by lazy.nvim on first start, pinned by `dotfiles/nvim/lazy-lock.json`.                                               |
+| Noctalia plugins           | Downloaded by Noctalia from the list in `dotfiles/noctalia/config.toml`.                                                        |
+| Desktop: Arch and Windows  | Share the 1 GB ESP. Arch's kernel and initramfs are copied to `/boot/arch` by hand after each Arch kernel update.               |
+| Firmware                   | `fwupdmgr refresh && fwupdmgr update`                                                                                           |
 
 ## Everyday use
 

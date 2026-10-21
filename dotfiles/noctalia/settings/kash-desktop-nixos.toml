@@ -22,7 +22,7 @@ widget_spacing = 14
     enabled = true
     fill = "surface_variant"
     id = "dev"
-    members = [ "raycursive/github-prs:bar", "8bury/mini-docker:mini-docker", "mindnbytes/nix-status:status" ]
+    members = [ "status", "raycursive/github-prs:bar", "8bury/mini-docker:mini-docker", "mindnbytes/nix-status:status" ]
     opacity = 1.0
     padding = 8.0
     widget_spacing = 10
@@ -208,6 +208,16 @@ widget_order = [
         show_unlock_hint = true
         show_weather = true
 
+[plugin_settings."davemhammer/obsidian"]
+daily_folder = "05 Journal/Daily"
+refresh_interval = 19
+vault_path = "/home/kasper/obsidian/vaults/Kasper"
+
+[plugin_settings."mindnbytes/nix-status"]
+flake_dir = "/home/kasper/nixos"
+nixos_configuration = "kash"
+use_themed_logos = true
+
 [plugins]
 enabled = [
     "noctalia/bitwarden",
@@ -219,11 +229,16 @@ enabled = [
     "cleboost/ssh-launcher",
     "kenn/keybind-cheatsheet",
     "tmelik/system-monitor",
-    "alexander/screen-toolkit"
+    "alexander/screen-toolkit",
+    "davemhammer/obsidian"
 ]
 
 [shell]
 font_family = "DejaVu Sans"
+
+    [shell.screenshot]
+    directory = "/home/kasper/Pictures/screenshots"
+    remember_last_region = true
 
     [[shell.session.actions]]
     action = "lock"
@@ -306,6 +321,9 @@ directory = "/home/kasper/Pictures/wallpapers"
 
 [widget.clock]
 tooltip_format = "{:%a %d. %b - %y}"
+
+[widget.status]
+type = "davemhammer/obsidian:status"
 
 [widget.tray]
 drawer = true

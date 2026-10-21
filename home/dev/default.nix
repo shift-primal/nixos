@@ -1,7 +1,7 @@
 _:
 
-# One file per language: toolchain plus the LSP servers, formatters and
-# debuggers Neovim uses for it. Mason is disabled, so Nix installs every binary.
+# One file per language: toolchain plus the LSP servers, formatters, etc.
+# Mason is disabled, so Nix installs every binary.
 {
     imports = [
         ./c.nix
@@ -15,7 +15,6 @@ _:
         ./python.nix
         ./rust.nix
         ./shell.nix
-        ./sql.nix
         ./toml.nix
         ./web.nix
     ];

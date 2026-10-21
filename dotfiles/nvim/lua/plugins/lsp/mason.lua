@@ -1,5 +1,4 @@
 -- Nix provides the language servers, formatters, and debug adapters
--- (~/nixos/home/dev). Mason is disabled entirely.
 
 local function vue_plugin_location()
 	local bin = vim.fn.exepath("vue-language-server")
@@ -14,9 +13,6 @@ local function vue_plugin_location()
 	return location
 end
 
--- The Vue extra calls LazyVim.get_pkg_path("vue-language-server") while
--- building lspconfig opts. That looks under Mason and warns when the package
--- is absent. Return the Nix package so the lookup succeeds.
 if LazyVim and type(LazyVim.get_pkg_path) == "function" then
 	local get_pkg_path = LazyVim.get_pkg_path
 	function LazyVim.get_pkg_path(pkg, path, opts)
@@ -31,7 +27,6 @@ if LazyVim and type(LazyVim.get_pkg_path) == "function" then
 end
 
 return {
-	-- LazyVim checks for these before using them, so it falls back to PATH.
 	{ "mason-org/mason.nvim", enabled = false },
 	{ "mason-org/mason-lspconfig.nvim", enabled = false },
 	{ "jay-babu/mason-nvim-dap.nvim", enabled = false },

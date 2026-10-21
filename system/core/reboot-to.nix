@@ -1,4 +1,9 @@
-{ lib, pkgs, vars, ... }:
+{
+    lib,
+    pkgs,
+    vars,
+    ...
+}:
 
 let
     # Only these fixed targets can be requested, so the sudo rule below
@@ -21,11 +26,15 @@ in
     environment.systemPackages = [ reboot-to ];
 
     # Used by the Noctalia power menu; run as `sudo reboot-to windows`.
-    security.sudo.extraRules = [{
-        users = [ vars.user.name ];
-        commands = [{
-            command = "/run/current-system/sw/bin/reboot-to";
-            options = [ "NOPASSWD" ];
-        }];
-    }];
+    security.sudo.extraRules = [
+        {
+            users = [ vars.user.name ];
+            commands = [
+                {
+                    command = "/run/current-system/sw/bin/reboot-to";
+                    options = [ "NOPASSWD" ];
+                }
+            ];
+        }
+    ];
 }

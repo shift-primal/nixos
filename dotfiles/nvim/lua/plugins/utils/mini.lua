@@ -16,7 +16,8 @@ return {
 			local rad = math.rad(h)
 			local a, b = c * math.cos(rad), c * math.sin(rad)
 
-			local l_, m_, s_ = l + 0.3963377774 * a + 0.2158037573 * b,
+			local l_, m_, s_ =
+				l + 0.3963377774 * a + 0.2158037573 * b,
 				l - 0.1055613458 * a - 0.0638541728 * b,
 				l - 0.0894841775 * a - 1.2914855480 * b
 			local ll, mm, ss = l_ ^ 3, m_ ^ 3, s_ ^ 3

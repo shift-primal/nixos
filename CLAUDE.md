@@ -52,7 +52,7 @@ system/              NixOS modules
   services/          docker, steam
   home-manager.nix   wires home/ in for vars.user.name
 home/                Home Manager modules
-  apps/              GUI apps; defaults.nix installs everything in vars.apps
+  apps/              GUI apps; default-apps.nix installs everything in vars.apps
   cli/               terminal tools
   dev/               one file per language: toolchain + LSP + formatter + debugger
   desktop/           noctalia, cursor, theme, fonts, clipboard, media, hidden entries
