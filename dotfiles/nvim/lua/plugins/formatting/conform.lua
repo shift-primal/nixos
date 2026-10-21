@@ -5,6 +5,7 @@ return {
 	"stevearc/conform.nvim",
 	opts = function(_, opts)
 		local util = require("conform.util")
+		local oxfmt_root = util.root_file({ ".oxfmtrc.json", ".oxfmtrc.jsonc", "oxfmt.config.ts" })
 
 		opts.formatters_by_ft = vim.tbl_extend("force", opts.formatters_by_ft or {}, {
 			markdown = { "prettier" },
@@ -35,7 +36,13 @@ return {
 			oxfmt_project = {
 				inherit = "oxfmt",
 				require_cwd = true,
-				cwd = util.root_file({ ".oxfmtrc.json", ".oxfmtrc.jsonc", "oxfmt.config.ts" }),
+				-- ~/.oxfmtrc.json is the global fallback (home/dotfiles.nix), not a project config
+				cwd = function(self, ctx)
+					local root = oxfmt_root(self, ctx)
+					if root ~= vim.uv.os_homedir() then
+						return root
+					end
+				end,
 			},
 			oxfmt = { prepend_args = { "-c", vim.fs.normalize("~/.config/oxc/oxfmtrc.json") } },
 			biome = { command = "biome", require_cwd = true },
