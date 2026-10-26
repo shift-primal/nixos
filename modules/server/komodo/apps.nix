@@ -45,6 +45,7 @@ in
                     config = {
                         builder = hostname;
                         inherit (app) repo branch;
+                        git_account = app.gitAccount;
                         # A push to the repo rebuilds, and redeploy_on_build rolls it out.
                         webhook_enabled = true;
                     }
@@ -91,6 +92,7 @@ in
                         if app.repo != null then
                             {
                                 inherit (app) repo branch;
+                                git_account = app.gitAccount;
                                 # Builds the compose file's `build:` services, so a push redeploys from source.
                                 run_build = true;
                                 webhook_enabled = true;
@@ -105,6 +107,12 @@ in
                                 auto_update = true;
                             }
                     )
+                    // lib.optionalAttrs (app.compose.preDeploy != null) {
+                        pre_deploy.command = "${app.compose.preDeploy}";
+                    }
+                    // lib.optionalAttrs (app.compose.postDeploy != null) {
+                        post_deploy.command = "${app.compose.postDeploy}";
+                    }
                     // lib.optionalAttrs (app.secrets != [ ]) {
                         # For ${VAR} interpolation in the compose file. Untracked, so Komodo never
                         # reads or shows the values.
@@ -167,6 +175,11 @@ in
                                 type = lib.types.str;
                                 default = "main";
                             };
+                            gitAccount = lib.mkOption {
+                                type = lib.types.str;
+                                default = "";
+                                description = "Komodo git account (Settings, Providers) for a private repo.";
+                            };
                             environment = lib.mkOption {
                                 type = with lib.types; attrsOf str;
                                 default = { };
@@ -220,6 +233,16 @@ in
                                                     Compose override, e.g. labels for backup.nix. With no `repo`, this is
                                                     the whole compose file.
                                                 '';
+                                            };
+                                            preDeploy = lib.mkOption {
+                                                type = with lib.types; nullOr path;
+                                                default = null;
+                                                description = "Script Komodo runs in the stack's directory before `compose up`.";
+                                            };
+                                            postDeploy = lib.mkOption {
+                                                type = with lib.types; nullOr path;
+                                                default = null;
+                                                description = "Script Komodo runs in the stack's directory after `compose up`.";
                                             };
                                         };
                                     }
