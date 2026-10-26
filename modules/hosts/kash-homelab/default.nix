@@ -14,13 +14,14 @@ in
     flake.modules.nixos.${hostname} = {
         # _hardware-configuration.nix is generated on the ProDesk itself:
         #   nixos-generate-config --show-hardware-config > _hardware-configuration.nix
-        # Secrets for komodo, cloudflared and backup live in secrets/hosts/kash-homelab.yaml (sops).
+        # Secrets for komodo, cloudflared, backup and monitoring live in secrets/hosts/kash-homelab.yaml (sops).
         imports = [
             nixos.base
             nixos.komodo
             nixos.caddy
             nixos.cloudflared
             nixos.backup
+            nixos.monitoring
             ./_hardware-configuration.nix
         ];
 

@@ -64,6 +64,9 @@ _:
                     "restic/password" = { };
                     "restic/r2-access-key-id" = { };
                     "restic/r2-secret-access-key" = { };
+                    # Ping URL of a healthchecks.io check (period 1 day, grace ~2 h), so a night
+                    # with no backup alerts too, not only one that fails.
+                    "healthchecks/backup-url" = { };
                 };
                 sops.templates."restic.env".content = ''
                     AWS_ACCESS_KEY_ID=${placeholder."restic/r2-access-key-id"}
@@ -100,6 +103,28 @@ _:
                     # up before the day it's needed. R2 doesn't charge for the download.
                     checkOpts = [ "--read-data-subset=2%" ];
                 };
+
+                # Reports each run to healthchecks.io: /start before the dumps, then success or /fail
+                # with this run's log. A failed ping must not fail the backup, hence `|| true`.
+                systemd.services.restic-backups-offsite =
+                    let
+                        ping = "${lib.getExe pkgs.curl} -fsS -m 10 --retry 5 -o /dev/null";
+                        url = "$(cat ${config.sops.secrets."healthchecks/backup-url".path})";
+                    in
+                    {
+                        preStart = lib.mkBefore ''
+                            ${ping} "${url}/start" || true
+                        '';
+                        postStop = ''
+                            if [ "$SERVICE_RESULT" = success ]; then
+                                ${ping} "${url}" || true
+                            else
+                                ${config.systemd.package}/bin/journalctl -o cat -n 100 \
+                                    _SYSTEMD_INVOCATION_ID="$INVOCATION_ID" |
+                                    ${ping} --data-binary @- "${url}/fail" || true
+                            fi
+                        '';
+                    };
             };
         };
 }
