@@ -142,6 +142,8 @@ in
                         ".tmdb.top"
                         ".tmdb.trending"
                     ];
+                    # How often they are fetched again.
+                    importHours = 6;
                     settings = {
                         # A series' missing seasons and episodes show up next to the ones on disk.
                         ExtendLocalSeriesTrees = true;
