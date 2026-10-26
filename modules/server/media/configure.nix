@@ -115,10 +115,11 @@ in
                     realDebrid = {
                         provider = "realdebrid";
                         name = "realdebrid";
-                        # Only releases Real-Debrid already has, so playback can start at once. An
-                        # uncached one fails, and Sonarr/Radarr blocklist it and take the next
-                        # (Decypharr's queue cleanup, on by default).
-                        download_uncached = false;
+                        # A release Real-Debrid already has plays at once; any other is fetched by
+                        # Real-Debrid first (usually minutes). Cached-only left older films with no
+                        # release at all. One Real-Debrid gives up on fails, and Decypharr's queue
+                        # cleanup (on by default) has Sonarr/Radarr blocklist it and take the next.
+                        download_uncached = true;
                     };
                 };
 
