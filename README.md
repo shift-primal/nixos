@@ -28,9 +28,10 @@ Tracks `nixos-unstable`. Unfree packages are allowed.
   (`modules/server/`), plus a 4 TB data disk at `/mnt/data`. Komodo and Caddy are
   left out of the host until its age key is in `.sops.yaml` (see
   [Secrets](#secrets)).
-- **Helpers:** `sudo rebuild switch|boot` (aliased `rb:switch` / `rb:boot`) and,
-  on the desktop, `sudo reboot-to windows|arch|limine`. Both run without a
-  password and only accept those fixed arguments.
+- **Helpers:** `sudo rebuild switch|boot [host]` (aliased `rb:switch` / `rb:boot`;
+  the host defaults to the hostname) and, on the desktop,
+  `sudo reboot-to windows|arch|limine`. Both run without a password and only
+  accept those fixed arguments, or a host the flake defines.
 
 ## Layout
 
@@ -134,6 +135,7 @@ them.
    sudo nixos-rebuild switch --flake ~/nixos#<hostname>
    ```
    After this, `sudo rebuild switch` (or plain `sudo nixos-rebuild switch`) is enough.
+   If the hostname doesn't match a config yet, `rb:switch <hostname>` names it once.
 6. **Reboot** and log in to the "Hyprland (uwsm-managed)" session.
 7. **Secrets:** add the new host's age key to `.sops.yaml` (see
    [Secrets](#secrets)), and its SSH public key to `vars.user.sshKeys` if it
