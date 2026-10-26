@@ -114,7 +114,8 @@ in
                         };
                     };
 
-                # Values go in secrets/hosts/<hostname>.yaml (sops), e.g. from `openssl rand -base64 32`.
+                # Values go in secrets/hosts/<hostname>.yaml (sops), e.g. from `openssl rand -hex 32`:
+                # base64 can put `+/=` into the MongoDB connection string.
                 # The host fails to build until that file exists.
                 sops.secrets = {
                     "komodo/db-password" = { };
@@ -143,7 +144,7 @@ in
                     restartUnits = [ "docker-komodo-core.service" ];
                 };
 
-                services.caddy.virtualHosts.${cfg.domain}.extraConfig = ''
+                services.caddy.virtualHosts."http://${cfg.domain}".extraConfig = ''
                     reverse_proxy 127.0.0.1:9120
                 '';
             };
