@@ -8,23 +8,24 @@
 #   sops updatekeys secrets/<file>.yaml
 # Create or edit a file with: sops secrets/<file>.yaml
 #
-# Fill in the keys and uncomment. Every file also lists &kasper so you can always edit it.
-#
-# keys:
-#   - &kasper age1...
-#   - &user age1...                  # Home Manager's key, ~/.config/sops/age/keys.txt
-#   - &kash-desktop-nixos age1...
-#   - &kash-laptop-nixos age1...
-#
-# creation_rules:
-#   # One host + you. The host's default file (modules/secrets/sops.nix).
-#   - path_regex: secrets/hosts/kash-desktop-nixos\.yaml$
-#     key_groups: [{ age: [*kasper, *kash-desktop-nixos] }]
-#   - path_regex: secrets/hosts/kash-laptop-nixos\.yaml$
-#     key_groups: [{ age: [*kasper, *kash-laptop-nixos] }]
-#   # Every host.
-#   - path_regex: secrets/common\.yaml$
-#     key_groups: [{ age: [*kasper, *kash-desktop-nixos, *kash-laptop-nixos] }]
-#   # Home Manager (user-level) secrets.
-#   - path_regex: secrets/home\.yaml$
-#     key_groups: [{ age: [*kasper, *user] }]
+# Every rule lists &kasper so you can always edit every file. Host keys are added as each
+# machine gets one; until a host is listed, it can't decrypt its file.
+
+keys:
+  - &kasper age1lxdh5j807xs3dvsszpmr5j3vrxlf5hnr4uq3zrpnepzwjme90fgsl7gnqh
+  # - &user age1...                  # Home Manager's key, ~/.config/sops/age/keys.txt
+  # - &kash-desktop-nixos age1...
+  # - &kash-laptop-nixos age1...
+
+creation_rules:
+  # One host + you. The host's default file (modules/secrets/sops.nix).
+  - path_regex: secrets/hosts/kash-desktop-nixos\.yaml$
+    key_groups: [{ age: [*kasper] }] # + *kash-desktop-nixos
+  - path_regex: secrets/hosts/kash-laptop-nixos\.yaml$
+    key_groups: [{ age: [*kasper] }] # + *kash-laptop-nixos
+  # Every host.
+  - path_regex: secrets/common\.yaml$
+    key_groups: [{ age: [*kasper] }] # + every host key
+  # Home Manager (user-level) secrets.
+  - path_regex: secrets/home\.yaml$
+    key_groups: [{ age: [*kasper] }] # + *user

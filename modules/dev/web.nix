@@ -34,9 +34,9 @@ in
                 oxfmt
                 oxlint
                 biome
-                vtsls
+                typescript
+                astro-language-server
                 tailwindcss-language-server
-                vue-language-server
                 inputs.nix-vite-plus.packages.${pkgs.stdenv.hostPlatform.system}.vp
 
                 # dependencies

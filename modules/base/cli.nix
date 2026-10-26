@@ -28,6 +28,7 @@
                 yt-dlp
                 ffmpeg
                 ddcutil
+                evtest
                 gocryptfs
                 git-filter-repo
                 unzip
