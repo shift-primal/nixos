@@ -32,6 +32,8 @@ _:
                 settings.publish = {
                     disable-publishing = false;
                     publish-addresses = true;
+                    # Lets the mdns-* services below (avahi-publish) register names; off, Avahi refuses them.
+                    disable-user-service-publishing = false;
                 };
             };
 
