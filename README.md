@@ -43,14 +43,14 @@ paths containing `/_` are skipped, which keeps `_hardware-configuration.nix` out
 Files add to _aspects_ (`flake.modules.nixos.<aspect>` and
 `flake.modules.homeManager.<aspect>`), and several files can feed the same
 aspect. The aspects are `base` (every host), `workstation` (GUI machines), `dev`,
-`komodo`, `caddy` and one per host. Each NixOS aspect pulls in its Home Manager
+`komodo`, `caddy`, `cloudflared` and one per host. Each NixOS aspect pulls in its Home Manager
 side, so a host only lists NixOS aspects:
 
 | Host                 | Aspects                          |
 | -------------------- | -------------------------------- |
 | `kash-desktop` | `base`, `workstation`, `dev`     |
 | `kash-laptop`  | `base`, `workstation`, `dev`     |
-| `kash-homelab` | `base` (`komodo`, `caddy` later) |
+| `kash-homelab` | `base`, `komodo`, `caddy`, `cloudflared` |
 
 Shared values (user, paths, locale, keyboard, cursor, default apps, SSH keys)
 live once in `modules/flake/vars.nix` as `config.vars`. Per-machine values
@@ -63,7 +63,7 @@ modules/flake/    flake-parts setup and the shared values (vars.nix)
 modules/base/     every host: nix, locale, users, ssh, shell, CLI tools, Home Manager
 modules/workstation/  GUI machines: Hyprland, greeter, audio, apps, theming
 modules/dev/      languages, Docker, Wireshark
-modules/server/   one aspect per service (komodo, caddy), each with its vhost and secrets
+modules/server/   one aspect per service (komodo, caddy, cloudflared), each with its vhost and secrets
 modules/secrets/  sops-nix
 modules/hosts/    one folder per machine: aspect list, hardware, bootloader, GPU
 pkgs/             packages that are not in nixpkgs

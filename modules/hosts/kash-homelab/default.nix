@@ -14,14 +14,20 @@ in
     flake.modules.nixos.${hostname} = {
         # _hardware-configuration.nix is generated on the ProDesk itself:
         #   nixos-generate-config --show-hardware-config > _hardware-configuration.nix
-        # komodo and caddy come back once the host key is in .sops.yaml and
-        # secrets/hosts/kash-homelab.yaml exists: komodo's secrets don't evaluate without it.
+        # Secrets for komodo and cloudflared live in secrets/hosts/kash-homelab.yaml (sops).
         imports = [
             nixos.base
+            nixos.komodo
+            nixos.caddy
+            nixos.cloudflared
             ./_hardware-configuration.nix
         ];
 
         networking.hostName = hostname;
+
+        homelab.komodo.domain = "komodo.haugestol.com";
+        # Placeholder until the tunnel exists: `cloudflared tunnel create homelab` prints the UUID.
+        homelab.tunnel.id = "00000000-0000-0000-0000-000000000000";
 
         # Release this machine was first installed with. Do not bump on upgrades.
         # Must match system.stateVersion in the installer's /etc/nixos/configuration.nix.

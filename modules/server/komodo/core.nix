@@ -143,7 +143,7 @@ in
                     restartUnits = [ "docker-komodo-core.service" ];
                 };
 
-                services.caddy.virtualHosts.${cfg.domain}.extraConfig = ''
+                services.caddy.virtualHosts."http://${cfg.domain}".extraConfig = ''
                     reverse_proxy 127.0.0.1:9120
                 '';
             };
