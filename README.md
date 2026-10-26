@@ -7,7 +7,7 @@ NixOS module, and live-editable dotfiles. It builds three machines:
 | -------------------- | ----------------- | ----------------------------------------------------------- |
 | `kash-desktop` | Desktop           | NVIDIA, Limine, triple boot with Windows and Arch           |
 | `kash-laptop`  | Laptop            | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
-| `kash-homelab` | HP ProDesk 400 G3 | Headless server, being installed: base only for now         |
+| `kash-homelab` | HP ProDesk 400 G3 | Headless server: base only for now                          |
 
 Tracks `nixos-unstable`. Unfree packages are allowed.
 
