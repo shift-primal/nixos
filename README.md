@@ -1,12 +1,13 @@
 # nixos
 
 My NixOS setup as a flake: Hyprland with the Noctalia shell, Home Manager as a
-NixOS module, and live-editable dotfiles. It builds two machines:
+NixOS module, and live-editable dotfiles. It builds three machines:
 
-| Host                 | Machine | Notes                                                       |
-| -------------------- | ------- | ----------------------------------------------------------- |
-| `kash-desktop-nixos` | Desktop | NVIDIA, Limine, triple boot with Windows and Arch           |
-| `kash-laptop-nixos`  | Laptop  | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
+| Host                 | Machine           | Notes                                                       |
+| -------------------- | ----------------- | ----------------------------------------------------------- |
+| `kash-desktop-nixos` | Desktop           | NVIDIA, Limine, triple boot with Windows and Arch           |
+| `kash-laptop-nixos`  | Laptop            | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
+| `kash-homelab-nixos` | HP ProDesk 400 G3 | Server, not installed yet: Komodo behind Caddy              |
 
 Tracks `nixos-unstable`. Unfree packages are allowed.
 
@@ -40,6 +41,7 @@ modules/flake/    flake-parts setup and the shared values (vars.nix)
 modules/base/     every host: nix, locale, users, ssh, shell, CLI tools, Home Manager
 modules/workstation/  GUI machines: Hyprland, greeter, audio, apps, theming
 modules/dev/      languages, Docker, Wireshark
+modules/server/   homelab services: Komodo, Caddy
 modules/secrets/  sops-nix
 modules/hosts/    one folder per machine: aspect list, hardware, bootloader, GPU
 pkgs/             packages that are not in nixpkgs
