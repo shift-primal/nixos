@@ -1,7 +1,7 @@
 local MOD = "SUPER"
 local NOC = "noctalia msg"
 
--- terminal, editor, browser, ... are picked in ~/nixos/vars.nix
+-- terminal, editor, browser, ... are picked in ~/nixos/modules/flake/vars.nix
 local apps = require("hyprland.vars").apps
 
 local function noctalia(cmd)

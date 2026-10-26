@@ -2,4 +2,4 @@
 command = "nixfmt"
 options = ["--width=100", "--indent=4"]
 includes = ["*.nix"]
-excludes = ["hardware-configuration.nix"]
+excludes = ["*hardware-configuration.nix"]
