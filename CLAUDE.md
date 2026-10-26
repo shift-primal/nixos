@@ -108,6 +108,8 @@ dotfiles/            live-edited configs
 - Web app on the homelab: an entry in `homelab.apps` (`modules/hosts/kash-homelab/apps.nix`).
   `modules/server/komodo/apps.nix` turns it into a Komodo Build + Deployment (Resource Sync
   "homelab") and a Caddy vhost; route its domain with `cloudflared tunnel route dns homelab <domain>`.
+  Its secret env vars (`secrets`) and build-time files (`buildFiles`) come from sops keys
+  `apps/<app>/<key>`.
 - Package not in nixpkgs: `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
 - New dotfile dir: put it in `dotfiles/` and add it to `dotfiles.links` in the
   feature that uses it.
