@@ -12,7 +12,7 @@ in
 
     # HP ProDesk 400 G3 SFF. The other files in this folder (boot, data) add to this module too.
     flake.modules.nixos.${hostname} = {
-        # _hardware-configuration.nix is a placeholder until the machine is installed. Replace it with:
+        # _hardware-configuration.nix is generated on the ProDesk itself:
         #   nixos-generate-config --show-hardware-config > _hardware-configuration.nix
         # komodo and caddy come back once the host key is in .sops.yaml and
         # secrets/hosts/kash-homelab.yaml exists: komodo's secrets don't evaluate without it.
