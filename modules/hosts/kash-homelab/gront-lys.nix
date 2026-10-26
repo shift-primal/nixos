@@ -74,6 +74,9 @@ in
                             context = checkout;
                             inherit dockerfile;
                         };
+                        # Komodo builds the image, then runs `compose pull`, which fails on a
+                        # local-only image name unless the service is skipped.
+                        pull_policy = "never";
                     };
                     afterSetup.setup.condition = "service_completed_successfully";
                 in
@@ -89,6 +92,7 @@ in
                     compose = {
                         files = [ ];
                         service = "web";
+                        oneShot = [ "setup" ] ++ lib.attrNames extraServices;
                         preDeploy = writeCommit;
                         inherit postDeploy;
                         override.services = {
@@ -151,6 +155,7 @@ in
                             context = "${stacksDir}/gront-lys-production";
                             dockerfile = "ops/backup/Dockerfile";
                         };
+                        pull_policy = "never";
                         command = [ "true" ];
                         restart = "no";
                     };

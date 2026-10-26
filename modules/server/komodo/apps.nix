@@ -87,6 +87,7 @@ in
                     config = {
                         server = hostname;
                         environment = lines app.environment;
+                        ignore_services = app.compose.oneShot;
                     }
                     // (
                         if app.repo != null then
@@ -232,6 +233,14 @@ in
                                                 description = ''
                                                     Compose override, e.g. labels for backup.nix. With no `repo`, this is
                                                     the whole compose file.
+                                                '';
+                                            };
+                                            oneShot = lib.mkOption {
+                                                type = with lib.types; listOf str;
+                                                default = [ ];
+                                                description = ''
+                                                    Services that run once per deploy and exit (migrations, seeds). Komodo leaves
+                                                    them out of the stack's health, which would otherwise read "unhealthy".
                                                 '';
                                             };
                                             preDeploy = lib.mkOption {
