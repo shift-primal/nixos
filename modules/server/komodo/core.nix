@@ -25,6 +25,16 @@ in
                 example = "komodo.example.com";
             };
 
+            options.homelab.komodo.webhookDomain = lib.mkOption {
+                type = lib.types.str;
+                description = ''
+                    Domain that lets git webhooks reach Core. The UI domain sits behind Cloudflare Access,
+                    which GitHub can't pass, so this one serves only /listener/*. Komodo checks each
+                    call against komodo/webhook-secret.
+                '';
+                example = "hooks.example.com";
+            };
+
             config = {
                 virtualisation.oci-containers = {
                     backend = "docker";
@@ -59,6 +69,8 @@ in
                         ];
                         environment = {
                             KOMODO_HOST = "https://${cfg.domain}";
+                            # The webhook URLs the UI shows point here.
+                            KOMODO_WEBHOOK_BASE_URL = "https://${cfg.webhookDomain}";
                             KOMODO_DATABASE_ADDRESS = "komodo-mongo:27017";
                             KOMODO_LOCAL_AUTH = "true";
                             KOMODO_INIT_ADMIN_USERNAME = "admin";
@@ -153,9 +165,17 @@ in
                     '';
                 };
 
-                services.caddy.virtualHosts."http://${cfg.domain}".extraConfig = ''
-                    reverse_proxy 127.0.0.1:9120
-                '';
+                services.caddy.virtualHosts = {
+                    "http://${cfg.domain}".extraConfig = ''
+                        reverse_proxy 127.0.0.1:9120
+                    '';
+                    "http://${cfg.webhookDomain}".extraConfig = ''
+                        handle /listener/* {
+                            reverse_proxy 127.0.0.1:9120
+                        }
+                        respond 404
+                    '';
+                };
             };
         };
 }
