@@ -149,6 +149,7 @@ in
                     inherit (config.services.seerr) configDir;
                     # Seerr wants an email for its owner; it is never mailed.
                     emailDomain = "snyltflix.local";
+                    inherit (config.homelab.media) jellyfinUrl;
                 };
             };
 

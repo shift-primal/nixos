@@ -13,13 +13,21 @@ _:
         }:
         let
             # Name on the home LAN → local port. Plain HTTP: no certificate covers a .local name.
+            jellyfin = "snyltflix.local";
             names = {
-                "snyltflix.local" = 8096; # Jellyfin (jellyfin.nix)
-                "request.local" = config.services.seerr.port;
+                ${jellyfin} = 8096; # jellyfin.nix
+                "req.local" = config.services.seerr.port;
             };
         in
         {
-            services.avahi = {
+            options.homelab.media.jellyfinUrl = lib.mkOption {
+                type = lib.types.str;
+                default = "http://${jellyfin}";
+                readOnly = true;
+                description = "Jellyfin's address on the home LAN, for links to it (configure.nix).";
+            };
+
+            config.services.avahi = {
                 enable = true;
                 settings.publish = {
                     disable-publishing = false;
@@ -29,7 +37,7 @@ _:
 
             # avahi-publish needs the address itself; read it from the default route at start, so a
             # new DHCP lease only needs a restart (it also restarts on every boot).
-            systemd.services = lib.mapAttrs' (
+            config.systemd.services = lib.mapAttrs' (
                 name: _:
                 lib.nameValuePair "mdns-${lib.removeSuffix ".local" name}" {
                     description = "Announce ${name} over mDNS";
@@ -57,13 +65,13 @@ _:
             ) names;
 
             # Caddy binds to localhost for the tunnel; these two also listen on the LAN.
-            services.caddy.virtualHosts = lib.mapAttrs' (
+            config.services.caddy.virtualHosts = lib.mapAttrs' (
                 name: port:
                 lib.nameValuePair "http://${name}" {
                     listenAddresses = [ "0.0.0.0" ];
                     extraConfig = "reverse_proxy 127.0.0.1:${toString port}";
                 }
             ) names;
-            networking.firewall.allowedTCPPorts = [ 80 ];
+            config.networking.firewall.allowedTCPPorts = [ 80 ];
         };
 }
