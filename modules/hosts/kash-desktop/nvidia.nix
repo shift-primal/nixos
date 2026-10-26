@@ -1,7 +1,7 @@
 _:
 
 {
-    flake.modules.nixos.kash-desktop-nixos =
+    flake.modules.nixos.kash-desktop =
         { config, ... }:
         {
             hardware.graphics.enable = true;

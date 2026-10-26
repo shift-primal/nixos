@@ -1,7 +1,7 @@
 { config, inputs, ... }:
 
 let
-    hostname = "kash-laptop-nixos";
+    hostname = "kash-laptop";
     nixos = config.flake.modules.nixos;
 in
 {

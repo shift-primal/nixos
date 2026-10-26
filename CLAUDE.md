@@ -1,6 +1,6 @@
 # NixOS config
 
-Flake for `kash-desktop-nixos` (desktop), `kash-laptop-nixos` (laptop) and `kash-homelab-nixos`
+Flake for `kash-desktop` (desktop), `kash-laptop` (laptop) and `kash-homelab`
 (homelab server, not installed yet), with
 Home Manager as a NixOS module, in the dendritic pattern (flake-parts + import-tree).
 `/etc/nixos` links here (`modules/base/flake-link.nix`). Apply with `sudo nixos-rebuild switch --flake ~/nixos`.

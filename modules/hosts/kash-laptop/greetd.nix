@@ -4,7 +4,7 @@ let
     inherit (config) vars;
 in
 {
-    flake.modules.nixos.kash-laptop-nixos =
+    flake.modules.nixos.kash-laptop =
         {
             config,
             lib,

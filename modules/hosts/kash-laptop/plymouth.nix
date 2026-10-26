@@ -1,7 +1,7 @@
 _:
 
 {
-    flake.modules.nixos.kash-laptop-nixos = {
+    flake.modules.nixos.kash-laptop = {
         # The splash itself is modules/workstation/plymouth.nix. The LUKS keymap comes from console.useXkbConfig
         # (modules/base/locale.nix) via systemd-vconsole-setup in the initrd.
         boot = {

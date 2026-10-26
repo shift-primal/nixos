@@ -5,9 +5,9 @@ NixOS module, and live-editable dotfiles. It builds three machines:
 
 | Host                 | Machine           | Notes                                                       |
 | -------------------- | ----------------- | ----------------------------------------------------------- |
-| `kash-desktop-nixos` | Desktop           | NVIDIA, Limine, triple boot with Windows and Arch           |
-| `kash-laptop-nixos`  | Laptop            | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
-| `kash-homelab-nixos` | HP ProDesk 400 G3 | Headless server, being installed: base only for now         |
+| `kash-desktop` | Desktop           | NVIDIA, Limine, triple boot with Windows and Arch           |
+| `kash-laptop`  | Laptop            | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
+| `kash-homelab` | HP ProDesk 400 G3 | Headless server, being installed: base only for now         |
 
 Tracks `nixos-unstable`. Unfree packages are allowed.
 
@@ -47,9 +47,9 @@ side, so a host only lists NixOS aspects:
 
 | Host                 | Aspects                          |
 | -------------------- | -------------------------------- |
-| `kash-desktop-nixos` | `base`, `workstation`, `dev`     |
-| `kash-laptop-nixos`  | `base`, `workstation`, `dev`     |
-| `kash-homelab-nixos` | `base` (`komodo`, `caddy` later) |
+| `kash-desktop` | `base`, `workstation`, `dev`     |
+| `kash-laptop`  | `base`, `workstation`, `dev`     |
+| `kash-homelab` | `base` (`komodo`, `caddy` later) |
 
 Shared values (user, paths, locale, keyboard, cursor, default apps, SSH keys)
 live once in `modules/flake/vars.nix` as `config.vars`. Per-machine values
@@ -99,7 +99,7 @@ them.
 ## Installing on a new machine
 
 1. **Install NixOS** from the official ISO in UEFI mode. On a laptop, turn on
-   disk encryption in the installer. `modules/hosts/kash-laptop-nixos/greetd.nix`
+   disk encryption in the installer. `modules/hosts/kash-laptop/greetd.nix`
    refuses to build autologin without LUKS, because the boot passphrase is
    then the only login.
 2. **Get the repo** into the home folder (`nix-shell -p git` if git is
@@ -109,7 +109,7 @@ them.
    ```
 3. **Add a host folder.** Copy an existing host and adjust:
    ```sh
-   cp -r ~/nixos/modules/hosts/kash-laptop-nixos ~/nixos/modules/hosts/<hostname>
+   cp -r ~/nixos/modules/hosts/kash-laptop ~/nixos/modules/hosts/<hostname>
    nixos-generate-config --show-hardware-config > ~/nixos/modules/hosts/<hostname>/_hardware-configuration.nix
    ```
 
@@ -117,7 +117,7 @@ them.
      `system.stateVersion` to the value in the installer's
      `/etc/nixos/configuration.nix`.
    - Pick a bootloader in `boot.nix` and a GPU module (`nvidia.nix` / `intel.nix`).
-   - A server only imports `base`; copy `kash-homelab-nixos` instead and skip
+   - A server only imports `base`; copy `kash-homelab` instead and skip
      the Hyprland and Noctalia files below.
    - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines
      from its `/etc/nixos/hardware-configuration.nix` too.
@@ -145,7 +145,7 @@ Change `user` in `modules/flake/vars.nix` (name, full name), and the keyboard, l
 time zone if needed. Then look for the few places that still hold
 machine-specific values:
 
-- `modules/hosts/kash-desktop-nixos/boot.nix`: Arch root UUID and the Limine entries.
+- `modules/hosts/kash-desktop/boot.nix`: Arch root UUID and the Limine entries.
 - `dotfiles/noctalia/hosts/*.toml` and `dotfiles/noctalia/settings/*.toml`:
   monitor names and wallpaper paths.
 - `dotfiles/hypr/hyprland/hosts/*.lua`: monitor layout.

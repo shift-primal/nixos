@@ -1,7 +1,7 @@
 _:
 
 {
-    flake.modules.nixos.kash-laptop-nixos =
+    flake.modules.nixos.kash-laptop =
         { lib, ... }:
         {
             # NixOS only on this disk, so the installer's default bootloader is kept.

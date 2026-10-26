@@ -1,7 +1,7 @@
 _:
 
 {
-    flake.modules.nixos.kash-desktop-nixos =
+    flake.modules.nixos.kash-desktop =
         { pkgs, ... }:
         {
             # sbctl: Secure Boot key tooling; Limine signing is not set up yet.
