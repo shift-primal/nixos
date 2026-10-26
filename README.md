@@ -7,7 +7,7 @@ NixOS module, and live-editable dotfiles. It builds three machines:
 | -------------------- | ----------------- | ----------------------------------------------------------- |
 | `kash-desktop-nixos` | Desktop           | NVIDIA, Limine, triple boot with Windows and Arch           |
 | `kash-laptop-nixos`  | Laptop            | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
-| `kash-homelab-nixos` | HP ProDesk 400 G3 | Server, not installed yet: Komodo behind Caddy              |
+| `kash-homelab-nixos` | HP ProDesk 400 G3 | Headless server, being installed: base only for now         |
 
 Tracks `nixos-unstable`. Unfree packages are allowed.
 
@@ -22,7 +22,12 @@ Tracks `nixos-unstable`. Unfree packages are allowed.
 - **Dev:** one file per language in `modules/dev/` with the toolchain, LSP,
   formatter and debugger. Neovim's Mason is turned off; Nix installs every binary.
 - **Services:** Docker, Tailscale, printing (HP, mDNS discovery), fwupd,
-  TeamViewer, Wireshark, Solaar.
+  Wireshark, Solaar. SSH on every host is key-only and reachable only over
+  Tailscale; the authorized keys are in `vars.user.sshKeys`.
+- **Homelab:** [Komodo](https://komo.do) for deploys and Caddy in front of it
+  (`modules/server/`), plus a 4 TB data disk at `/mnt/data`. Komodo and Caddy are
+  left out of the host until its age key is in `.sops.yaml` (see
+  [Secrets](#secrets)).
 - **Helpers:** `sudo rebuild switch|boot` (aliased `rb:switch` / `rb:boot`) and,
   on the desktop, `sudo reboot-to windows|arch|limine`. Both run without a
   password and only accept those fixed arguments.
@@ -31,9 +36,25 @@ Tracks `nixos-unstable`. Unfree packages are allowed.
 
 Dendritic: built with [flake-parts](https://flake.parts), and every file under
 `modules/` is a module imported automatically by
-[import-tree](https://github.com/vic/import-tree). Files add to _aspects_
-(`base`, `workstation`, `dev`, one per host), and each host lists the aspects it
-uses.
+[import-tree](https://github.com/vic/import-tree). There are no import lists;
+paths containing `/_` are skipped, which keeps `_hardware-configuration.nix` out.
+
+Files add to _aspects_ (`flake.modules.nixos.<aspect>` and
+`flake.modules.homeManager.<aspect>`), and several files can feed the same
+aspect. The aspects are `base` (every host), `workstation` (GUI machines), `dev`,
+`komodo`, `caddy` and one per host. Each NixOS aspect pulls in its Home Manager
+side, so a host only lists NixOS aspects:
+
+| Host                 | Aspects                          |
+| -------------------- | -------------------------------- |
+| `kash-desktop-nixos` | `base`, `workstation`, `dev`     |
+| `kash-laptop-nixos`  | `base`, `workstation`, `dev`     |
+| `kash-homelab-nixos` | `base` (`komodo`, `caddy` later) |
+
+Shared values (user, paths, locale, keyboard, cursor, default apps, SSH keys)
+live once in `modules/flake/vars.nix` as `config.vars`. Per-machine values
+(`networking.hostName`, `system.stateVersion`) are set in the host's
+`default.nix`.
 
 ```
 flake.nix         inputs, mkFlake over modules/
@@ -41,7 +62,7 @@ modules/flake/    flake-parts setup and the shared values (vars.nix)
 modules/base/     every host: nix, locale, users, ssh, shell, CLI tools, Home Manager
 modules/workstation/  GUI machines: Hyprland, greeter, audio, apps, theming
 modules/dev/      languages, Docker, Wireshark
-modules/server/   homelab services: Komodo, Caddy
+modules/server/   one aspect per service (komodo, caddy), each with its vhost and secrets
 modules/secrets/  sops-nix
 modules/hosts/    one folder per machine: aspect list, hardware, bootloader, GPU
 pkgs/             packages that are not in nixpkgs
@@ -54,8 +75,26 @@ so editing them takes effect right away without a rebuild. Values the dotfiles
 need from Nix (hostname, keyboard, cursor, app commands) are written to
 `~/.config/nixos-vars/vars.lua` on rebuild.
 
-[`CLAUDE.md`](CLAUDE.md) has the conventions: where new things go, style and
-how to verify a build.
+[`CLAUDE.md`](CLAUDE.md) has the full conventions.
+
+## Adding things
+
+One feature is one file, with its NixOS and Home Manager parts together (see
+`modules/dev/docker.nix`). New files have to be `git add`ed before a build sees
+them.
+
+- **Feature:** a new file in the aspect's folder that adds to
+  `flake.modules.nixos.<aspect>` and/or `flake.modules.homeManager.<aspect>`.
+  Values used in more than one place go in `modules/flake/vars.nix`.
+- **CLI tool:** `modules/base/cli.nix`. **GUI app:** `modules/workstation/apps.nix`,
+  or `vars.apps` if it is a default app with a keybind.
+- **Language:** a new `modules/dev/<lang>.nix` with its toolchain, LSP,
+  formatter and debugger.
+- **Machine-only setting** (GPU, bootloader, disks): a file in
+  `modules/hosts/<hostname>/` adding to `flake.modules.nixos.<hostname>`.
+  Hyprland tweaks go in `dotfiles/hypr/hyprland/hosts/<hostname>.lua`.
+- **Package not in nixpkgs:** `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
+- **Host:** see below.
 
 ## Installing on a new machine
 
@@ -73,10 +112,13 @@ how to verify a build.
    cp -r ~/nixos/modules/hosts/kash-laptop-nixos ~/nixos/modules/hosts/<hostname>
    nixos-generate-config --show-hardware-config > ~/nixos/modules/hosts/<hostname>/_hardware-configuration.nix
    ```
+
    - In its `default.nix`, set `hostname`, pick the aspects, and set
      `system.stateVersion` to the value in the installer's
      `/etc/nixos/configuration.nix`.
    - Pick a bootloader in `boot.nix` and a GPU module (`nvidia.nix` / `intel.nix`).
+   - A server only imports `base`; copy `kash-homelab-nixos` instead and skip
+     the Hyprland and Noctalia files below.
    - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines
      from its `/etc/nixos/hardware-configuration.nix` too.
    - Add `dotfiles/hypr/hyprland/hosts/<hostname>.lua` (monitors, input) and
@@ -93,6 +135,9 @@ how to verify a build.
    ```
    After this, `sudo rebuild switch` (or plain `sudo nixos-rebuild switch`) is enough.
 6. **Reboot** and log in to the "Hyprland (uwsm-managed)" session.
+7. **Secrets:** add the new host's age key to `.sops.yaml` (see
+   [Secrets](#secrets)), and its SSH public key to `vars.user.sshKeys` if it
+   should SSH into the others.
 
 ### Using it as someone else
 
@@ -106,12 +151,38 @@ machine-specific values:
 - `dotfiles/hypr/hyprland/hosts/*.lua`: monitor layout.
 - `modules/base/cli.nix` and `modules/workstation/apps.nix`: drop what you don't use.
 
+## Secrets
+
+The repo is public, so no plaintext secret goes in it, in Nix strings or in
+`dotfiles/`. Secrets the system needs are committed encrypted with
+[sops-nix](https://github.com/Mic92/sops-nix) under `secrets/` and decrypted at
+activation into `/run/secrets`, never into the Nix store.
+
+| File                            | Read by                      |
+| ------------------------------- | ---------------------------- |
+| `secrets/hosts/<hostname>.yaml` | that host (its default file) |
+| `secrets/common.yaml`           | every host                   |
+| `secrets/home.yaml`             | Home Manager                 |
+
+Every file is also encrypted to my personal age key (private half in Bitwarden),
+so I can edit all of them from any machine. Hosts decrypt with an age key
+derived from their SSH host key, so there is no key file to copy.
+
+- **Add a host as a recipient:** on that host, run
+  `ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub`, add the result under `keys:`
+  and to its rules in `.sops.yaml`, then `sops updatekeys secrets/<file>.yaml`
+  for each file it should read.
+- **Add a secret:** `sops secrets/hosts/<hostname>.yaml` (or `common.yaml`) to
+  edit the value, and declare it in the feature that uses it with
+  `sops.secrets."<name>" = { };`, or `sops.templates` for an env file.
+- **Before committing**, check that the file's values read `ENC[...]` and that
+  it ends with `sops:` metadata.
+
+`sops`, `age` and `ssh-to-age` are installed on every host.
+
 ## What lives outside the repo
 
-The repo is public, so no plaintext secret is in it. Secrets that the system
-needs are committed encrypted with [sops-nix](https://github.com/Mic92/sops-nix)
-under `secrets/`; each host decrypts them with its SSH host key (see
-`.sops.yaml`). These have to be set up by hand after the first boot:
+These have to be set up by hand after the first boot:
 
 | What                       | How                                                                                                                             |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
