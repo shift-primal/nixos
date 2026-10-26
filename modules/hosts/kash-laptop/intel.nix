@@ -1,7 +1,7 @@
 _:
 
 {
-    flake.modules.nixos.kash-laptop-nixos =
+    flake.modules.nixos.kash-laptop =
         { pkgs, ... }:
         {
             # VA-API for Alder Lake (iHD), so Firefox and mpv decode video on the GPU.

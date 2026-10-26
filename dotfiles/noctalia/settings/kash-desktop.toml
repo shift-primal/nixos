@@ -215,7 +215,7 @@ vault_path = "/home/kasper/obsidian/vaults/Kasper"
 
 [plugin_settings."mindnbytes/nix-status"]
 flake_dir = "/home/kasper/nixos"
-nixos_configuration = "kash-desktop-nixos"
+nixos_configuration = "kash-desktop"
 use_themed_logos = true
 
 [plugins]

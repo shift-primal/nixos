@@ -2,7 +2,7 @@ _:
 
 {
     # HTTP proxy so kasper-vps can send traffic out through this machine's connection.
-    flake.modules.nixos.kash-desktop-nixos = {
+    flake.modules.nixos.kash-desktop = {
         services.tinyproxy = {
             enable = true;
             settings = {
