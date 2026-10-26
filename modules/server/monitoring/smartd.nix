@@ -26,5 +26,8 @@ _:
                 # while the HDD is spun down, but not more than 24 in a row. -M exec: alert through ntfy.
                 defaults.autodetected = "-a -o on -S on -s (S/../.././02|L/../../7/05) -W 4,45,55 -n standby,24,q -m <nomailer> -M exec ${notify}";
             };
+
+            # `smartctl -a /dev/sdX` to read a disk by hand; the smartd module doesn't install it.
+            environment.systemPackages = with pkgs; [ smartmontools ];
         };
 }
