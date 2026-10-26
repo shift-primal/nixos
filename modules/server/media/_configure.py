@@ -200,8 +200,13 @@ def jellyfin(c):
         if any(lib["path"] in f.get("Locations", []) for f in folders):
             continue
         q = urllib.parse.urlencode({"name": lib["name"], "collectionType": lib["type"], "refreshLibrary": "true"})
-        api.post(f"/Library/VirtualFolders?{q}", {"LibraryOptions": {"EnableRealtimeMonitor": True, "PathInfos": [{"Path": lib["path"]}]}})
+        api.post(f"/Library/VirtualFolders?{q}", {"LibraryOptions": {"EnableRealtimeMonitor": True, "PathInfos": [{"Path": lib["path"]}], **c["libraryOptions"]}})
         log(f"added library {lib['name']} at {lib['path']}")
+    for f in api.get("/Library/VirtualFolders"):
+        opts = f.get("LibraryOptions") or {}
+        if any(opts.get(k) != v for k, v in c["libraryOptions"].items()):
+            api.post("/Library/VirtualFolders/LibraryOptions", {"Id": f["ItemId"], "LibraryOptions": {**opts, **c["libraryOptions"]}})
+            log(f"library {f['Name']}: {c['libraryOptions']}")
 
     users = {u["Name"]: u for u in api.get("/Users")}
     for u in c["users"]:
@@ -219,28 +224,40 @@ def jellyfin(c):
     return token
 
 
-# ----------------------------------------------------------------------------------- rdt-client
+# ------------------------------------------------------------------------------------ decypharr
 
 
-def rdtclient(c):
-    api = Api(c["url"], cookies=True)
-    password = read(c["passwordFile"])
-    api.wait("/Api/Authentication/IsLoggedIn")
-    login = {"userName": c["user"], "password": password}
-    try:
-        api.post("/Api/Authentication/Login", login)
-    except RuntimeError:
-        # Create only succeeds while there is no user yet; otherwise the password is wrong.
-        api.post("/Api/Authentication/Create", login)
-        log(f"created rdt-client user {c['user']}")
+def differs(want, have):
+    """Whether have lacks anything in want. Decypharr leaves false, 0 and "" out of its config."""
+    if isinstance(want, dict):
+        have = have or {}
+        return any(differs(v, have.get(k)) for k, v in want.items())
+    if isinstance(want, list):
+        have = have or []
+        return len(want) != len(have) or any(differs(w, h) for w, h in zip(want, have))
+    return (want or None) != (have or None)
 
-    want = dict(c["settings"])
-    want["Provider:ApiKey"] = read(c["realDebridKeyFile"])
-    current = {s["key"]: s.get("value") for s in api.get("/Api/Settings")}
-    changes = [{"key": k, "value": v} for k, v in want.items() if str(current.get(k)) != str(v)]
-    if changes:
-        api.put("/Api/Settings", changes)
-        log(f"rdt-client settings: {[x['key'] for x in changes]}")
+
+def decypharr(k):
+    c = cfg["decypharr"]
+    api = Api(c["url"])
+    api.wait("/version")
+    for _ in range(60):  # written on first start
+        if os.path.exists(c["authFile"]):
+            break
+        time.sleep(3)
+    api.headers["Authorization"] = "Bearer " + json.load(open(c["authFile"]))["api_token"]
+
+    want = dict(c["config"])
+    want["debrids"] = [{**c["realDebrid"], "api_key": read(c["realDebridKeyFile"])}]
+    # Sonarr and Radarr log in with their own URL and API key (arr_setup); Decypharr only accepts
+    # arrs it knows, and uses them to clean up their queues.
+    want["arrs"] = [{"name": name, "host": cfg[name]["url"], "token": k[name]} for name in ("sonarr", "radarr")]
+    have = api.get("/api/config")
+    changed = sorted(key for key in want if differs(want[key], have.get(key)))
+    if changed:
+        r = api.post("/api/config", want)
+        log(f"decypharr settings: {changed}{' (restarting)' if r.get('restarted') else ''}")
 
 
 # ------------------------------------------------------------------------------- sonarr/radarr
@@ -255,23 +272,29 @@ def arr_setup(name, key, jf_key):
         api.post("/rootfolder", {"path": c["rootFolder"]})
         log(f"root folder {c['rootFolder']}")
 
-    # rdt-client, added as qBittorrent.
-    rdt = cfg["rdtclient"]
+    # Decypharr, added as qBittorrent. It replaced rdt-client, so that client is taken over rather
+    # than left behind for grabs to go to.
+    d = cfg["decypharr"]
     clients = api.get("/downloadclient")
-    client = next((d for d in clients if d["implementation"] == "QBittorrent" and field(d, "port") == rdt["port"]), None)
+    client = next((x for x in clients if x["implementation"] == "QBittorrent" and (field(x, "port") == d["port"] or x["name"] == "rdt-client")), None)
     new = client is None
     if new:
         client = from_schema(api, "downloadclient", "QBittorrent")
-        client.update(name="rdt-client", enable=True)
-        set_fields(client, {c["categoryField"]: name})
-    changed = set_fields(client, {"host": "127.0.0.1", "port": rdt["port"], "username": rdt["user"], "password": read(rdt["passwordFile"])})
+    changed = client["name"] != "Decypharr" or not client["enable"]
+    client.update(name="Decypharr", enable=True)
+    # Decypharr knows the app by its URL and API key (decypharr()); the category is its name there.
+    changed |= set_fields(client, {"host": "127.0.0.1", "port": d["port"], "username": c["url"], c["categoryField"]: name})
+    # Read back masked, so only sent along with another change.
+    if new or changed:
+        set_fields(client, {"password": key})
     if not client.get("removeCompletedDownloads"):
         client["removeCompletedDownloads"] = changed = True
     if new:
         api.post("/downloadclient?forceSave=true", client)
-        log("added download client rdt-client")
+        log("added download client Decypharr")
     elif changed:
         api.put(f"/downloadclient/{client['id']}?forceSave=true", client)
+        log("download client Decypharr updated")
 
     # Nordic releases usually carry Norwegian subtitles in the file; scored in arr_profile.
     formats = api.get("/customformat")
@@ -413,6 +436,10 @@ def bazarr(k):
         "settings-general-serie_default_profile": 1,
         "settings-general-movie_default_enabled": True,
         "settings-general-movie_default_profile": 1,
+        # Sync every subtitle to the audio (ffsubsync), whatever the provider's score.
+        "settings-subsync-use_subsync": True,
+        "settings-subsync-use_subsync_threshold": False,
+        "settings-subsync-use_subsync_movie_threshold": False,
     }
     for key, path in c["secretFiles"].items():
         want[key] = read(path)
@@ -454,6 +481,12 @@ def bazarr(k):
 # ---------------------------------------------------------------------------------------- seerr
 
 
+# Seerr's permission bits (server/lib/permissions.ts).
+PERM_ADMIN = 2
+PERM_REQUEST = 32
+PERM_AUTO_APPROVE = 128
+
+
 def seerr(k, profiles):
     c = cfg["seerr"]
     settings_file = os.path.join(c["configDir"], "settings.json")
@@ -486,6 +519,17 @@ def seerr(k, profiles):
     if settings["jellyfin"].get("externalHostname") != c["jellyfinUrl"]:
         api.post("/settings/jellyfin", {"externalHostname": c["jellyfinUrl"]})
         log(f"Seerr links to Jellyfin at {c['jellyfinUrl']}")
+    if c["autoApprove"]:
+        # New users get it from the defaults; users already imported from Jellyfin get it here.
+        auto = PERM_REQUEST | PERM_AUTO_APPROVE
+        main_settings = api.get("/settings/main")
+        if main_settings["defaultPermissions"] & auto != auto:
+            api.post("/settings/main", {"defaultPermissions": main_settings["defaultPermissions"] | auto})
+            log("Seerr approves requests automatically")
+        for user in api.get("/user?take=1000")["results"]:
+            if user["permissions"] & PERM_ADMIN == 0 and user["permissions"] & auto != auto:
+                api.post(f"/user/{user['id']}/settings/permissions", {"permissions": user["permissions"] | auto})
+                log(f"Seerr: {user['displayName']} auto-approved")
     if not settings["public"]["initialized"]:
         for lib in api.post("/settings/jellyfin/library/sync"):
             if not lib["enabled"]:
@@ -542,7 +586,7 @@ def seerr(k, profiles):
 def main():
     k = keys()
     jf_key = step("jellyfin", jellyfin, cfg["jellyfin"])
-    step("rdt-client", rdtclient, cfg["rdtclient"])
+    step("decypharr", decypharr, k)
     for name in ("sonarr", "radarr"):
         step(f"{name}: clients and folders", arr_setup, name, k[name], jf_key)
     # TRaSH quality profiles and custom formats (recyclarr.nix); the profiles must exist below.
