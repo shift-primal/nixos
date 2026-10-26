@@ -13,9 +13,8 @@ _:
             networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ cfg.port ];
 
             # Settings, users and request history. It runs as a DynamicUser, so its state is under
-            # /var/lib/private.
-            homelab.backup.paths = [
-                "/var/lib/private/${config.systemd.services.seerr.serviceConfig.StateDirectory}"
-            ];
+            # /var/lib/private. Spelled out: reading it from systemd.services loops, because the
+            # backup's own unit is built from these paths.
+            homelab.backup.paths = [ "/var/lib/private/seerr" ];
         };
 }
