@@ -11,15 +11,6 @@ _:
             repo = "shift-primal/pdex_26";
         };
 
-        quiz = {
-            domain = "quiz.haugestol.com";
-            port = 3002;
-            repo = "shift-primal/bfq";
-            secrets = [ "DATABASE_URL" ];
-            # The real questions are gitignored so the answers stay out of the public repo.
-            buildFiles."src/config/questions.data.ts" = "questions";
-        };
-
         spot = {
             domain = "spot.haugestol.com";
             port = 3003;
