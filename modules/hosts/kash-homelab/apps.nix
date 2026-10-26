@@ -36,6 +36,10 @@ _:
             repo = "shift-primal/ws";
             compose = {
                 files = [ "docker-compose.prod.yml" ];
+                oneShot = [
+                    "migrate"
+                    "seed"
+                ];
                 # Nightly pg_dumpall (backup.nix).
                 override.services.db.labels."homelab.backup" = "postgres";
             };
@@ -53,6 +57,7 @@ _:
             port = 3006;
             compose = {
                 service = "web";
+                oneShot = [ "migrate" ];
                 override =
                     let
                         databaseUrl = "postgres://klyndre:\${POSTGRES_PASSWORD}@db:5432/klyndre";
