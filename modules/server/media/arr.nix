@@ -22,14 +22,22 @@ _:
                 })
                 // {
                     prowlarr.enable = true;
+                    # Solves Cloudflare challenges for indexers behind it. Added in Prowlarr as an
+                    # indexer proxy (http://127.0.0.1:8191) and tagged onto those indexers.
+                    flaresolverr.enable = true;
                 };
 
             # Without the disk an import would fail or land on the root filesystem.
-            systemd.services = lib.genAttrs arr (_: {
-                unitConfig.RequiresMountsFor = [ root ];
-                # Group-writable files, like the folders they land in.
-                serviceConfig.UMask = lib.mkForce "0002";
-            });
+            systemd.services =
+                lib.genAttrs arr (_: {
+                    unitConfig.RequiresMountsFor = [ root ];
+                    # Group-writable files, like the folders they land in.
+                    serviceConfig.UMask = lib.mkForce "0002";
+                })
+                // {
+                    # Only Prowlarr on this host needs it.
+                    flaresolverr.environment.HOST = "127.0.0.1";
+                };
 
             networking.firewall.interfaces.tailscale0.allowedTCPPorts = map (
                 name: config.services.${name}.settings.server.port
