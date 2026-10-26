@@ -1,7 +1,7 @@
 _:
 
 {
-    # HD 530 (Skylake, Gen9) for Jellyfin transcoding (modules/server/jellyfin.nix). VA-API rather
+    # HD 530 (Skylake, Gen9) for Jellyfin transcoding (modules/server/media/jellyfin.nix). VA-API rather
     # than QSV: QSV on Gen9 needs intel-media-sdk, which is end of life and marked insecure in nixpkgs.
     flake.modules.nixos.kash-homelab =
         { pkgs, ... }:
@@ -16,8 +16,6 @@ _:
             };
 
             systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD";
-
-            homelab.jellyfin.mediaDir = "/mnt/data/media";
 
             services.jellyfin = {
                 hardwareAcceleration = {
