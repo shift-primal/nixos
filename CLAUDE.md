@@ -1,6 +1,7 @@
 # NixOS config
 
-Flake for two hosts, `kash-desktop-nixos` (desktop) and `kash-laptop-nixos` (laptop), with
+Flake for `kash-desktop-nixos` (desktop), `kash-laptop-nixos` (laptop) and `kash-homelab-nixos`
+(homelab server, not installed yet), with
 Home Manager as a NixOS module, in the dendritic pattern (flake-parts + import-tree).
 `/etc/nixos` links here (`modules/base/flake-link.nix`). Apply with `sudo nixos-rebuild switch --flake ~/nixos`.
 
@@ -69,6 +70,8 @@ modules/
                      bluetooth, printing, steam, apps, theming, fonts, vars.lua
   dev/               one file per language (toolchain + LSP + formatter + debugger),
                      docker, wireshark, claude skills
+  server/            one aspect per service (komodo, caddy); each adds its own Caddy
+                     virtualHost and sops secrets
   secrets/           sops-nix wiring
   hosts/<hostname>/  default.nix (nixosConfiguration, aspect list, hostName, stateVersion),
                      _hardware-configuration.nix, boot.nix, GPU and other machine-only files
