@@ -16,9 +16,9 @@ Tracks `nixos-unstable`. Unfree packages are allowed.
   [Noctalia](https://github.com/noctalia-dev/noctalia) shell and greeter,
   PipeWire, Bluetooth, Plymouth boot splash, xdg-desktop-portal.
 - **Apps:** kitty, Neovim (LazyVim), Chrome, Vesktop, Thunderbird, yazi, btop,
-  Bitwarden, Steam and others. Default apps are picked in `vars.nix`, and the
+  Bitwarden, Steam and others. Default apps are picked in `modules/flake/vars.nix`, and the
   Hyprland keybinds follow.
-- **Dev:** one file per language in `home/dev/` with the toolchain, LSP,
+- **Dev:** one file per language in `modules/dev/` with the toolchain, LSP,
   formatter and debugger. Neovim's Mason is turned off; Nix installs every binary.
 - **Services:** Docker, Tailscale, printing (HP, mDNS discovery), fwupd,
   TeamViewer, Wireshark, Solaar.
@@ -28,13 +28,22 @@ Tracks `nixos-unstable`. Unfree packages are allowed.
 
 ## Layout
 
+Dendritic: built with [flake-parts](https://flake.parts), and every file under
+`modules/` is a module imported automatically by
+[import-tree](https://github.com/vic/import-tree). Files add to _aspects_
+(`base`, `workstation`, `dev`, one per host), and each host lists the aspects it
+uses.
+
 ```
-flake.nix         inputs, one nixosConfiguration per folder in hosts/
-vars.nix          shared values: user, paths, locale, keyboard, cursor, default apps
-hosts/<host>/     hardware config, bootloader, GPU, stateVersion
-system/           NixOS modules (core, hardware, desktop, services)
-home/             Home Manager modules (apps, cli, dev, desktop, shell)
+flake.nix         inputs, mkFlake over modules/
+modules/flake/    flake-parts setup and the shared values (vars.nix)
+modules/base/     every host: nix, locale, users, ssh, shell, CLI tools, Home Manager
+modules/workstation/  GUI machines: Hyprland, greeter, audio, apps, theming
+modules/dev/      languages, Docker, Wireshark
+modules/secrets/  sops-nix
+modules/hosts/    one folder per machine: aspect list, hardware, bootloader, GPU
 pkgs/             packages that are not in nixpkgs
+secrets/          sops-encrypted secrets (recipients in .sops.yaml)
 dotfiles/         hypr, kitty, nvim, zsh, starship, noctalia (symlinked, not copied)
 ```
 
@@ -49,7 +58,7 @@ how to verify a build.
 ## Installing on a new machine
 
 1. **Install NixOS** from the official ISO in UEFI mode. On a laptop, turn on
-   disk encryption in the installer. `hosts/kash-laptop-nixos/greetd.nix`
+   disk encryption in the installer. `modules/hosts/kash-laptop-nixos/greetd.nix`
    refuses to build autologin without LUKS, because the boot passphrase is
    then the only login.
 2. **Get the repo** into the home folder (`nix-shell -p git` if git is
@@ -57,14 +66,14 @@ how to verify a build.
    ```sh
    git clone https://github.com/shift-primal/nixos ~/nixos
    ```
-3. **Add a host folder.** The folder name becomes the hostname. Copy an
-   existing host and adjust:
+3. **Add a host folder.** Copy an existing host and adjust:
    ```sh
-   cp -r ~/nixos/hosts/kash-laptop-nixos ~/nixos/hosts/<hostname>
-   nixos-generate-config --show-hardware-config > ~/nixos/hosts/<hostname>/hardware-configuration.nix
+   cp -r ~/nixos/modules/hosts/kash-laptop-nixos ~/nixos/modules/hosts/<hostname>
+   nixos-generate-config --show-hardware-config > ~/nixos/modules/hosts/<hostname>/_hardware-configuration.nix
    ```
-   - Set `stateVersion` in `hosts/<hostname>/vars.nix` to the value in the
-     installer's `/etc/nixos/configuration.nix`.
+   - In its `default.nix`, set `hostname`, pick the aspects, and set
+     `system.stateVersion` to the value in the installer's
+     `/etc/nixos/configuration.nix`.
    - Pick a bootloader in `boot.nix` and a GPU module (`nvidia.nix` / `intel.nix`).
    - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines
      from its `/etc/nixos/hardware-configuration.nix` too.
@@ -85,20 +94,22 @@ how to verify a build.
 
 ### Using it as someone else
 
-Change `user` in `vars.nix` (name, full name), and the keyboard, locale and
+Change `user` in `modules/flake/vars.nix` (name, full name), and the keyboard, locale and
 time zone if needed. Then look for the few places that still hold
 machine-specific values:
 
-- `hosts/kash-desktop-nixos/boot.nix`: Arch root UUID and the Limine entries.
+- `modules/hosts/kash-desktop-nixos/boot.nix`: Arch root UUID and the Limine entries.
 - `dotfiles/noctalia/hosts/*.toml` and `dotfiles/noctalia/settings/*.toml`:
   monitor names and wallpaper paths.
 - `dotfiles/hypr/hyprland/hosts/*.lua`: monitor layout.
-- `home/cli/default.nix` and `home/apps/default.nix`: drop what you don't use.
+- `modules/base/cli.nix` and `modules/workstation/apps.nix`: drop what you don't use.
 
 ## What lives outside the repo
 
-The repo is public, so nothing secret is in it. These have to be set up by hand
-after the first boot:
+The repo is public, so no plaintext secret is in it. Secrets that the system
+needs are committed encrypted with [sops-nix](https://github.com/Mic92/sops-nix)
+under `secrets/`; each host decrypts them with its SSH host key (see
+`.sops.yaml`). These have to be set up by hand after the first boot:
 
 | What                       | How                                                                                                                             |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -124,7 +135,7 @@ nix store diff-closures /run/current-system <result>   # what a build changes
 ```
 
 - Edits under `dotfiles/` apply immediately; Hyprland reloads on save.
-- Changes to `.nix` files, including `vars.nix`, need a rebuild.
+- Changes to `.nix` files, including `modules/flake/vars.nix`, need a rebuild.
 - Noctalia saves GUI changes to `dotfiles/noctalia/settings/<hostname>.toml`, so
   they show up in `git status`. Commit them if they should stick.
 - Format Nix with `nixfmt` (settings in `treefmt.toml`).
