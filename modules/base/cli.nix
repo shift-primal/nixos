@@ -37,6 +37,8 @@
                 gowall
 
                 railway
+                # `cloudflared tunnel route dns` for homelab hostnames (modules/server/cloudflared.nix).
+                cloudflared
                 stripe-cli
 
                 grok-cli
