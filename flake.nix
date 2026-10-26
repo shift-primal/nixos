@@ -4,8 +4,20 @@
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+        flake-parts = {
+            url = "github:hercules-ci/flake-parts";
+            inputs.nixpkgs-lib.follows = "nixpkgs";
+        };
+
+        import-tree.url = "github:vic/import-tree";
+
         home-manager = {
             url = "github:nix-community/home-manager";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+
+        sops-nix = {
+            url = "github:Mic92/sops-nix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
 
@@ -25,26 +37,7 @@
         };
     };
 
-    outputs =
-        { nixpkgs, ... }@inputs:
-        let
-            inherit (nixpkgs) lib;
-
-            # One nixosConfiguration per folder in hosts/, named after it, so
-            # `nixos-rebuild switch --flake ~/nixos` picks the one matching the hostname.
-            mkHost =
-                hostname:
-                let
-                    vars = import ./vars.nix // import ./hosts/${hostname}/vars.nix // { inherit hostname; };
-                in
-                lib.nixosSystem {
-                    specialArgs = { inherit inputs vars; };
-                    modules = [ ./hosts/${hostname} ];
-                };
-
-            hosts = lib.attrNames (lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./hosts));
-        in
-        {
-            nixosConfigurations = lib.genAttrs hosts mkHost;
-        };
+    # Every .nix file under modules/ is a flake-parts module, imported automatically.
+    # Paths containing /_ are skipped (hardware-configuration.nix files).
+    outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
 }
