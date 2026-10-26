@@ -2,8 +2,8 @@ _:
 
 {
     # Sonarr (shows), Radarr (movies) and Prowlarr (indexers, synced into both). Tailscale only, like
-    # Jellyfin. Their download client is rdt-client at 127.0.0.1:6500 (rdt-client.nix), added as
-    # qBittorrent, whose API it speaks.
+    # Jellyfin. Their download client is rdt-client (rdt-client.nix), added as qBittorrent, whose API
+    # it speaks. configure.nix links them all up; recyclarr.nix sets the quality profiles.
     flake.modules.nixos.media =
         { config, lib, ... }:
         let
@@ -22,8 +22,8 @@ _:
                 })
                 // {
                     prowlarr.enable = true;
-                    # Solves Cloudflare challenges for indexers behind it. Added in Prowlarr as an
-                    # indexer proxy (http://127.0.0.1:8191) and tagged onto those indexers.
+                    # Solves Cloudflare challenges for indexers behind it. media-configure
+                    # (configure.nix) adds it to Prowlarr as a proxy for indexers tagged flaresolverr.
                     flaresolverr.enable = true;
                 };
 

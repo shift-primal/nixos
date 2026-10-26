@@ -109,6 +109,10 @@ dotfiles/            live-edited configs
   `modules/server/komodo/apps.nix` turns it into a Komodo Stack (Resource Sync
   "homelab") and a Caddy vhost; move its domain onto the tunnel with `cutover <domain>`.
   Its secret env vars (`secrets`) come from sops keys `apps/<app>/<key>`.
+- Media stack setting that lives in an app's own database (Jellyfin libraries and users, indexers,
+  Bazarr languages, Seerr defaults, the links between the apps): `modules/server/media/configure.nix`,
+  applied through each app's API by `_configure.py` (the `media-configure` service). Quality
+  profiles come from the TRaSH Guides via `modules/server/media/recyclarr.nix`.
 - Package not in nixpkgs: `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
 - New dotfile dir: put it in `dotfiles/` and add it to `dotfiles.links` in the
   feature that uses it.
