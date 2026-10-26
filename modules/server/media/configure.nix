@@ -5,8 +5,8 @@ let
 in
 {
     # media-configure: sets up everything the apps keep in their own databases, which Nix can't
-    # write directly: Jellyfin's libraries and users, rdt-client's Real-Debrid key, the links between
-    # the apps, Prowlarr's indexers, Bazarr's languages and Seerr's defaults. _configure.py talks to
+    # write directly: Jellyfin's libraries and users, Decypharr's Real-Debrid key and mount, the links
+    # between the apps, Prowlarr's indexers, Bazarr's languages and Seerr's defaults. _configure.py talks to
     # each app's API, changes only what differs from the config below, and never deletes. It runs at
     # boot and whenever this config changes; a failed step retries.
     flake.modules.nixos.media =
@@ -21,7 +21,7 @@ in
                 root
                 keysDir
                 profiles
-                rdtclientPort
+                decypharr
                 ;
             secret = name: config.sops.secrets."media/${name}".path;
             port = app: config.services.${app}.settings.server.port;
@@ -71,7 +71,16 @@ in
                         }
                     ];
                     users = map (u: u // { passwordFile = secret "jellyfin-password/${u.name}"; }) users;
-                    # Original audio (the file's default track) with Norwegian subtitles from Bazarr.
+                    # The files stream from Real-Debrid (decypharr.nix): reading one whole to make
+                    # scrubbing previews or chapter thumbnails would download it.
+                    libraryOptions = {
+                        EnableTrickplayImageExtraction = false;
+                        ExtractTrickplayImagesDuringLibraryScan = false;
+                        EnableChapterImageExtraction = false;
+                        ExtractChapterImagesDuringLibraryScan = false;
+                    };
+                    # Original audio (the file's default track) with Norwegian subtitles from Bazarr, or
+                    # English when there are none.
                     playback = {
                         SubtitleLanguagePreference = "nob";
                         SubtitleMode = "Always";
@@ -79,19 +88,37 @@ in
                     };
                 };
 
-                rdtclient = {
-                    url = url rdtclientPort;
-                    port = rdtclientPort;
-                    user = vars.user.name;
-                    passwordFile = secret "rdtclient-password";
+                decypharr = {
+                    url = url decypharr.port;
+                    inherit (decypharr) port;
+                    # Decypharr makes its own API token on first start.
+                    authFile = "${decypharr.dataDir}/auth.json";
                     realDebridKeyFile = secret "realdebrid-api-key";
-                    # Real-Debrid (0) with the built-in downloader (0), into the shared downloads/
-                    # under the same path as on the host (rdt-client.nix).
-                    settings = {
-                        "Provider:Provider" = 0;
-                        "DownloadClient:Client" = 0;
-                        "DownloadClient:DownloadPath" = "${root}/downloads";
-                        "DownloadClient:MappedPath" = "${root}/downloads";
+                    # Merged into its config.json; _configure.py adds the Real-Debrid key and the arrs.
+                    config = {
+                        download_folder = decypharr.downloads;
+                        categories = [
+                            "sonarr"
+                            "radarr"
+                        ];
+                        default_download_action = "symlink";
+                        mount = {
+                            type = "dfs";
+                            mount_path = decypharr.mountPath;
+                            dfs = {
+                                cache_dir = decypharr.cacheDir;
+                                disk_cache_size = "20GB";
+                                umask = "022";
+                            };
+                        };
+                    };
+                    realDebrid = {
+                        provider = "realdebrid";
+                        name = "realdebrid";
+                        # Only releases Real-Debrid already has, so playback can start at once. An
+                        # uncached one fails, and Sonarr/Radarr blocklist it and take the next
+                        # (Decypharr's queue cleanup, on by default).
+                        download_uncached = false;
                     };
                 };
 
@@ -130,7 +157,11 @@ in
                     url = url config.services.bazarr.settings.general.port;
                     configFile = "${config.services.bazarr.dataDir}/config/config.yaml";
                     profileName = "Norsk";
-                    languages = [ "nb" ];
+                    # English too, for when no Norwegian subtitle exists.
+                    languages = [
+                        "nb"
+                        "en"
+                    ];
                     # OpenSubtitles has the most Norwegian subtitles; embedded ones are already in
                     # the file.
                     providers = [
@@ -149,6 +180,8 @@ in
                     inherit (config.services.seerr) configDir;
                     # Seerr wants an email for its owner; it is never mailed.
                     emailDomain = "snyltflix.local";
+                    # Requests go straight to Sonarr/Radarr without waiting for an admin.
+                    autoApprove = true;
                     inherit (config.homelab.media) jellyfinUrl;
                 };
             };
@@ -160,7 +193,7 @@ in
 
             apps = [
                 "jellyfin.service"
-                "docker-rdtclient.service"
+                "decypharr.service"
                 "sonarr.service"
                 "radarr.service"
                 "prowlarr.service"
@@ -180,7 +213,6 @@ in
             config = {
                 sops.secrets = lib.genAttrs (map (n: "media/${n}") (
                     [
-                        "rdtclient-password"
                         "realdebrid-api-key"
                         "opensubtitles-username"
                         "opensubtitles-password"

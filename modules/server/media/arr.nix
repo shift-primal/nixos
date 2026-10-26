@@ -2,7 +2,7 @@ _:
 
 {
     # Sonarr (shows), Radarr (movies) and Prowlarr (indexers, synced into both). Tailscale only, like
-    # Jellyfin. Their download client is rdt-client (rdt-client.nix), added as qBittorrent, whose API
+    # Jellyfin. Their download client is Decypharr (decypharr.nix), added as qBittorrent, whose API
     # it speaks. configure.nix links them all up; recyclarr.nix sets the quality profiles.
     flake.modules.nixos.media =
         { config, lib, ... }:
