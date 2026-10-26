@@ -26,8 +26,9 @@ in
         networking.hostName = hostname;
 
         homelab.komodo.domain = "komodo.haugestol.com";
-        # Placeholder until the tunnel exists: `cloudflared tunnel create homelab` prints the UUID.
-        homelab.tunnel.id = "00000000-0000-0000-0000-000000000000";
+        # The "homelab" tunnel (cloudflared.nix). Route a hostname to it with
+        #   cloudflared tunnel route dns homelab <host>
+        homelab.tunnel.id = "9533558e-052d-442c-9790-c20eb59c4b8e";
 
         # Release this machine was first installed with. Do not bump on upgrades.
         # Must match system.stateVersion in the installer's /etc/nixos/configuration.nix.
