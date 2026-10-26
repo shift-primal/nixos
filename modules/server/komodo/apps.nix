@@ -85,14 +85,26 @@ in
                     inherit name;
                     config = {
                         server = hostname;
-                        inherit (app) repo branch;
-                        # Builds the compose file's `build:` services, so a push redeploys from source.
-                        run_build = true;
-                        webhook_enabled = true;
-                        # The override is a store path; compose takes absolute -f paths as they are.
-                        file_paths = app.compose.files ++ [ "${override name app}" ];
                         environment = lines app.environment;
                     }
+                    // (
+                        if app.repo != null then
+                            {
+                                inherit (app) repo branch;
+                                # Builds the compose file's `build:` services, so a push redeploys from source.
+                                run_build = true;
+                                webhook_enabled = true;
+                                # The override is a store path; compose takes absolute -f paths as they are.
+                                file_paths = app.compose.files ++ [ "${override name app}" ];
+                            }
+                        else
+                            {
+                                file_contents = lib.generators.toYAML { } (composeWithPort app);
+                                # Prebuilt images: redeploy when a newer one is pushed.
+                                poll_for_updates = true;
+                                auto_update = true;
+                            }
+                    )
                     // lib.optionalAttrs (app.secrets != [ ]) {
                         # For ${VAR} interpolation in the compose file. Untracked, so Komodo never
                         # reads or shows the values.
@@ -108,15 +120,14 @@ in
 
             # Binds the served container to localhost (Docker bypasses the firewall, and Caddy is the
             # way in), on top of whatever the stack's own override adds.
-            override =
-                name: app:
-                (pkgs.formats.yaml { }).generate "${name}-override.yml" (
-                    lib.recursiveUpdate {
-                        services.${app.compose.service}.ports = [
-                            "127.0.0.1:${toString app.port}:${toString app.containerPort}"
-                        ];
-                    } app.compose.override
-                );
+            composeWithPort =
+                app:
+                lib.recursiveUpdate {
+                    services.${app.compose.service}.ports = [
+                        "127.0.0.1:${toString app.port}:${toString app.containerPort}"
+                    ];
+                } app.compose.override;
+            override = name: app: (pkgs.formats.yaml { }).generate "${name}-override.yml" (composeWithPort app);
 
             # Copied rather than linked: Core's container can't follow links into /nix/store.
             syncDir = pkgs.runCommand "komodo-sync-${syncName}" { } ''
@@ -145,8 +156,12 @@ in
                                 description = "Port the app listens on inside its container.";
                             };
                             repo = lib.mkOption {
-                                type = lib.types.str;
-                                description = "GitHub repo with a Dockerfile at its root, as owner/name.";
+                                type = with lib.types; nullOr str;
+                                default = null;
+                                description = ''
+                                    GitHub repo with a Dockerfile at its root (or the compose files), as
+                                    owner/name. Only a `compose` app of prebuilt images goes without.
+                                '';
                             };
                             branch = lib.mkOption {
                                 type = lib.types.str;
@@ -201,7 +216,10 @@ in
                                             override = lib.mkOption {
                                                 type = lib.types.attrs;
                                                 default = { };
-                                                description = "Compose override, e.g. labels for backup.nix.";
+                                                description = ''
+                                                    Compose override, e.g. labels for backup.nix. With no `repo`, this is
+                                                    the whole compose file.
+                                                '';
                                             };
                                         };
                                     }
@@ -221,6 +239,10 @@ in
                             in
                             lib.length ports == lib.length (lib.unique ports);
                         message = "homelab.apps: two apps share a port.";
+                    }
+                    {
+                        assertion = lib.all (app: app.repo != null) (lib.attrValues apps);
+                        message = "homelab.apps: an app without `compose` needs a `repo` to build.";
                     }
                 ];
 
