@@ -6,10 +6,10 @@ let
     syncName = "homelab";
 in
 {
-    # Web apps built from their own git repos. Each entry gets a Komodo Build and Deployment, or a
-    # Stack when it ships its own compose file (declared through a Resource Sync generated here),
-    # plus its Caddy vhost, so the port lives in one place. Komodo builds on this host and keeps the
-    # images local; nothing is pushed to a registry.
+    # Web apps built from their own git repos, each a Komodo Stack (declared through a Resource Sync
+    # generated here) plus its Caddy vhost, so the port lives in one place. An app with its own
+    # compose file runs that; any other gets a one-service compose file built from its Dockerfile.
+    # Komodo builds on this host and keeps the images local; nothing is pushed to a registry.
     flake.modules.nixos.komodo =
         {
             config,
@@ -18,8 +18,6 @@ in
             ...
         }:
         let
-            apps = lib.filterAttrs (_: app: app.compose == null) config.homelab.apps;
-            stacks = lib.filterAttrs (_: app: app.compose != null) config.homelab.apps;
             allApps = config.homelab.apps;
             hostname = config.networking.hostName;
             periphery = config.services.komodo-periphery;
@@ -30,64 +28,51 @@ in
             # Komodo reads these as `KEY = value` lines.
             lines = attrs: lib.concatLines (lib.mapAttrsToList (k: v: "${k} = ${v}") attrs);
 
-            resources = {
-                builder = [
-                    {
-                        name = hostname;
-                        config = {
-                            type = "Server";
-                            params.server = hostname;
-                        };
-                    }
-                ];
-                build = lib.mapAttrsToList (name: app: {
-                    inherit name;
-                    config = {
-                        builder = hostname;
-                        inherit (app) repo branch;
-                        git_account = app.gitAccount;
-                        # A push to the repo rebuilds, and redeploy_on_build rolls it out.
-                        webhook_enabled = true;
-                    }
-                    // lib.optionalAttrs (app.buildFiles != { }) {
-                        # Runs in the fresh checkout on this host, so the file never reaches git
-                        # or the store.
-                        pre_build.command = lib.concatLines (
-                            lib.mapAttrsToList (
-                                path: secret: "cp ${config.sops.secrets.${secretName name secret}.path} ${path}"
-                            ) app.buildFiles
-                        );
-                    };
-                }) apps;
-                deployment = lib.mapAttrsToList (name: app: {
-                    inherit name;
-                    config = {
-                        server = hostname;
-                        image = {
-                            type = "Build";
-                            params.build = name;
-                        };
-                        redeploy_on_build = true;
-                        # Komodo defaults to the host network, which would ignore the port binding.
-                        network = "bridge";
+            # The compose settings of an app without its own compose file: one service, built from the
+            # Dockerfile at the root of Komodo's checkout. Compose resolves a relative context against
+            # the override's store path, hence the absolute one.
+            single = name: app: {
+                files = [ ];
+                service = "app";
+                oneShot = [ ];
+                preDeploy = null;
+                postDeploy = null;
+                override = {
+                    services.app = {
+                        image = "${name}:latest";
+                        build.context = "${periphery.rootDirectory}/stacks/${name}";
+                        # Komodo runs `compose pull` after the build; the image only exists here.
+                        pull_policy = "never";
                         restart = "unless-stopped";
-                        # Localhost only: Docker bypasses the firewall, and Caddy is the way in.
-                        ports = "127.0.0.1:${toString app.port}:${toString app.containerPort}";
-                        environment = lines app.environment;
-                        # Named volumes land in /var/lib/docker/volumes, which backup.nix copies.
-                        volumes = lines app.volumes;
+                        inherit (app) environment;
                     }
                     // lib.optionalAttrs (app.secrets != [ ]) {
-                        # Read by the docker CLI, which Periphery runs as its own user.
-                        extra_args = [ "--env-file=${config.sops.templates.${envFile name}.path}" ];
+                        env_file = [ config.sops.templates.${envFile name}.path ];
+                    }
+                    // lib.optionalAttrs (app.volumes != { }) {
+                        volumes = lib.mapAttrsToList (source: target: "${source}:${target}") app.volumes;
                     };
-                }) apps;
-                stack = lib.mapAttrsToList (name: app: {
+                }
+                // lib.optionalAttrs (namedVolumes app != { }) {
+                    # `name` keeps compose from prefixing the project, so the volume a Deployment made
+                    # before is reused.
+                    volumes = lib.mapAttrs (volume: _: { name = volume; }) (namedVolumes app);
+                };
+            };
+            namedVolumes = app: lib.filterAttrs (source: _: !lib.hasPrefix "/" source) app.volumes;
+            composeOf = name: app: if app.compose != null then app.compose else single name app;
+
+            resources.stack = lib.mapAttrsToList (
+                name: app:
+                let
+                    compose = composeOf name app;
+                in
+                {
                     inherit name;
                     config = {
                         server = hostname;
                         environment = lines app.environment;
-                        ignore_services = app.compose.oneShot;
+                        ignore_services = compose.oneShot;
                     }
                     // (
                         if app.repo != null then
@@ -98,21 +83,21 @@ in
                                 run_build = true;
                                 webhook_enabled = true;
                                 # The override is a store path; compose takes absolute -f paths as they are.
-                                file_paths = app.compose.files ++ [ "${override name app}" ];
+                                file_paths = compose.files ++ [ "${override name compose app}" ];
                             }
                         else
                             {
-                                file_contents = lib.generators.toYAML { } (composeWithPort app);
+                                file_contents = lib.generators.toYAML { } (composeWithPort compose app);
                                 # Prebuilt images: redeploy when a newer one is pushed.
                                 poll_for_updates = true;
                                 auto_update = true;
                             }
                     )
-                    // lib.optionalAttrs (app.compose.preDeploy != null) {
-                        pre_deploy.command = "${app.compose.preDeploy}";
+                    // lib.optionalAttrs (compose.preDeploy != null) {
+                        pre_deploy.command = "${compose.preDeploy}";
                     }
-                    // lib.optionalAttrs (app.compose.postDeploy != null) {
-                        post_deploy.command = "${app.compose.postDeploy}";
+                    // lib.optionalAttrs (compose.postDeploy != null) {
+                        post_deploy.command = "${compose.postDeploy}";
                     }
                     // lib.optionalAttrs (app.secrets != [ ]) {
                         # For ${VAR} interpolation in the compose file. Untracked, so Komodo never
@@ -124,19 +109,21 @@ in
                             }
                         ];
                     };
-                }) stacks;
-            };
+                }
+            ) allApps;
 
             # Binds the served container to localhost (Docker bypasses the firewall, and Caddy is the
             # way in), on top of whatever the stack's own override adds.
             composeWithPort =
-                app:
+                compose: app:
                 lib.recursiveUpdate {
-                    services.${app.compose.service}.ports = [
+                    services.${compose.service}.ports = [
                         "127.0.0.1:${toString app.port}:${toString app.containerPort}"
                     ];
-                } app.compose.override;
-            override = name: app: (pkgs.formats.yaml { }).generate "${name}-override.yml" (composeWithPort app);
+                } compose.override;
+            override =
+                name: compose: app:
+                (pkgs.formats.yaml { }).generate "${name}-override.yml" (composeWithPort compose app);
 
             # Copied rather than linked: Core's container can't follow links into /nix/store.
             syncDir = pkgs.runCommand "komodo-sync-${syncName}" { } ''
@@ -194,25 +181,20 @@ in
                                     secrets/hosts/<hostname>.yaml. Changing one needs a Redeploy in Komodo.
                                 '';
                             };
-                            buildFiles = lib.mkOption {
-                                type = with lib.types; attrsOf str;
-                                default = { };
-                                description = "Files copied into the checkout before the build: path in the repo -> sops key under apps/<app>/.";
-                                example = {
-                                    "src/config/questions.data.ts" = "questions";
-                                };
-                            };
                             volumes = lib.mkOption {
                                 type = with lib.types; attrsOf str;
                                 default = { };
-                                description = "Named volume or host path -> path in the container.";
+                                description = ''
+                                    Named volume or host path -> path in the container. Named volumes land in
+                                    /var/lib/docker/volumes, which backup.nix copies.
+                                '';
                             };
                             compose = lib.mkOption {
                                 default = null;
                                 description = ''
-                                    Deploy the repo's own compose file as a Komodo Stack instead. `secrets`
-                                    then feed the file's ''${VAR} interpolation; `volumes` and `buildFiles`
-                                    don't apply (put volumes in the compose file or `override`).
+                                    Deploy the repo's own compose file instead of building its Dockerfile.
+                                    `secrets` then feed the file's ''${VAR} interpolation; `volumes` doesn't
+                                    apply (put volumes in the compose file or `override`).
                                 '';
                                 type = lib.types.nullOr (
                                     lib.types.submodule {
@@ -273,7 +255,7 @@ in
                         message = "homelab.apps: two apps share a port.";
                     }
                     {
-                        assertion = lib.all (app: app.repo != null) (lib.attrValues apps);
+                        assertion = lib.all (app: app.compose != null || app.repo != null) (lib.attrValues allApps);
                         message = "homelab.apps: an app without `compose` needs a `repo` to build.";
                     }
                 ];
@@ -281,7 +263,7 @@ in
                 sops.secrets = lib.mkMerge (
                     lib.mapAttrsToList (
                         name: app:
-                        lib.genAttrs (map (secretName name) (app.secrets ++ lib.attrValues app.buildFiles)) (_: {
+                        lib.genAttrs (map (secretName name) app.secrets) (_: {
                             owner = periphery.user;
                         })
                     ) allApps

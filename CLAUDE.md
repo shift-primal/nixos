@@ -106,10 +106,9 @@ dotfiles/            live-edited configs
   `/etc/nixos` away so the link can be created. For secrets, add its host key to
   `.sops.yaml` and run `sops updatekeys` on the files it should read.
 - Web app on the homelab: an entry in `homelab.apps` (`modules/hosts/kash-homelab/apps.nix`).
-  `modules/server/komodo/apps.nix` turns it into a Komodo Build + Deployment (Resource Sync
-  "homelab") and a Caddy vhost; route its domain with `cloudflared tunnel route dns homelab <domain>`.
-  Its secret env vars (`secrets`) and build-time files (`buildFiles`) come from sops keys
-  `apps/<app>/<key>`.
+  `modules/server/komodo/apps.nix` turns it into a Komodo Stack (Resource Sync
+  "homelab") and a Caddy vhost; move its domain onto the tunnel with `cutover <domain>`.
+  Its secret env vars (`secrets`) come from sops keys `apps/<app>/<key>`.
 - Package not in nixpkgs: `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
 - New dotfile dir: put it in `dotfiles/` and add it to `dotfiles.links` in the
   feature that uses it.
