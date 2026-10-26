@@ -6,9 +6,10 @@ let
     syncName = "homelab";
 in
 {
-    # Web apps built from their own git repos. Each entry gets a Komodo Build and Deployment
-    # (declared through a Resource Sync generated here) plus its Caddy vhost, so the port lives in
-    # one place. Komodo builds on this host and keeps the image local; nothing is pushed to a registry.
+    # Web apps built from their own git repos. Each entry gets a Komodo Build and Deployment, or a
+    # Stack when it ships its own compose file (declared through a Resource Sync generated here),
+    # plus its Caddy vhost, so the port lives in one place. Komodo builds on this host and keeps the
+    # images local; nothing is pushed to a registry.
     flake.modules.nixos.komodo =
         {
             config,
@@ -17,7 +18,9 @@ in
             ...
         }:
         let
-            apps = config.homelab.apps;
+            apps = lib.filterAttrs (_: app: app.compose == null) config.homelab.apps;
+            stacks = lib.filterAttrs (_: app: app.compose != null) config.homelab.apps;
+            allApps = config.homelab.apps;
             hostname = config.networking.hostName;
             periphery = config.services.komodo-periphery;
             inherit (config.sops) placeholder;
@@ -78,7 +81,42 @@ in
                         extra_args = [ "--env-file=${config.sops.templates.${envFile name}.path}" ];
                     };
                 }) apps;
+                stack = lib.mapAttrsToList (name: app: {
+                    inherit name;
+                    config = {
+                        server = hostname;
+                        inherit (app) repo branch;
+                        # Builds the compose file's `build:` services, so a push redeploys from source.
+                        run_build = true;
+                        webhook_enabled = true;
+                        # The override is a store path; compose takes absolute -f paths as they are.
+                        file_paths = app.compose.files ++ [ "${override name app}" ];
+                        environment = lines app.environment;
+                    }
+                    // lib.optionalAttrs (app.secrets != [ ]) {
+                        # For ${VAR} interpolation in the compose file. Untracked, so Komodo never
+                        # reads or shows the values.
+                        additional_env_files = [
+                            {
+                                path = config.sops.templates.${envFile name}.path;
+                                track = false;
+                            }
+                        ];
+                    };
+                }) stacks;
             };
+
+            # Binds the served container to localhost (Docker bypasses the firewall, and Caddy is the
+            # way in), on top of whatever the stack's own override adds.
+            override =
+                name: app:
+                (pkgs.formats.yaml { }).generate "${name}-override.yml" (
+                    lib.recursiveUpdate {
+                        services.${app.compose.service}.ports = [
+                            "127.0.0.1:${toString app.port}:${toString app.containerPort}"
+                        ];
+                    } app.compose.override
+                );
 
             # Copied rather than linked: Core's container can't follow links into /nix/store.
             syncDir = pkgs.runCommand "komodo-sync-${syncName}" { } ''
@@ -140,6 +178,35 @@ in
                                 default = { };
                                 description = "Named volume or host path -> path in the container.";
                             };
+                            compose = lib.mkOption {
+                                default = null;
+                                description = ''
+                                    Deploy the repo's own compose file as a Komodo Stack instead. `secrets`
+                                    then feed the file's ''${VAR} interpolation; `volumes` and `buildFiles`
+                                    don't apply (put volumes in the compose file or `override`).
+                                '';
+                                type = lib.types.nullOr (
+                                    lib.types.submodule {
+                                        options = {
+                                            files = lib.mkOption {
+                                                type = with lib.types; listOf str;
+                                                default = [ "compose.yaml" ];
+                                                description = "Compose files in the repo.";
+                                            };
+                                            service = lib.mkOption {
+                                                type = lib.types.str;
+                                                default = "app";
+                                                description = "Service Caddy proxies to.";
+                                            };
+                                            override = lib.mkOption {
+                                                type = lib.types.attrs;
+                                                default = { };
+                                                description = "Compose override, e.g. labels for backup.nix.";
+                                            };
+                                        };
+                                    }
+                                );
+                            };
                         };
                     }
                 );
@@ -150,7 +217,7 @@ in
                     {
                         assertion =
                             let
-                                ports = lib.mapAttrsToList (_: app: app.port) apps;
+                                ports = lib.mapAttrsToList (_: app: app.port) allApps;
                             in
                             lib.length ports == lib.length (lib.unique ports);
                         message = "homelab.apps: two apps share a port.";
@@ -163,7 +230,7 @@ in
                         lib.genAttrs (map (secretName name) (app.secrets ++ lib.attrValues app.buildFiles)) (_: {
                             owner = periphery.user;
                         })
-                    ) apps
+                    ) allApps
                 );
 
                 sops.templates = lib.mapAttrs' (
@@ -172,7 +239,7 @@ in
                         owner = periphery.user;
                         content = lib.concatLines (map (key: "${key}=${placeholder.${secretName name key}}") app.secrets);
                     }
-                ) (lib.filterAttrs (_: app: app.secrets != [ ]) apps);
+                ) (lib.filterAttrs (_: app: app.secrets != [ ]) allApps);
 
                 # A new store path per change, so Core restarts (a few seconds of UI downtime, apps
                 # keep running) and the sync shows the diff to execute.
@@ -191,7 +258,7 @@ in
                             }
                         '';
                     }
-                ) apps;
+                ) allApps;
             };
         };
 }
