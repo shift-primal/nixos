@@ -10,7 +10,7 @@ in
         modules = [ nixos.${hostname} ];
     };
 
-    # HP ProDesk 400 G3 SFF. The other files in this folder (boot, data) add to this module too.
+    # HP ProDesk 400 G3 SFF. The other files in this folder (boot, data, intel) add to this module too.
     flake.modules.nixos.${hostname} = {
         # _hardware-configuration.nix is generated on the ProDesk itself:
         #   nixos-generate-config --show-hardware-config > _hardware-configuration.nix
@@ -22,6 +22,7 @@ in
             nixos.cloudflared
             nixos.backup
             nixos.monitoring
+            nixos.jellyfin
             ./_hardware-configuration.nix
         ];
 
