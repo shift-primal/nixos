@@ -482,6 +482,10 @@ def seerr(k, profiles):
         log("connected Seerr to Jellyfin")
 
     api.headers["X-Api-Key"] = settings["main"]["apiKey"]
+    # Where "Play on Jellyfin" links point; Seerr itself talks to Jellyfin on localhost.
+    if settings["jellyfin"].get("externalHostname") != c["jellyfinUrl"]:
+        api.post("/settings/jellyfin", {"externalHostname": c["jellyfinUrl"]})
+        log(f"Seerr links to Jellyfin at {c['jellyfinUrl']}")
     if not settings["public"]["initialized"]:
         for lib in api.post("/settings/jellyfin/library/sync"):
             if not lib["enabled"]:
