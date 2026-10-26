@@ -37,5 +37,22 @@ _:
                 "RESEND_API_KEY"
             ];
         };
+
+        # wastescope. Its compose file runs migrations and reseeds the demo accounts on each deploy.
+        ws = {
+            domain = "ws.haugestol.com";
+            port = 3005;
+            repo = "shift-primal/ws";
+            compose = {
+                files = [ "docker-compose.prod.yml" ];
+                # Nightly pg_dumpall (backup.nix).
+                override.services.db.labels."homelab.backup" = "postgres";
+            };
+            environment.BETTER_AUTH_URL = "https://ws.haugestol.com";
+            secrets = [
+                "POSTGRES_PASSWORD"
+                "BETTER_AUTH_SECRET"
+            ];
+        };
     };
 }
