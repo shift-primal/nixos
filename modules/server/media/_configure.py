@@ -522,7 +522,9 @@ def seerr(k, profiles):
             api.post(f"/settings/{name}", want)
             log(f"added {name} to Seerr")
         elif any(have.get(f) != v for f, v in want.items() if f != "name"):
-            api.put(f"/settings/{name}/{have['id']}", {**have, **{f: v for f, v in want.items() if f != "name"}})
+            body = {**have, **{f: v for f, v in want.items() if f != "name"}}
+            del body["id"]  # read-only in Seerr's API
+            api.put(f"/settings/{name}/{have['id']}", body)
             log(f"updated {name} in Seerr")
 
     if not settings["public"]["initialized"]:
