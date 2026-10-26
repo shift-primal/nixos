@@ -144,6 +144,15 @@ in
                     restartUnits = [ "docker-komodo-core.service" ];
                 };
 
+                # Mongo's files are dumped instead of copied live (backup.nix).
+                homelab.backup = {
+                    paths = [ dataDir ];
+                    exclude = [ "${dataDir}/mongo" ];
+                    dumps."komodo-mongo.archive.gz" = ''
+                        ${config.virtualisation.docker.package}/bin/docker exec komodo-mongo sh -c 'exec mongodump --quiet --archive --gzip --username "$MONGO_INITDB_ROOT_USERNAME" --password "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin'
+                    '';
+                };
+
                 services.caddy.virtualHosts."http://${cfg.domain}".extraConfig = ''
                     reverse_proxy 127.0.0.1:9120
                 '';

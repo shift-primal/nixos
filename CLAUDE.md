@@ -70,7 +70,7 @@ modules/
                      bluetooth, printing, steam, apps, theming, fonts, vars.lua
   dev/               one file per language (toolchain + LSP + formatter + debugger),
                      docker, wireshark, claude skills
-  server/            one aspect per service (komodo, caddy, cloudflared); each adds its own Caddy
+  server/            one aspect per service (komodo, caddy, cloudflared, backup); each adds its own Caddy
                      virtualHost and sops secrets
   secrets/           sops-nix wiring
   hosts/<hostname>/  default.nix (nixosConfiguration, aspect list, hostName, stateVersion),
