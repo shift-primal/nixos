@@ -2,8 +2,8 @@ _:
 
 {
     # Sonarr (shows), Radarr (movies) and Prowlarr (indexers, synced into both). Tailscale only, like
-    # Jellyfin. The download client they talk to is qBittorrent at 127.0.0.1:8081 (qbittorrent.nix).
-    # Prowlarr reaches the indexers directly, not through the VPN: it only searches.
+    # Jellyfin. Their download client is rdt-client at 127.0.0.1:6500 (rdt-client.nix), added as
+    # qBittorrent, whose API it speaks.
     flake.modules.nixos.media =
         { config, lib, ... }:
         let

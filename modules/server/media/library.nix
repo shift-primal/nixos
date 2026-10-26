@@ -4,7 +4,7 @@ let
     inherit (config) vars;
 in
 {
-    # Folders and permissions the whole media stack shares: Jellyfin reads the libraries, qBittorrent
+    # Folders and permissions the whole media stack shares: Jellyfin reads the libraries, rdt-client
     # writes downloads, Sonarr and Radarr hardlink finished downloads into the libraries. Hardlinks
     # only work within one filesystem, so downloads and libraries live under the same root.
     flake.modules.nixos.media =
@@ -20,7 +20,7 @@ in
             };
 
             config = {
-                # Fixed gid: the qBittorrent container (qbittorrent.nix) gets it as a number.
+                # Fixed gid: the rdt-client container (rdt-client.nix) gets it as a number.
                 users.groups.media = {
                     gid = 2000;
                     members = [ vars.user.name ];
