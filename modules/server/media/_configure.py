@@ -2,9 +2,11 @@
 
 Run as root by media-configure.service with a JSON config as its only argument. Every step reads
 the current state first and only writes what differs, so it is safe to run again at any time. It
-creates and fixes what the config names and never deletes anything else.
+creates and fixes what the config names and deletes only what it replaced.
 """
 
+import base64
+import hashlib
 import http.cookiejar
 import json
 import os
@@ -207,6 +209,7 @@ def jellyfin(c):
         if any(opts.get(k) != v for k, v in c["libraryOptions"].items()):
             api.post("/Library/VirtualFolders/LibraryOptions", {"Id": f["ItemId"], "LibraryOptions": {**opts, **c["libraryOptions"]}})
             log(f"library {f['Name']}: {c['libraryOptions']}")
+    library_fetchers(api, c)
 
     users = {u["Name"]: u for u in api.get("/Users")}
     for u in c["users"]:
@@ -222,6 +225,101 @@ def jellyfin(c):
             api.post(f"/Users/{user['Id']}/Configuration", {**prefs, **c["playback"]})
             log(f"{u['name']}: playback {c['playback']}")
     return token
+
+
+def library_fetchers(api, c):
+    """Metadata and image sources per item type: Gelato first, so its titles get their metadata from
+    the addon; no Screen Grabber, which would read every file from Real-Debrid for a thumbnail."""
+    for f in api.get("/Library/VirtualFolders"):
+        kind = {"movies": "movies", "tvshows": "tvshows"}.get(f.get("CollectionType"))
+        if not kind:
+            continue
+        available = api.get(f"/Libraries/AvailableOptions?libraryContentType={kind}")["TypeOptions"]
+        want = []
+        for t in available:
+            def names(key):
+                n = [x["Name"] for x in t[key] if x["DefaultEnabled"] and x["Name"] not in c["disabledFetchers"]]
+                return sorted(n, key=lambda name: name != "Gelato")
+            meta, images = names("MetadataFetchers"), names("ImageFetchers")
+            want.append({"Type": t["Type"], "MetadataFetchers": meta, "MetadataFetcherOrder": meta, "ImageFetchers": images, "ImageFetcherOrder": images, "ImageOptions": []})
+        opts = f.get("LibraryOptions") or {}
+        have = {t["Type"]: t for t in opts.get("TypeOptions") or []}
+        keys = ("MetadataFetchers", "MetadataFetcherOrder", "ImageFetchers", "ImageFetcherOrder")
+        if any(have.get(t["Type"], {}).get(k) != t[k] for t in want for k in keys):
+            merged = [{**t, **have.get(t["Type"], {}), **{k: t[k] for k in keys}} for t in want]
+            api.post("/Library/VirtualFolders/LibraryOptions", {"Id": f["ItemId"], "LibraryOptions": {**opts, "TypeOptions": merged}})
+            log(f"library {f['Name']}: metadata and image sources {[t['Type'] for t in want]}")
+
+
+# ----------------------------------------------------------------------------------- aiostreams
+
+
+def aiostreams(c):
+    """One AIOStreams user holds the addon setup Gelato uses. Its uuid and password live in
+    media-configure's state, as AIOStreams can't give either back."""
+    api = Api(c["url"] + "/api/v1")
+    api.wait("/status")
+    config = json.load(open(c["configFile"]))
+    digest = hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest()
+    state_file = os.path.join(cfg["keysDir"], "aiostreams.json")
+    state = json.load(open(state_file)) if os.path.exists(state_file) else None
+
+    if state:
+        api.headers["Authorization"] = "Basic " + base64.b64encode(f"{state['uuid']}:{state['password']}".encode()).decode()
+        # Kept from creation: it comes back different on every call, and Gelato's URL holds it.
+        try:
+            api.get("/user")
+        except RuntimeError as e:
+            # Its database or secret key is gone; a new user it is.
+            log(f"AIOStreams user {state['uuid']} unusable ({str(e)[:100]}), making a new one")
+            state = None
+            del api.headers["Authorization"]
+
+    if not state:
+        password = secrets.token_hex(24)
+        data = api.post("/user", {"config": config, "password": password})["data"]
+        state = {"uuid": data["uuid"], "password": password, "encryptedPassword": data["encryptedPassword"], "digest": digest}
+        log(f"created AIOStreams user {state['uuid']}")
+    elif state.get("digest") != digest:
+        api.put("/user", {"config": config})
+        state["digest"] = digest
+        log("AIOStreams config updated")
+
+    with open(os.open(state_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as f:
+        json.dump(state, f)
+    return f"{c['url']}/stremio/{state['uuid']}/{state['encryptedPassword']}/manifest.json"
+
+
+# --------------------------------------------------------------------------------------- gelato
+
+
+def gelato(c, jf_key, manifest):
+    api = Api(cfg["jellyfin"]["url"], {"Authorization": f'MediaBrowser Token="{jf_key}"'})
+    path = f"/Plugins/{c['pluginId']}/Configuration"
+    have = api.get(path)
+
+    # The addon's catalogs that fill the home screen; Gelato imports them on a schedule. Their ids
+    # change with the addon setup, so the list is replaced, keeping the settings of those it had.
+    known = {(x["Id"], x["Type"]): x for x in have.get("Catalogs") or []}
+    catalogs = [
+        {**known.get((cat["id"], cat["type"]), {}), "Id": cat["id"], "Type": cat["type"], "Name": cat["name"], "Enabled": True}
+        for cat in Api(manifest).get("")["catalogs"]
+        if any(cat["id"].endswith(suffix) for suffix in c["catalogs"])
+    ]
+
+    want = {**c["settings"], "Url": manifest, "MoviePath": c["moviePath"], "SeriesPath": c["seriesPath"], "Catalogs": catalogs}
+    changed = sorted(k for k, v in want.items() if have.get(k) != v)
+    if changed:
+        api.post(path, {**have, **want})
+        log(f"gelato settings: {changed}")
+
+    # Its folders go into the libraries next to the real files, so its titles show up there. The scan
+    # registers them; Gelato imports nothing into a folder Jellyfin doesn't know yet.
+    folders = {f["Name"]: f for f in api.get("/Library/VirtualFolders")}
+    for name, folder in ((cfg["jellyfin"]["libraries"][0]["name"], c["moviePath"]), (cfg["jellyfin"]["libraries"][1]["name"], c["seriesPath"])):
+        if folder not in folders[name]["Locations"]:
+            api.post("/Library/VirtualFolders/Paths?refreshLibrary=true", {"Name": name, "PathInfo": {"Path": folder}})
+            log(f"library {name}: added {folder}")
 
 
 # ------------------------------------------------------------------------------------ decypharr
@@ -272,11 +370,10 @@ def arr_setup(name, key, jf_key):
         api.post("/rootfolder", {"path": c["rootFolder"]})
         log(f"root folder {c['rootFolder']}")
 
-    # Decypharr, added as qBittorrent. It replaced rdt-client, so that client is taken over rather
-    # than left behind for grabs to go to.
+    # Decypharr, added as qBittorrent.
     d = cfg["decypharr"]
     clients = api.get("/downloadclient")
-    client = next((x for x in clients if x["implementation"] == "QBittorrent" and (field(x, "port") == d["port"] or x["name"] == "rdt-client")), None)
+    client = next((x for x in clients if x["implementation"] == "QBittorrent" and field(x, "port") == d["port"]), None)
     new = client is None
     if new:
         client = from_schema(api, "downloadclient", "QBittorrent")
@@ -295,6 +392,11 @@ def arr_setup(name, key, jf_key):
     elif changed:
         api.put(f"/downloadclient/{client['id']}?forceSave=true", client)
         log("download client Decypharr updated")
+    # Any other qBittorrent client is rdt-client's, which Decypharr replaced; grabs sent there fail.
+    for x in clients:
+        if x["implementation"] == "QBittorrent" and field(x, "port") != d["port"]:
+            api.call("DELETE", f"/downloadclient/{x['id']}")
+            log(f"removed download client {x['name']}")
 
     # Nordic releases usually carry Norwegian subtitles in the file; scored in arr_profile.
     formats = api.get("/customformat")
@@ -587,6 +689,11 @@ def main():
     k = keys()
     jf_key = step("jellyfin", jellyfin, cfg["jellyfin"])
     step("decypharr", decypharr, k)
+    manifest = step("aiostreams", aiostreams, cfg["aiostreams"])
+    if jf_key and manifest:
+        step("gelato", gelato, cfg["gelato"], jf_key, manifest)
+    else:
+        failed.append("gelato (waits for Jellyfin and AIOStreams)")
     for name in ("sonarr", "radarr"):
         step(f"{name}: clients and folders", arr_setup, name, k[name], jf_key)
     # TRaSH quality profiles and custom formats (recyclarr.nix); the profiles must exist below.

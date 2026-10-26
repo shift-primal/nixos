@@ -5,5 +5,6 @@ final: prev: {
     cutover = final.callPackage ./cutover.nix { };
     decypharr = final.callPackage ./decypharr.nix { };
     grok-cli = final.callPackage ./grok.nix { };
+    jellyfin-plugin-gelato = final.callPackage ./gelato.nix { };
     oxfmt = final.callPackage ./oxfmt.nix { inherit (prev) oxfmt; };
 }
