@@ -39,6 +39,7 @@
                 railway
                 # `cloudflared tunnel route dns` for homelab hostnames (modules/server/cloudflared.nix).
                 cloudflared
+                cutover
                 stripe-cli
 
                 grok-cli
