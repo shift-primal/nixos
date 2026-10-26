@@ -215,7 +215,7 @@ vault_path = "/home/kasper/obsidian/vaults/Kasper"
 
 [plugin_settings."mindnbytes/nix-status"]
 flake_dir = "/home/kasper/nixos"
-nixos_configuration = "kash"
+nixos_configuration = "kash-desktop-nixos"
 use_themed_logos = true
 
 [plugins]
@@ -236,9 +236,11 @@ enabled = [
 [shell]
 font_family = "DejaVu Sans"
 
+    [shell.launcher]
+    app_grid = true
+
     [shell.screenshot]
     directory = "/home/kasper/Pictures/screenshots"
-    remember_last_region = true
 
     [[shell.session.actions]]
     action = "lock"
