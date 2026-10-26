@@ -5,10 +5,11 @@ let
 in
 {
     # media-configure: sets up everything the apps keep in their own databases, which Nix can't
-    # write directly: Jellyfin's libraries and users, Decypharr's Real-Debrid key and mount, the links
-    # between the apps, Prowlarr's indexers, Bazarr's languages and Seerr's defaults. _configure.py talks to
-    # each app's API, changes only what differs from the config below, and never deletes. It runs at
-    # boot and whenever this config changes; a failed step retries.
+    # write directly: Jellyfin's libraries and users, Decypharr's Real-Debrid key and mount, the
+    # AIOStreams user and Gelato's settings, the links between the apps, Prowlarr's indexers, Bazarr's
+    # languages and Seerr's defaults. _configure.py talks to each app's API, changes only what differs
+    # from the config below, and deletes only what it replaced. It runs at boot and whenever this
+    # config changes; a failed step retries.
     flake.modules.nixos.media =
         {
             config,
@@ -22,6 +23,8 @@ in
                 keysDir
                 profiles
                 decypharr
+                aiostreams
+                gelato
                 ;
             secret = name: config.sops.secrets."media/${name}".path;
             port = app: config.services.${app}.settings.server.port;
@@ -79,6 +82,8 @@ in
                         EnableChapterImageExtraction = false;
                         ExtractChapterImagesDuringLibraryScan = false;
                     };
+                    # Screen Grabber would read the whole file for a thumbnail, as above.
+                    disabledFetchers = [ "Screen Grabber" ];
                     # Original audio (the file's default track) with Norwegian subtitles from Bazarr, or
                     # English when there are none.
                     playback = {
@@ -120,6 +125,30 @@ in
                         # release at all. One that Real-Debrid gives up on fails, and Decypharr's queue
                         # cleanup (on by default) has Sonarr/Radarr blocklist it and take the next.
                         download_uncached = true;
+                    };
+                };
+
+                # The addon setup Gelato streams from (aiostreams.nix): Real-Debrid releases only,
+                # 1080p, original audio and Norwegian subtitles first.
+                aiostreams = {
+                    inherit (aiostreams) url;
+                    configFile = ./_aiostreams.json;
+                };
+
+                gelato = {
+                    inherit (gelato) pluginId moviePath seriesPath;
+                    # AIOStreams' catalogs (by id suffix) that fill the home screen.
+                    catalogs = [
+                        ".tmdb.top"
+                        ".tmdb.trending"
+                    ];
+                    settings = {
+                        # A series' missing seasons and episodes show up next to the ones on disk.
+                        ExtendLocalSeriesTrees = true;
+                        # Search results stay out of the libraries until someone plays them.
+                        HideUnplayedSearchTitles = true;
+                        # Sends what we play to a public database.
+                        RemuxDbContribute = false;
                     };
                 };
 
@@ -195,6 +224,7 @@ in
             apps = [
                 "jellyfin.service"
                 "decypharr.service"
+                "docker-aiostreams.service"
                 "sonarr.service"
                 "radarr.service"
                 "prowlarr.service"

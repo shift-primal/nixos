@@ -17,7 +17,7 @@ _:
             services =
                 lib.genAttrs arr (_: {
                     enable = true;
-                    # Writes into the libraries and hardlinks from downloads/ (library.nix).
+                    # Moves Decypharr's symlinks from downloads/ into the libraries (library.nix).
                     group = "media";
                 })
                 // {

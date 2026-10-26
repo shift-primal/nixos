@@ -5,9 +5,8 @@ let
 in
 {
     # Folders and permissions the whole media stack shares: Jellyfin reads the libraries, Decypharr
-    # puts symlinks into its mount in downloads/, Sonarr and Radarr move or hardlink finished
-    # downloads into the libraries. Hardlinks only work within one filesystem, so downloads and
-    # libraries live under the same root.
+    # puts symlinks into its mount in downloads/, Sonarr and Radarr move them into the libraries.
+    # Files copied in by hand go straight into the libraries.
     flake.modules.nixos.media =
         { config, lib, ... }:
         let
