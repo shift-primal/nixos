@@ -119,20 +119,29 @@ def deduplicate():
                 log(f"deleted the Gelato copy of {item['Name']}")
 
 
-with sqlite3.connect(f"file:{cfg['jellyfin']['db']}?mode=ro", uri=True) as con:
-    row = con.execute("SELECT AccessToken FROM ApiKeys WHERE Name = 'media-configure'").fetchone()
-if not row:
-    sys.exit("no Jellyfin API key yet; media-configure makes it")
-jf_headers = {"Authorization": f'MediaBrowser Token="{row[0]}"'}
-admin = next(u["Id"] for u in jellyfin("GET", "/Users") if u["Policy"]["IsAdministrator"])
-with open(os.path.join(cfg["seerr"]["configDir"], "settings.json")) as f:
-    seerr_headers = {"X-Api-Key": json.load(f)["main"]["apiKey"]}
+def main():
+    global jf_headers, admin, seerr_headers
+    with sqlite3.connect(f"file:{cfg['jellyfin']['db']}?mode=ro", uri=True) as con:
+        row = con.execute("SELECT AccessToken FROM ApiKeys WHERE Name = 'media-configure'").fetchone()
+    if not row:
+        sys.exit("no Jellyfin API key yet; media-configure makes it")
+    jf_headers = {"Authorization": f'MediaBrowser Token="{row[0]}"'}
+    admin = next(u["Id"] for u in jellyfin("GET", "/Users") if u["Policy"]["IsAdministrator"])
+    with open(os.path.join(cfg["seerr"]["configDir"], "settings.json")) as f:
+        seerr_headers = {"X-Api-Key": json.load(f)["main"]["apiKey"]}
 
-state_file = cfg["stateFile"]
-state = json.load(open(state_file)) if os.path.exists(state_file) else {}
+    state_file = cfg["stateFile"]
+    state = json.load(open(state_file)) if os.path.exists(state_file) else {}
+    try:
+        promote(state)
+    finally:
+        with open(state_file, "w") as f:
+            json.dump(state, f)
+    deduplicate()
+
+
 try:
-    promote(state)
-finally:
-    with open(state_file, "w") as f:
-        json.dump(state, f)
-deduplicate()
+    main()
+except OSError as e:
+    # Jellyfin or Seerr restarting (a switch, a plugin update): the next run, in two minutes, catches up.
+    log(f"Jellyfin or Seerr not answering ({e}); trying again next run")
