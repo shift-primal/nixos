@@ -43,14 +43,14 @@ paths containing `/_` are skipped, which keeps `_hardware-configuration.nix` out
 Files add to _aspects_ (`flake.modules.nixos.<aspect>` and
 `flake.modules.homeManager.<aspect>`), and several files can feed the same
 aspect. The aspects are `base` (every host), `workstation` (GUI machines), `dev`,
-`komodo`, `caddy`, `cloudflared` and one per host. Each NixOS aspect pulls in its Home Manager
+`komodo`, `caddy`, `cloudflared`, `backup` and one per host. Each NixOS aspect pulls in its Home Manager
 side, so a host only lists NixOS aspects:
 
 | Host                 | Aspects                          |
 | -------------------- | -------------------------------- |
 | `kash-desktop` | `base`, `workstation`, `dev`     |
 | `kash-laptop`  | `base`, `workstation`, `dev`     |
-| `kash-homelab` | `base`, `komodo`, `caddy`, `cloudflared` |
+| `kash-homelab` | `base`, `komodo`, `caddy`, `cloudflared`, `backup` |
 
 Shared values (user, paths, locale, keyboard, cursor, default apps, SSH keys)
 live once in `modules/flake/vars.nix` as `config.vars`. Per-machine values
@@ -63,7 +63,7 @@ modules/flake/    flake-parts setup and the shared values (vars.nix)
 modules/base/     every host: nix, locale, users, ssh, shell, CLI tools, Home Manager
 modules/workstation/  GUI machines: Hyprland, greeter, audio, apps, theming
 modules/dev/      languages, Docker, Wireshark
-modules/server/   one aspect per service (komodo, caddy, cloudflared), each with its vhost and secrets
+modules/server/   one aspect per service (komodo, caddy, cloudflared, backup), each with its vhost and secrets
 modules/secrets/  sops-nix
 modules/hosts/    one folder per machine: aspect list, hardware, bootloader, GPU
 pkgs/             packages that are not in nixpkgs
@@ -181,6 +181,29 @@ derived from their SSH host key, so there is no key file to copy.
   it ends with `sops:` metadata.
 
 `sops`, `age` and `ssh-to-age` are installed on every host.
+
+## Backups (homelab)
+
+`modules/server/backup.nix` runs restic every night around 03:00 to a private R2
+bucket. It copies `/var/lib/docker/volumes`, the paths features add to
+`homelab.backup.paths` (Komodo's keys and data), and database dumps taken just
+before: Komodo's MongoDB, plus every container labelled `homelab.backup=postgres`
+(`pg_dumpall`). It keeps 7 daily, 5 weekly and 12 monthly snapshots, and checks
+2% of the stored data after each run. Projects whose database is on Neon back up
+on their own; nothing of theirs is on the box.
+
+The repository password (`restic/password` in sops) is also in Bitwarden.
+Without it no snapshot can be read.
+
+```sh
+sudo systemctl start restic-backups-offsite   # run now
+journalctl -u restic-backups-offsite -n 50    # last run
+sudo restic-offsite snapshots                 # what's stored
+sudo restic-offsite restore latest --target /tmp/restore --include /var/lib/komodo-core
+```
+
+To restore Komodo's database, stop `docker-komodo-core`, then
+`docker exec -i komodo-mongo sh -c 'mongorestore --drop --archive --gzip -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin' < komodo-mongo.archive.gz`.
 
 ## What lives outside the repo
 
