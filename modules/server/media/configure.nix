@@ -117,7 +117,7 @@ in
                         name = "realdebrid";
                         # A release Real-Debrid already has plays at once; any other is fetched by
                         # Real-Debrid first (usually minutes). Cached-only left older films with no
-                        # release at all. One Real-Debrid gives up on fails, and Decypharr's queue
+                        # release at all. One that Real-Debrid gives up on fails, and Decypharr's queue
                         # cleanup (on by default) has Sonarr/Radarr blocklist it and take the next.
                         download_uncached = true;
                     };
