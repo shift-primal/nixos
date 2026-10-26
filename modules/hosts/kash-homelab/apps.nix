@@ -11,15 +11,6 @@ _:
             repo = "shift-primal/pdex_26";
         };
 
-        quiz = {
-            domain = "quiz.haugestol.com";
-            port = 3002;
-            repo = "shift-primal/bfq";
-            secrets = [ "DATABASE_URL" ];
-            # The real questions are gitignored so the answers stay out of the public repo.
-            buildFiles."src/config/questions.data.ts" = "questions";
-        };
-
         spot = {
             domain = "spot.haugestol.com";
             port = 3003;
@@ -97,6 +88,7 @@ _:
                                 environment.DATABASE_URL = databaseUrl;
                             };
                             # Only one bot may be logged in to Discord: stop the old one before deploying.
+                            # No YOUTUBE_PROXY: on a home connection the bot streams YouTube directly.
                             bot = {
                                 image = "ghcr.io/shift-primal/klyndre-bot:latest";
                                 restart = "unless-stopped";
@@ -108,7 +100,6 @@ _:
                                     XAI_API_KEY = "\${XAI_API_KEY}";
                                     DP_SPOTIFY_CLIENT_ID = "\${DP_SPOTIFY_CLIENT_ID}";
                                     DP_SPOTIFY_CLIENT_SECRET = "\${DP_SPOTIFY_CLIENT_SECRET}";
-                                    YOUTUBE_PROXY = "\${YOUTUBE_PROXY}";
                                 };
                             };
                             web = {
@@ -133,7 +124,6 @@ _:
                 "XAI_API_KEY"
                 "DP_SPOTIFY_CLIENT_ID"
                 "DP_SPOTIFY_CLIENT_SECRET"
-                "YOUTUBE_PROXY"
             ];
         };
     };

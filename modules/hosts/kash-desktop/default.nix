@@ -10,7 +10,7 @@ in
         modules = [ nixos.${hostname} ];
     };
 
-    # The other files in this folder (boot, NVIDIA, tinyproxy) add to this module too.
+    # The other files in this folder (boot, NVIDIA) add to this module too.
     flake.modules.nixos.${hostname} = {
         imports = [
             nixos.base
