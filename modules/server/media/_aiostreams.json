@@ -74,6 +74,25 @@
         "removeTrash": true,
         "mediaTypes": []
       }
+    },
+    {
+      "type": "opensubtitles-v3-plus",
+      "instanceId": "0b5",
+      "enabled": true,
+      "options": {
+        "name": "OpenSubtitles",
+        "timeout": 6000,
+        "resources": [
+          "subtitles"
+        ],
+        "language": [
+          "no",
+          "en"
+        ],
+        "sources": "all",
+        "includeAiTranslated": true,
+        "movieHashPlusAutoAdjustment": false
+      }
     }
   ],
   "formatter": {
@@ -131,11 +150,11 @@
         "direction": "desc"
       },
       {
-        "key": "resolution",
+        "key": "subtitle",
         "direction": "desc"
       },
       {
-        "key": "subtitle",
+        "key": "resolution",
         "direction": "desc"
       },
       {

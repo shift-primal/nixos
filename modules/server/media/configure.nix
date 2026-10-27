@@ -81,6 +81,16 @@ in
                         ExtractTrickplayImagesDuringLibraryScan = false;
                         EnableChapterImageExtraction = false;
                         ExtractChapterImagesDuringLibraryScan = false;
+                        # A Gelato stream gets Norwegian (else English) subtitles from OpenSubtitles
+                        # through AIOStreams (_aiostreams.json) as soon as it plays. Not always in sync;
+                        # the real copy gets synced ones from Bazarr. Kept in Jellyfin's own folder, so
+                        # Bazarr doesn't take one for its own and skip the synced download.
+                        SubtitleDownloadLanguages = [
+                            "nob"
+                            "eng"
+                        ];
+                        SubtitleFetcherOrder = [ "Gelato Subtitles" ];
+                        SaveSubtitlesWithMedia = false;
                     };
                     # Screen Grabber would read the whole file for a thumbnail, as above.
                     disabledFetchers = [ "Screen Grabber" ];
