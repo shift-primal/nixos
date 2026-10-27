@@ -9,6 +9,8 @@
 stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "jellyfin-plugin-gelato";
     version = "0.26.29.0";
+    # Its folder name in Jellyfin's plugin folder, before the version (jellyfin.nix).
+    passthru.pluginName = "Gelato";
 
     src = fetchzip {
         url = "https://github.com/lostb1t/Gelato/releases/download/v${finalAttrs.version}/gelato_${finalAttrs.version}.zip";

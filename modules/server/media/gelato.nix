@@ -14,7 +14,6 @@ _:
             ...
         }:
         let
-            plugin = pkgs.jellyfin-plugin-gelato;
             inherit (config.services.jellyfin) dataDir;
             folders = "${dataDir}/gelato";
         in
@@ -31,17 +30,7 @@ _:
             };
 
             config = {
-                # Jellyfin writes the plugin's state into its folder, so it gets a copy rather than
-                # a link into the store. A new version replaces the old folder.
-                systemd.services.jellyfin.preStart = lib.mkBefore ''
-                    plugin=${dataDir}/plugins/Gelato_${plugin.version}
-                    if [ ! -e "$plugin/Gelato.dll" ]; then
-                        rm -rf ${dataDir}/plugins/Gelato_*
-                        mkdir -p ${dataDir}/plugins
-                        cp -r ${plugin} "$plugin"
-                        chmod -R u+w "$plugin"
-                    fi
-                '';
+                homelab.media.jellyfinPlugins = [ pkgs.jellyfin-plugin-gelato ];
 
                 systemd.tmpfiles.settings.gelato =
                     lib.genAttrs [ folders "${folders}/movies" "${folders}/series" ]
