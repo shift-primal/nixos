@@ -74,6 +74,17 @@ _:
                     extraConfig = "reverse_proxy 127.0.0.1:${toString port}";
                 }
             ) names;
-            config.networking.firewall.allowedTCPPorts = [ 80 ];
+            # Safari on iOS tries https:// first when you type a bare name and only falls back to
+            # http:// once that fails. The firewall drops packets by default, so the attempt would
+            # hang until it times out; a TCP reset on 443 makes the fallback instant. Nothing
+            # listens on 443 here: Caddy binds to localhost for the tunnel (caddy.nix). The chain is rebuilt
+            # on every firewall reload, so the rule needs no cleanup.
+            config.networking.firewall = {
+                allowedTCPPorts = [ 80 ];
+                extraCommands = ''
+                    iptables -w -I nixos-fw -p tcp --dport 443 -j REJECT --reject-with tcp-reset
+                    ip6tables -w -I nixos-fw -p tcp --dport 443 -j REJECT --reject-with tcp-reset
+                '';
+            };
         };
 }
