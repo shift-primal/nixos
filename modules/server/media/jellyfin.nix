@@ -6,7 +6,12 @@ _:
     # http://<hostname>:8096.
     # The GPU side (VA-API, codecs) is per machine: modules/hosts/kash-homelab/intel.nix.
     flake.modules.nixos.media =
-        { config, lib, ... }:
+        {
+            config,
+            lib,
+            pkgs,
+            ...
+        }:
         let
             inherit (config.services.jellyfin) dataDir;
         in
@@ -19,6 +24,13 @@ _:
 
             config = {
                 services.jellyfin.enable = true;
+                # Jellyfin picks a subtitle or audio track only when its language code equals the
+                # preference exactly (configure.nix sets "nor"), but releases tag Norwegian as nor, nob,
+                # nno, no or nb. The patch makes any of them match. Built from source, so it takes a
+                # while after a nixpkgs bump.
+                services.jellyfin.package = pkgs.jellyfin.overrideAttrs (prev: {
+                    patches = (prev.patches or [ ]) ++ [ ./_jellyfin-norwegian.patch ];
+                });
                 users.users.jellyfin.extraGroups = [ "media" ];
 
                 # Open on every interface, so the TVs at home need no Tailscale. The router forwards no
