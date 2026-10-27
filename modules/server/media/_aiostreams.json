@@ -146,7 +146,7 @@
         "direction": "desc"
       },
       {
-        "key": "language",
+        "key": "streamExpressionScore",
         "direction": "desc"
       },
       {
@@ -359,5 +359,22 @@
   "preferredSubtitles": [
     "Norwegian",
     "English"
+  ],
+  "rankedStreamExpressions": [
+    {
+      "expression": "/* Original audio */ language(streams, 'Original')",
+      "score": 100,
+      "enabled": true
+    },
+    {
+      "expression": "/* Untagged English release */ originalLanguage == 'English' ? language(streams, 'Unknown') : slice(streams, 0, 0)",
+      "score": 70,
+      "enabled": true
+    },
+    {
+      "expression": "/* Extra dub, may be the default track */ language(streams, 'Italian', 'French', 'German', 'Spanish', 'Latino', 'Portuguese', 'Russian', 'Ukrainian', 'Polish', 'Czech', 'Hungarian', 'Turkish', 'Hindi', 'Tamil', 'Telugu', 'Arabic', 'Multi', 'Dual Audio', 'Dubbed')",
+      "score": -60,
+      "enabled": true
+    }
   ]
 }
