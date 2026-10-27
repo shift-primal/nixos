@@ -86,7 +86,7 @@ in
                         # the real copy gets synced ones from Bazarr. Kept in Jellyfin's own folder, so
                         # Bazarr doesn't take one for its own and skip the synced download.
                         SubtitleDownloadLanguages = [
-                            "nob"
+                            "nor"
                             "eng"
                         ];
                         SubtitleFetcherOrder = [ "Gelato Subtitles" ];
@@ -95,9 +95,11 @@ in
                     # Screen Grabber would read the whole file for a thumbnail, as above.
                     disabledFetchers = [ "Screen Grabber" ];
                     # Original audio (the file's default track) with Norwegian subtitles from Bazarr, or
-                    # English when there are none.
+                    # English when there are none. "nor", not Bokmål's "nob": it is what release tracks,
+                    # OpenSubtitles and Bazarr's "no" files are tagged with, and Jellyfin matches the
+                    # code exactly.
                     playback = {
-                        SubtitleLanguagePreference = "nob";
+                        SubtitleLanguagePreference = "nor";
                         SubtitleMode = "Always";
                         PlayDefaultAudioTrack = true;
                     };
@@ -199,9 +201,11 @@ in
                     url = url config.services.bazarr.settings.general.port;
                     configFile = "${config.services.bazarr.dataDir}/config/config.yaml";
                     profileName = "Norsk";
-                    # English too, for when no Norwegian subtitle exists.
+                    # English too, for when no Norwegian subtitle exists. Norwegian as "no": providers
+                    # tag Norwegian subtitles that way, not as Bokmål ("nb"), and Jellyfin's preference
+                    # above has to match the file's code.
                     languages = [
-                        "nb"
+                        "no"
                         "en"
                     ];
                     # OpenSubtitles has the most Norwegian subtitles; embedded ones are already in
