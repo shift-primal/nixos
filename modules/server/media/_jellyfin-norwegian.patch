@@ -1,0 +1,21 @@
+--- a/Emby.Server.Implementations/Library/MediaSourceManager.cs
++++ b/Emby.Server.Implementations/Library/MediaSourceManager.cs
+@@ -482,12 +482,13 @@
+             }
+ 
+             var culture = _localizationManager.FindLanguageInfo(language);
+-            if (culture is not null)
+-            {
+-                return culture.Name.Contains('-', StringComparison.OrdinalIgnoreCase) ? [culture.Name] : culture.ThreeLetterISOLanguageNames;
+-            }
++            IReadOnlyList<string> names = culture is null
++                ? [language]
++                : culture.Name.Contains('-', StringComparison.OrdinalIgnoreCase) ? [culture.Name] : culture.ThreeLetterISOLanguageNames;
+ 
+-            return [language];
++            // Norwegian is tagged nor, nob, nno, no, nb or nn depending on the release, so any of them matches all.
++            string[] norwegian = ["nor", "nob", "nno", "no", "nb", "nn", "norwegian"];
++            return names.Any(n => norwegian.Contains(n, StringComparer.OrdinalIgnoreCase)) ? norwegian : names;
+         }
+ 
+         private void SetDefaultSubtitleStreamIndex(MediaSourceInfo source, UserItemData userData, User user, bool allowRememberingSelection)
