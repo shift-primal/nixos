@@ -320,6 +320,22 @@ def gelato(c, jf_key, manifest):
         if folder not in folders[name]["Locations"]:
             api.post("/Library/VirtualFolders/Paths?refreshLibrary=true", {"Name": name, "PathInfo": {"Path": folder}})
             log(f"library {name}: added {folder}")
+            changed.append(name)
+
+    # Gelato's catalog import has no schedule of its own: it runs every few hours, and at once when
+    # its setup changed, after the scan above has registered the folders.
+    tasks = {t["Key"]: t for t in api.get("/ScheduledTasks")}
+    task = tasks["GelatoCatalogItemsSync"]
+    triggers = [{"Type": "StartupTrigger"}, {"Type": "IntervalTrigger", "IntervalTicks": c["importHours"] * 3600 * 10**7}]
+    if [{k: t.get(k) for k in x} for t, x in zip(task["Triggers"], triggers)] != triggers or len(task["Triggers"]) != len(triggers):
+        api.post(f"/ScheduledTasks/{task['Id']}/Triggers", triggers)
+        log(f"gelato catalog import every {c['importHours']} hours")
+    if changed:
+        end = time.time() + 600
+        while time.time() < end and api.get(f"/ScheduledTasks/{tasks['RefreshLibrary']['Id']}")["State"] != "Idle":
+            time.sleep(5)
+        api.post(f"/ScheduledTasks/Running/{task['Id']}")
+        log("gelato catalog import started")
 
 
 # ------------------------------------------------------------------------------------ decypharr
