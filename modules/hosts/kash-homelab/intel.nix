@@ -1,7 +1,8 @@
 _:
 
 {
-    # HD 530 (Skylake, Gen9) for Jellyfin transcoding (modules/server/media/jellyfin.nix). VA-API rather
+    # HD 530 (Skylake, Gen9) for Jellyfin and Immich transcoding (modules/server/media/jellyfin.nix,
+    # modules/server/immich.nix). VA-API rather
     # than QSV: QSV on Gen9 needs intel-media-sdk, which is end of life and marked insecure in nixpkgs.
     flake.modules.nixos.kash-homelab =
         { pkgs, ... }:
@@ -39,5 +40,20 @@ _:
                     hardwareEncodingCodecs.hevc = true;
                 };
             };
+
+            # Immich transcodes phone videos (HEVC, often 10-bit) to H.264 for playback in the browser.
+            # The module hides /dev from Immich unless a device is listed here.
+            services.immich = {
+                accelerationDevices = [ "/dev/dri/renderD128" ];
+                environment.LIBVA_DRIVER_NAME = "iHD";
+                settings.ffmpeg = {
+                    accel = "vaapi";
+                    accelDecode = true;
+                };
+            };
+            users.users.immich.extraGroups = [
+                "video"
+                "render"
+            ];
         };
 }

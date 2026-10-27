@@ -23,6 +23,7 @@ in
             nixos.backup
             nixos.monitoring
             nixos.media
+            nixos.immich
             ./_hardware-configuration.nix
         ];
 
