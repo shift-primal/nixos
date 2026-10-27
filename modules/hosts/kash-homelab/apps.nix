@@ -134,9 +134,9 @@ _:
 
         # The homelab's own dashboard. Home LAN and tailnet only: hub.local, or http://kash-homelab
         # over Tailscale. API keys for the apps it reads go in `secrets`, so they stay server-side.
-        hub = {
+        homehub = {
             port = 3009;
-            repo = "shift-primal/hub";
+            repo = "shift-primal/homehub";
             localNames = [ "hub.local" ];
             frontPage = true;
             hostAccess = true;
