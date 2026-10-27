@@ -42,7 +42,7 @@
     {
       "type": "mediafusion",
       "instanceId": "327",
-      "enabled": true,
+      "enabled": false,
       "options": {
         "name": "MediaFusion",
         "timeout": 6000,
