@@ -1,21 +1,45 @@
 --- a/Emby.Server.Implementations/Library/MediaSourceManager.cs
 +++ b/Emby.Server.Implementations/Library/MediaSourceManager.cs
-@@ -482,12 +482,13 @@
+@@ -481,13 +481,23 @@
+                 return [];
              }
  
-             var culture = _localizationManager.FindLanguageInfo(language);
+-            var culture = _localizationManager.FindLanguageInfo(language);
 -            if (culture is not null)
--            {
++            // A list such as "nor,eng" is a fallback order: the first language with a track wins.
++            if (language.Contains(',', StringComparison.Ordinal))
+             {
 -                return culture.Name.Contains('-', StringComparison.OrdinalIgnoreCase) ? [culture.Name] : culture.ThreeLetterISOLanguageNames;
--            }
++                return language.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
++                    .SelectMany(NormalizeLanguage)
++                    .Distinct(StringComparer.OrdinalIgnoreCase)
++                    .ToList();
+             }
+ 
+-            return [language];
++            var culture = _localizationManager.FindLanguageInfo(language);
 +            IReadOnlyList<string> names = culture is null
 +                ? [language]
 +                : culture.Name.Contains('-', StringComparison.OrdinalIgnoreCase) ? [culture.Name] : culture.ThreeLetterISOLanguageNames;
- 
--            return [language];
++
 +            // Norwegian is tagged nor, nob, nno, no, nb or nn depending on the release, so any of them matches all.
 +            string[] norwegian = ["nor", "nob", "nno", "no", "nb", "nn", "norwegian"];
 +            return names.Any(n => norwegian.Contains(n, StringComparer.OrdinalIgnoreCase)) ? norwegian : names;
          }
  
          private void SetDefaultSubtitleStreamIndex(MediaSourceInfo source, UserItemData userData, User user, bool allowRememberingSelection)
+--- a/Emby.Server.Implementations/Library/MediaStreamSelector.cs
++++ b/Emby.Server.Implementations/Library/MediaStreamSelector.cs
+@@ -74,7 +74,11 @@
+             else if (mode == SubtitlePlaybackMode.Always)
+             {
+                 // Always load (full/non-forced) subtitles of the user's preferred subtitle language if possible, otherwise OnlyForced behaviour.
+-                stream = sortedStreams.FirstOrDefault(x => !x.IsForced && MatchesPreferredLanguage(x.Language, preferredLanguages)) ??
++                // Earlier languages in the list win over later ones (the fallbacks), whatever the track order.
++                stream = sortedStreams
++                    .Where(x => !x.IsForced && MatchesPreferredLanguage(x.Language, preferredLanguages))
++                    .OrderBy(x => preferredLanguages.FindIndex(l => string.Equals(l, x.Language, StringComparison.OrdinalIgnoreCase)))
++                    .FirstOrDefault() ??
+                     BehaviorOnlyForced(sortedStreams, preferredLanguages).FirstOrDefault();
+             }
+             else if (mode == SubtitlePlaybackMode.OnlyForced)
