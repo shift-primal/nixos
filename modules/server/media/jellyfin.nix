@@ -25,9 +25,10 @@ _:
             config = {
                 services.jellyfin.enable = true;
                 # Jellyfin picks a subtitle or audio track only when its language code equals the
-                # preference exactly (configure.nix sets "nor"), but releases tag Norwegian as nor, nob,
-                # nno, no or nb. The patch makes any of them match. Built from source, so it takes a
-                # while after a nixpkgs bump.
+                # preference exactly, but releases tag Norwegian as nor, nob, nno, no or nb; the patch
+                # makes any of them match. It also takes a fallback list ("nor,eng" in configure.nix),
+                # which Jellyfin's single preference can't. Built from source, so it takes a while
+                # after a nixpkgs bump.
                 services.jellyfin.package = pkgs.jellyfin.overrideAttrs (prev: {
                     patches = (prev.patches or [ ]) ++ [ ./_jellyfin-norwegian.patch ];
                 });

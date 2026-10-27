@@ -94,14 +94,18 @@ in
                     };
                     # Screen Grabber would read the whole file for a thumbnail, as above.
                     disabledFetchers = [ "Screen Grabber" ];
-                    # Original audio (the file's default track) with Norwegian subtitles from Bazarr, or
-                    # English when there are none. "nor", not Bokmål's "nob": it is what release tracks,
-                    # OpenSubtitles and Bazarr's "no" files are tagged with, and Jellyfin matches the
-                    # code exactly.
+                    # Audio in the title's original language, whatever track the release marks as
+                    # default. Norwegian subtitles, else English: a comma list is a fallback order, and
+                    # any Norwegian tag matches (both through _jellyfin-norwegian.patch). Jellyfin's own
+                    # settings page can't show the list, so saving it there drops the fallback until
+                    # media-configure runs again. A per-title choice isn't remembered, so a first play
+                    # that started without subtitles (they arrive seconds later) doesn't stick at Off.
                     playback = {
-                        SubtitleLanguagePreference = "nor";
+                        AudioLanguagePreference = "OriginalLanguage";
+                        PlayDefaultAudioTrack = false;
+                        SubtitleLanguagePreference = "nor,eng";
                         SubtitleMode = "Always";
-                        PlayDefaultAudioTrack = true;
+                        RememberSubtitleSelections = false;
                     };
                 };
 
@@ -196,6 +200,9 @@ in
                         "YTS".flaresolverr = false;
                         "EZTV".flaresolverr = false;
                         "Knaben".flaresolverr = false;
+                        "kickasstorrents.to".flaresolverr = false;
+                        "LimeTorrents".flaresolverr = false;
+                        "Torrent Downloads".flaresolverr = false;
                     };
                 };
 
