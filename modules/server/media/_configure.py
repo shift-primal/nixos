@@ -504,24 +504,34 @@ def prowlarr(k):
         api.post("/applications?forceSave=true", a)
         log(f"added app {impl}")
 
+    def named(item, name):
+        return name.lower() in (item["definitionName"].lower(), item["name"].lower())
+
     indexers = api.get("/indexer")
+    # The list is the whole set: one taken out of it goes from Prowlarr, and with it from Sonarr and Radarr.
+    for i in indexers:
+        if not any(named(i, name) for name in c["indexers"]):
+            api.call("DELETE", f"/indexer/{i['id']}")
+            log(f"removed indexer {i['name']}")
     schema = None
     errors = []
     for want_name, opts in c["indexers"].items():
         want_tags = [tag] if opts["flaresolverr"] else []
-        have = next((i for i in indexers if want_name.lower() in (i["definitionName"].lower(), i["name"].lower())), None)
+        priority = opts.get("priority", 25)  # Prowlarr's default
+        have = next((i for i in indexers if named(i, want_name)), None)
         if have:
-            if want_tags and tag not in have["tags"]:
-                have["tags"].append(tag)
+            tags = [t for t in have["tags"] if t != tag] + want_tags
+            if sorted(tags) != sorted(have["tags"]) or have["priority"] != priority:
+                have.update(tags=tags, priority=priority)
                 api.put(f"/indexer/{have['id']}?forceSave=true", have)
-                log(f"tagged {have['name']} flaresolverr")
+                log(f"indexer {have['name']}: flaresolverr {opts['flaresolverr']}, priority {priority}")
             continue
         schema = schema or api.get("/indexer/schema")
-        s = next((s for s in schema if want_name.lower() in (s["definitionName"].lower(), s["name"].lower())), None)
+        s = next((s for s in schema if named(s, want_name)), None)
         if s is None:
             log(f"indexer {want_name}: not in Prowlarr's list, skipped")
             continue
-        s.update(enable=True, appProfileId=1, tags=want_tags)
+        s.update(enable=True, appProfileId=1, tags=want_tags, priority=priority)
         try:
             # Prowlarr tests the site first; one that is down must not block the rest.
             api.post("/indexer?forceSave=true", s)

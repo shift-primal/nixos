@@ -187,7 +187,9 @@ in
                     url = url (port "prowlarr");
                     configFile = "/var/lib/private/prowlarr/config.xml";
                     flaresolverr = "http://127.0.0.1:${toString config.services.flaresolverr.port}/";
-                    # Prowlarr's names (Indexers > Add). Behind Cloudflare: flaresolverr = true.
+                    # Prowlarr's names (Indexers > Add); the list is the whole set, so one taken out
+                    # is removed. Behind Cloudflare: flaresolverr = true. priority 1-50, lower is
+                    # preferred when Sonarr and Radarr pick between equal releases; 25 if left out.
                     indexers = {
                         "1337x".flaresolverr = true;
                         "The Pirate Bay".flaresolverr = false;
