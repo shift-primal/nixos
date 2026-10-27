@@ -109,6 +109,8 @@ dotfiles/            live-edited configs
   `modules/server/komodo/apps.nix` turns it into a Komodo Stack (Resource Sync
   "homelab") and a Caddy vhost; move its domain onto the tunnel with `cutover <domain>`.
   Its secret env vars (`secrets`) come from sops keys `apps/<app>/<key>`.
+  A LAN/Tailscale-only app gets `localNames` (e.g. `hub.local`, announced over mDNS by
+  `modules/server/local-names.nix`) instead of a `domain`.
 - Media stack setting that lives in an app's own database (Jellyfin libraries and users, indexers,
   Bazarr languages, Seerr defaults, the links between the apps): `modules/server/media/configure.nix`,
   applied through each app's API by `_configure.py` (the `media-configure` service). Quality
