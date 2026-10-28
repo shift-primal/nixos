@@ -55,7 +55,8 @@ in
         # Private repos only (public ones run free on GitHub). Token: sops key github-runner/<name>.
         homelab.githubRunners = {
             gront-lys.url = "https://github.com/shift-primal/gront-lys-app";
-            anteria.url = "https://github.com/anteria-as";
+            # Repo scope: the org permission for runners was not offered for the PAT.
+            anteria.url = "https://github.com/anteria-as/office-off";
         };
 
         # Release this machine was first installed with. Do not bump on upgrades.
