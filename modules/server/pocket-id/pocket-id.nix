@@ -130,6 +130,10 @@ _:
                         # Caddy (caddy.nix) passes on the visitor's address, for rate limits and the audit log.
                         TRUST_PROXY = true;
                         ANALYTICS_DISABLED = true;
+                        # Application settings come from here, not the admin UI, so they stay in Nix.
+                        UI_CONFIG_DISABLED = true;
+                        # pocket-id-provision creates users without one; on (the default), it fails.
+                        REQUIRE_USER_EMAIL = false;
                     };
                     credentials = {
                         ENCRYPTION_KEY = "${keysDir}/encryption-key";
