@@ -12,6 +12,7 @@ _:
                 "sonarr"
                 "radarr"
             ];
+            ports = map (name: config.services.${name}.settings.server.port) (arr ++ [ "prowlarr" ]);
         in
         {
             services =
@@ -39,9 +40,9 @@ _:
                     flaresolverr.environment.HOST = "127.0.0.1";
                 };
 
-            networking.firewall.interfaces.tailscale0.allowedTCPPorts = map (
-                name: config.services.${name}.settings.server.port
-            ) (arr ++ [ "prowlarr" ]);
+            networking.firewall.interfaces.tailscale0.allowedTCPPorts = ports;
+            # https://<host>.<tailnet>.ts.net:<port> (tailscale-https.nix).
+            homelab.tailscaleHttps = ports;
 
             # Series, movies, history, indexers and API keys. Prowlarr runs as a DynamicUser, so its
             # state is under /var/lib/private.

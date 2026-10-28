@@ -97,6 +97,8 @@ in
 
                 # Web UI; Sonarr and Radarr reach it on localhost.
                 networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ port ];
+                # https://<host>.<tailnet>.ts.net:8282 (tailscale-https.nix).
+                homelab.tailscaleHttps = [ port ];
 
                 # Settings, login and the torrent list; the media itself lives on Real-Debrid.
                 homelab.backup.paths = [ cfg.dataDir ];
