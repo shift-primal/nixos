@@ -46,8 +46,14 @@ in
                         restart = "unless-stopped";
                         inherit (app) environment;
                     }
-                    // lib.optionalAttrs app.hostAccess {
-                        extra_hosts = [ "host.docker.internal:host-gateway" ];
+                    // lib.optionalAttrs app.hostNetwork {
+                        network_mode = "host";
+                        # The app listens on its host port itself, on localhost only so the LAN can't
+                        # skip Caddy (with host networking the firewall would be the only guard).
+                        environment = app.environment // {
+                            HOST = "127.0.0.1";
+                            PORT = toString app.port;
+                        };
                     }
                     // lib.optionalAttrs (app.secrets != [ ]) {
                         env_file = [ config.sops.templates.${envFile name}.path ];
@@ -121,11 +127,11 @@ in
             # way in), on top of whatever the stack's own override adds.
             composeWithPort =
                 compose: app:
-                lib.recursiveUpdate {
+                lib.recursiveUpdate (lib.optionalAttrs (!app.hostNetwork) {
                     services.${compose.service}.ports = [
                         "127.0.0.1:${toString app.port}:${toString app.containerPort}"
                     ];
-                } compose.override;
+                }) compose.override;
             override =
                 name: compose: app:
                 (pkgs.formats.yaml { }).generate "${name}-override.yml" (composeWithPort compose app);
@@ -160,12 +166,13 @@ in
                                 default = false;
                                 description = "Also serve the app at http://<hostname>, the host's Tailscale MagicDNS name.";
                             };
-                            hostAccess = lib.mkOption {
+                            hostNetwork = lib.mkOption {
                                 type = lib.types.bool;
                                 default = false;
                                 description = ''
-                                    Let the container reach services on the host at host.docker.internal. Only
-                                    ports the firewall opens on every interface answer (e.g. Jellyfin's 8096).
+                                    Run the container on the host's network, so it reaches every service on
+                                    127.0.0.1 (the hub's status checks). The app must listen on $HOST:$PORT,
+                                    which are set to 127.0.0.1 and `port`. Not for `compose` apps.
                                 '';
                             };
                             port = lib.mkOption {
@@ -283,6 +290,10 @@ in
                     {
                         assertion = lib.all (app: app.compose != null || app.repo != null) (lib.attrValues allApps);
                         message = "homelab.apps: an app without `compose` needs a `repo` to build.";
+                    }
+                    {
+                        assertion = lib.all (app: app.hostNetwork -> app.compose == null) (lib.attrValues allApps);
+                        message = "homelab.apps: `hostNetwork` only applies to an app built from its Dockerfile.";
                     }
                     {
                         assertion = lib.all (app: app.domain != null || app.localNames != [ ] || app.frontPage) (

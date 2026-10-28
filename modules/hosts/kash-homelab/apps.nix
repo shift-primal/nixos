@@ -139,8 +139,9 @@ _:
             repo = "shift-primal/homehub";
             localNames = [ "hub.local" ];
             frontPage = true;
-            hostAccess = true;
-            environment.JELLYFIN_URL = "http://host.docker.internal:8096";
+            # Status checks hit every service on 127.0.0.1 (src/server/services.ts in homehub).
+            hostNetwork = true;
+            environment.APP_ENV = "prod";
         };
     };
 }
