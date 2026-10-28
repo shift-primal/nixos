@@ -120,10 +120,11 @@ in
                                     # Emptied, not recreated: dind holds a bind mount of this directory.
                                     find ${dir}/work -mindepth 1 -delete
                                 '';
-                                # An ephemeral runner exits 0 after its job; start the next one.
+                                # An ephemeral runner exits 0 after its job; start the next one. A
+                                # bad token also exits, so wait long enough not to hammer GitHub.
                                 serviceConfig = {
                                     Restart = lib.mkForce "always";
-                                    RestartSec = 5;
+                                    RestartSec = 30;
                                 };
                             };
                         }
