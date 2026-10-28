@@ -87,9 +87,6 @@ in
                                 };
                                 containers."gha-${name}" = {
                                     image = runnerImage;
-                                    # The runner updates itself when GitHub requires it; pulling on
-                                    # each start keeps a fresh container from redoing that every job.
-                                    pull = "newer";
                                     dependsOn = [ dind ];
                                     environment = {
                                         RUNNER_SCOPE = if isOrg then "org" else "repo";
@@ -140,10 +137,15 @@ in
                         (merge "systemd")
                         {
                             # dind keeps images (postgres, build cache) between jobs for speed; drop
-                            # what no job used in a week.
+                            # what no job used in a week. The runner updates itself when GitHub
+                            # requires it, so a fresh image saves every new container redoing that
+                            # (Docker's --pull has no "newer", and "always" would hit Hub every job).
                             services.gha-prune = lib.mkIf (cfg != { }) {
                                 description = "Prune the GitHub runners' Docker caches";
-                                script = lib.concatMapStrings (name: ''
+                                script = ''
+                                    ${docker} pull ${runnerImage} || true
+                                ''
+                                + lib.concatMapStrings (name: ''
                                     ${docker} exec gha-${name}-dind docker system prune -af --filter until=168h || true
                                     ${docker} exec gha-${name}-dind docker volume prune -f || true
                                 '') (lib.attrNames cfg);
