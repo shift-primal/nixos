@@ -26,6 +26,7 @@ in
             nixos.media
             nixos.pocket-id
             nixos.opencloud
+            nixos.github-runners
             ./_hardware-configuration.nix
         ];
 
@@ -47,6 +48,12 @@ in
         homelab.drive = {
             domain = "drive.haugestol.com";
             users.${vars.user.name} = "admin";
+        };
+
+        # Private repos only (public ones run free on GitHub). Token: sops key github-runner/<name>.
+        homelab.githubRunners = {
+            gront-lys.url = "https://github.com/shift-primal/gront-lys-app";
+            anteria.url = "https://github.com/anteria-as";
         };
 
         # Release this machine was first installed with. Do not bump on upgrades.
