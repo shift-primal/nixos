@@ -2,6 +2,8 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("noctalia")
 
 	hl.exec_cmd("bitwarden-desktop")
+	-- OpenCloud sync client, to the tray (modules/workstation/apps.nix)
+	hl.exec_cmd("opencloud")
 
 	hl.exec_cmd("wl-paste --type text --watch cliphist store")
 	hl.exec_cmd("wl-paste --type image --watch cliphist store")

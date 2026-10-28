@@ -6,8 +6,9 @@ let
     dataDir = "/var/lib/aiostreams";
 in
 {
-    # AIOStreams: one Stremio addon that asks several torrent indexers (Comet, MediaFusion, StremThru)
-    # which releases Real-Debrid has, and sorts them by our preferences. Gelato (gelato.nix) asks it
+    # AIOStreams: one Stremio addon that asks several torrent indexers (Comet, StremThru) which
+    # releases Real-Debrid has, and sorts them by our preferences. MediaFusion is off in
+    # _aiostreams.json: ElfHosted's public instance lists streams that then 404 on play. Gelato (gelato.nix) asks it
     # for a catalog, a search or the stream for a title; nobody opens its own UI. Its user config
     # (_aiostreams.json) is set by media-configure (configure.nix).
     flake.modules.nixos.media =

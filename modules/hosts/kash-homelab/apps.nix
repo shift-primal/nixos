@@ -131,5 +131,16 @@ _:
                 "DP_SPOTIFY_CLIENT_SECRET"
             ];
         };
+
+        # The homelab's own dashboard. Home LAN and tailnet only: hub.local, or http://kash-homelab
+        # over Tailscale. API keys for the apps it reads go in `secrets`, so they stay server-side.
+        homehub = {
+            port = 3009;
+            repo = "shift-primal/homehub";
+            localNames = [ "hub.local" ];
+            frontPage = true;
+            hostAccess = true;
+            environment.JELLYFIN_URL = "http://host.docker.internal:8096";
+        };
     };
 }
