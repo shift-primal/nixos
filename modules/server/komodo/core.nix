@@ -75,6 +75,8 @@ in
                             KOMODO_LOCAL_AUTH = "true";
                             KOMODO_INIT_ADMIN_USERNAME = "admin";
                             KOMODO_DISABLE_USER_REGISTRATION = "true";
+                            # Single admin; the type-the-name confirm on every deploy is just friction.
+                            KOMODO_DISABLE_CONFIRM_DIALOG = "true";
                             KOMODO_FIRST_SERVER_NAME = hostname;
                             KOMODO_PERIPHERY_PUBLIC_KEY = "file:/periphery-keys/periphery.pub";
                             TZ = config.time.timeZone;
