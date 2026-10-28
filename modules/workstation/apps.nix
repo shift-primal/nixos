@@ -11,6 +11,9 @@ _:
                 vlc
                 mpv
                 inkscape
+                # Sync client for OpenCloud on the homelab (modules/server/opencloud.nix), started
+                # from autostart.lua.
+                opencloud-desktop
             ];
         };
 }
