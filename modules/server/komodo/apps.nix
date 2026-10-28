@@ -30,7 +30,7 @@ in
 
             # The compose settings of an app without its own compose file: one service, built from the
             # Dockerfile at the root of Komodo's checkout. Compose resolves a relative context against
-            # the override's store path, hence the absolute one.
+            # the override's directory in /etc, hence the absolute one.
             single = name: app: {
                 files = [ ];
                 service = "app";
@@ -85,8 +85,10 @@ in
                                 # Builds the compose file's `build:` services, so a push redeploys from source.
                                 run_build = true;
                                 webhook_enabled = true;
-                                # The override is a store path; compose takes absolute -f paths as they are.
-                                file_paths = compose.files ++ [ "${override name compose app}" ];
+                                # A fixed path: a rebuild changes the store path, and a Stack still pointing
+                                # at an old one (sync not executed, or garbage collected) can't deploy,
+                                # webhooks included. Compose takes absolute -f paths as they are.
+                                file_paths = compose.files ++ [ (overridePath name) ];
                             }
                         else
                             {
@@ -127,6 +129,8 @@ in
             override =
                 name: compose: app:
                 (pkgs.formats.yaml { }).generate "${name}-override.yml" (composeWithPort compose app);
+            overrideFile = name: "komodo/stacks/${name}-override.yml";
+            overridePath = name: "/etc/${overrideFile name}";
 
             # Copied rather than linked: Core's container can't follow links into /nix/store.
             syncDir = pkgs.runCommand "komodo-sync-${syncName}" { } ''
@@ -300,6 +304,12 @@ in
                         })
                     ) allApps
                 );
+
+                # Changes here take effect on the Stack's next deploy; the sync shows no diff for them.
+                environment.etc = lib.mapAttrs' (
+                    name: app:
+                    lib.nameValuePair (overrideFile name) { source = override name (composeOf name app) app; }
+                ) (lib.filterAttrs (_: app: app.repo != null) allApps);
 
                 sops.templates = lib.mapAttrs' (
                     name: app:
