@@ -26,26 +26,31 @@ _:
             };
 
             # The serve config lives in tailscaled's state; resetting it first drops ports no feature
-            # lists any more.
+            # lists any more. Not a oneshot: a switch waits for a oneshot to finish, and `tailscale
+            # serve` waits as long as HTTPS is off in the admin console, so it would hang the switch.
+            # As a plain service it runs alongside, gives up after a minute and retries.
             config.systemd.services.tailscale-https = lib.mkIf (ports != [ ]) {
                 description = "Serve the Tailscale-only apps over HTTPS";
                 wantedBy = [ "multi-user.target" ];
                 after = [ "tailscaled.service" ];
                 requires = [ "tailscaled.service" ];
-                path = [ pkgs.jq ];
+                path = with pkgs; [
+                    jq
+                    coreutils
+                ];
                 script = ''
                     until ${tailscale} status --json | jq -e '.BackendState == "Running"' > /dev/null; do
                         sleep 2
                     done
                     ${tailscale} serve reset
                     ${lib.concatMapStrings (port: ''
-                        ${tailscale} serve --bg --https=${toString port} http://127.0.0.1:${toString port}
+                        timeout 60 ${tailscale} serve --bg --https=${toString port} http://127.0.0.1:${toString port}
                     '') ports}
                 '';
                 serviceConfig = {
-                    Type = "oneshot";
                     RemainAfterExit = true;
-                    TimeoutStartSec = 300;
+                    Restart = "on-failure";
+                    RestartSec = 60;
                 };
             };
         };
