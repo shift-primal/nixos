@@ -24,6 +24,7 @@ in
             nixos.backup
             nixos.monitoring
             nixos.media
+            nixos.immich
             nixos.pocket-id
             nixos.opencloud
             nixos.github-runners
@@ -34,6 +35,7 @@ in
 
         homelab.komodo.domain = "komodo.haugestol.com";
         homelab.komodo.webhookDomain = "hooks.haugestol.com";
+        homelab.immich.domain = "photos.haugestol.com";
         # The "homelab" tunnel (cloudflared.nix). Route a hostname to it with
         #   cloudflared tunnel route dns homelab <host>
         homelab.tunnel.id = "9533558e-052d-442c-9790-c20eb59c4b8e";

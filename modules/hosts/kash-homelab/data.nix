@@ -20,6 +20,8 @@ in
 
         # Libraries and downloads (modules/server/media/library.nix).
         homelab.media.root = mountPoint;
+        # Photos and videos from the phones (modules/server/immich.nix).
+        services.immich.mediaLocation = "${mountPoint}/immich";
         # OpenCloud's files and state (modules/server/opencloud.nix).
         services.opencloud.stateDir = "${mountPoint}/opencloud";
     };
