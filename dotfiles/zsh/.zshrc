@@ -24,3 +24,19 @@ alias ff='fastfetch'
 alias ls='eza'
 alias rb:switch='sudo rebuild switch'
 alias rb:boot='sudo rebuild boot'
+
+# Pull and switch the homelab from here; rebuild.nix lets sudo run without a password, so no tty.
+# Quiet while it builds; on failure prints the end of the log and keeps the whole file.
+homelab:switch() {
+  local log
+  log=$(mktemp -t homelab-switch.XXXXXX)
+  print "homelab: pulling and switching..."
+  if ssh homelab 'git -C /etc/nixos pull --ff-only && sudo rebuild switch' >"$log" 2>&1; then
+    print -P "%F{green}homelab: switched%f"
+    rm -f "$log"
+  else
+    print -P "%F{red}homelab: failed%f, full log in $log"
+    tail -n 40 "$log"
+    return 1
+  fi
+}
