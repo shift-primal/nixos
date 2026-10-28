@@ -111,6 +111,9 @@ dotfiles/            live-edited configs
   Its secret env vars (`secrets`) come from sops keys `apps/<app>/<key>`.
   A LAN/Tailscale-only app gets `localNames` (e.g. `hub.local`, announced over mDNS by
   `modules/server/local-names.nix`) instead of a `domain`.
+- Tailscale-only service with its own port (the arr apps): open the port on `tailscale0` and add
+  it to `homelab.tailscaleHttps` (`modules/server/tailscale-https.nix`), which serves it as
+  `https://<host>.<tailnet>.ts.net:<port>`.
 - Media stack setting that lives in an app's own database (Jellyfin libraries and users, indexers,
   Bazarr languages, Seerr defaults, the links between the apps): `modules/server/media/configure.nix`,
   applied through each app's API by `_configure.py` (the `media-configure` service). Quality

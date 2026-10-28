@@ -22,6 +22,8 @@ _:
             };
 
             networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ cfg.settings.general.port ];
+            # https://<host>.<tailnet>.ts.net:6767 (tailscale-https.nix).
+            homelab.tailscaleHttps = [ cfg.settings.general.port ];
 
             # Languages, providers and their logins, and the Sonarr/Radarr connections.
             homelab.backup.paths = [ cfg.dataDir ];
