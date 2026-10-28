@@ -25,6 +25,14 @@ _:
                         default = "http://localhost:80";
                     };
                 };
+
+                # The tunnel runs over QUIC, which wants ~7 MB UDP socket buffers; the kernel's 208 KB
+                # default caps its throughput, uploads to OpenCloud included (cloudflared then logs
+                # "failed to sufficiently increase receive buffer size").
+                boot.kernel.sysctl = {
+                    "net.core.rmem_max" = 7500000;
+                    "net.core.wmem_max" = 7500000;
+                };
             };
         };
 }
