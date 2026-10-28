@@ -1,6 +1,7 @@
 { config, inputs, ... }:
 
 let
+    inherit (config) vars;
     hostname = "kash-homelab";
     nixos = config.flake.modules.nixos;
 in
@@ -23,6 +24,8 @@ in
             nixos.backup
             nixos.monitoring
             nixos.media
+            nixos.pocket-id
+            nixos.opencloud
             nixos.github-runners
             ./_hardware-configuration.nix
         ];
@@ -34,6 +37,18 @@ in
         # The "homelab" tunnel (cloudflared.nix). Route a hostname to it with
         #   cloudflared tunnel route dns homelab <host>
         homelab.tunnel.id = "9533558e-052d-442c-9790-c20eb59c4b8e";
+
+        homelab.pocketId = {
+            domain = "id.haugestol.com";
+            users.${vars.user.name} = {
+                inherit (vars.user) fullName;
+                admin = true;
+            };
+        };
+        homelab.drive = {
+            domain = "drive.haugestol.com";
+            users.${vars.user.name} = "admin";
+        };
 
         # Private repos only (public ones run free on GitHub). Token: sops key github-runner/<name>.
         homelab.githubRunners = {

@@ -7,9 +7,15 @@ _:
     # HTTP on localhost and never asks for certificates.
     flake.modules.nixos.caddy.services.caddy = {
         enable = true;
+        # Requests from cloudflared (localhost) carry the visitor's address in Cf-Connecting-Ip; trusting
+        # it lets apps behind Caddy (pocket-id.nix) rate-limit and log the visitor, not 127.0.0.1.
         globalConfig = ''
             auto_https off
             default_bind 127.0.0.1 [::1]
+            servers {
+                trusted_proxies static 127.0.0.1/32 ::1/128
+                client_ip_headers Cf-Connecting-Ip X-Forwarded-For
+            }
         '';
     };
 }

@@ -46,6 +46,9 @@ in
                         restart = "unless-stopped";
                         inherit (app) environment;
                     }
+                    // lib.optionalAttrs app.hostAccess {
+                        extra_hosts = [ "host.docker.internal:host-gateway" ];
+                    }
                     // lib.optionalAttrs (app.secrets != [ ]) {
                         env_file = [ config.sops.templates.${envFile name}.path ];
                     }
@@ -139,8 +142,27 @@ in
                     lib.types.submodule {
                         options = {
                             domain = lib.mkOption {
-                                type = lib.types.str;
+                                type = with lib.types; nullOr str;
+                                default = null;
                                 description = "Public hostname, routed to the tunnel with `cloudflared tunnel route dns`.";
+                            };
+                            localNames = lib.mkOption {
+                                type = with lib.types; listOf str;
+                                default = [ ];
+                                description = "Names on the home LAN (*.local, over mDNS) and tailnet (server/local-names.nix).";
+                            };
+                            frontPage = lib.mkOption {
+                                type = lib.types.bool;
+                                default = false;
+                                description = "Also serve the app at http://<hostname>, the host's Tailscale MagicDNS name.";
+                            };
+                            hostAccess = lib.mkOption {
+                                type = lib.types.bool;
+                                default = false;
+                                description = ''
+                                    Let the container reach services on the host at host.docker.internal. Only
+                                    ports the firewall opens on every interface answer (e.g. Jellyfin's 8096).
+                                '';
                             };
                             port = lib.mkOption {
                                 type = lib.types.port;
@@ -258,6 +280,16 @@ in
                         assertion = lib.all (app: app.compose != null || app.repo != null) (lib.attrValues allApps);
                         message = "homelab.apps: an app without `compose` needs a `repo` to build.";
                     }
+                    {
+                        assertion = lib.all (app: app.domain != null || app.localNames != [ ] || app.frontPage) (
+                            lib.attrValues allApps
+                        );
+                        message = "homelab.apps: an app needs a `domain`, `localNames` or `frontPage` to be reachable.";
+                    }
+                    {
+                        assertion = lib.count (app: app.frontPage) (lib.attrValues allApps) <= 1;
+                        message = "homelab.apps: only one app can be the `frontPage`.";
+                    }
                 ];
 
                 sops.secrets = lib.mkMerge (
@@ -294,7 +326,14 @@ in
                             }
                         '';
                     }
-                ) allApps;
+                ) (lib.filterAttrs (_: app: app.domain != null) allApps);
+
+                homelab.localNames = lib.mkMerge (
+                    lib.mapAttrsToList (
+                        _: app:
+                        lib.genAttrs (app.localNames ++ lib.optional app.frontPage hostname) (_: app.port)
+                    ) allApps
+                );
             };
         };
 }

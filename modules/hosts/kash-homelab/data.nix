@@ -20,5 +20,7 @@ in
 
         # Libraries and downloads (modules/server/media/library.nix).
         homelab.media.root = mountPoint;
+        # OpenCloud's files and state (modules/server/opencloud.nix).
+        services.opencloud.stateDir = "${mountPoint}/opencloud";
     };
 }
