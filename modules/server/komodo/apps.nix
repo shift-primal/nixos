@@ -91,6 +91,9 @@ in
                                 # Builds the compose file's `build:` services, so a push redeploys from source.
                                 run_build = true;
                                 webhook_enabled = true;
+                                # The default deploys only when the compose files changed; the code a push
+                                # changes is in the image, so that would never redeploy.
+                                webhook_force_deploy = true;
                                 # A fixed path: a rebuild changes the store path, and a Stack still pointing
                                 # at an old one (sync not executed, or garbage collected) can't deploy,
                                 # webhooks included. Compose takes absolute -f paths as they are.
