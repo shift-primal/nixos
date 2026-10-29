@@ -19,6 +19,9 @@ in
                         PORT = toString port;
                         HOST_NAME = url;
                         NODE_OPTIONS = "--require /search-filter.js";
+                        # It won't start without a fanart.tv key, which only adds title logos. A
+                        # placeholder lets it start; logo lookups then fail quietly and TMDB's are used.
+                        FANART_API = "none";
                     };
                     # Drops unrated titles and person credits from search results.
                     volumes = [ "${./_tmdb-search-filter.js}:/search-filter.js:ro" ];
