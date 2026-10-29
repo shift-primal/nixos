@@ -28,8 +28,8 @@ in
             options.homelab.komodo.webhookDomain = lib.mkOption {
                 type = lib.types.str;
                 description = ''
-                    Domain that lets git webhooks reach Core. The UI domain sits behind Cloudflare Access,
-                    which GitHub can't pass, so this one serves only /listener/*. Komodo checks each
+                    Domain that lets git webhooks reach Core; it serves only /listener/*, so the hooks
+                    already set in GitHub keep working whatever guards the UI domain. Komodo checks each
                     call against komodo/webhook-secret.
                 '';
                 example = "hooks.example.com";
@@ -72,6 +72,8 @@ in
                             # The webhook URLs the UI shows point here.
                             KOMODO_WEBHOOK_BASE_URL = "https://${cfg.webhookDomain}";
                             KOMODO_DATABASE_ADDRESS = "komodo-mongo:27017";
+                            # No Cloudflare Access in front: this login is the only guard on the public
+                            # UI, so nobody can sign up and the admin is the one account.
                             KOMODO_LOCAL_AUTH = "true";
                             KOMODO_INIT_ADMIN_USERNAME = "admin";
                             KOMODO_DISABLE_USER_REGISTRATION = "true";
