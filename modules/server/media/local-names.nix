@@ -1,9 +1,9 @@
 _:
 
 {
-    # Short names on the home LAN for Jellyfin and Seerr (server/local-names.nix announces and routes them).
+    # Jellyfin's short name on the home LAN (server/local-names.nix announces and routes it).
     flake.modules.nixos.media =
-        { config, lib, ... }:
+        { lib, ... }:
         let
             jellyfin = "snyltflix.local";
         in
@@ -15,9 +15,6 @@ _:
                 description = "Jellyfin's address on the home LAN, for links to it (configure.nix).";
             };
 
-            config.homelab.localNames = {
-                ${jellyfin} = 8096; # jellyfin.nix
-                "req.local" = config.services.seerr.port;
-            };
+            config.homelab.localNames.${jellyfin} = 8096; # jellyfin.nix
         };
 }
