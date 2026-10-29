@@ -6,7 +6,7 @@ _:
     # tailnet it takes the port over from the app's plain HTTP (it answers before the kernel does).
     # Needs MagicDNS and HTTPS Certificates turned on once in the Tailscale admin console (DNS page).
     # The .local names stay plain HTTP: no public CA signs them (local-names.nix). Features add
-    # ports: media/arr.nix, media/bazarr.nix, media/decypharr.nix.
+    # their ports to homelab.tailscaleHttps.
     flake.modules.nixos.caddy =
         {
             config,

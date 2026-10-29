@@ -111,13 +111,12 @@ dotfiles/            live-edited configs
   Its secret env vars (`secrets`) come from sops keys `apps/<app>/<key>`.
   A LAN/Tailscale-only app gets `localNames` (e.g. `hub.local`, announced over mDNS by
   `modules/server/local-names.nix`) instead of a `domain`.
-- Tailscale-only service with its own port (the arr apps): open the port on `tailscale0` and add
+- Tailscale-only service with its own port: open the port on `tailscale0` and add
   it to `homelab.tailscaleHttps` (`modules/server/tailscale-https.nix`), which serves it as
   `https://<host>.<tailnet>.ts.net:<port>`.
-- Media stack setting that lives in an app's own database (Jellyfin libraries and users, indexers,
-  Bazarr languages, Seerr defaults, the links between the apps): `modules/server/media/configure.nix`,
-  applied through each app's API by `_configure.py` (the `media-configure` service). Quality
-  profiles come from the TRaSH Guides via `modules/server/media/recyclarr.nix`.
+- Media stack setting that lives in an app's own database (Jellyfin libraries and users, the
+  AIOStreams user, Gelato's settings and catalogs): `modules/server/media/configure.nix`, applied
+  through each app's API by `_configure.py` (the `media-configure` service).
 - Package not in nixpkgs: `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
 - New dotfile dir: put it in `dotfiles/` and add it to `dotfiles.links` in the
   feature that uses it.

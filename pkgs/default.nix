@@ -3,7 +3,6 @@ final: prev: {
     bagnard = final.callPackage ./bagnard.nix { };
     circular-std = final.callPackage ./circular-std.nix { };
     cutover = final.callPackage ./cutover.nix { };
-    decypharr = final.callPackage ./decypharr.nix { };
     grok-cli = final.callPackage ./grok.nix { };
     jellyfin-plugin-file-transformation = final.callPackage ./jellyfin-file-transformation.nix { };
     jellyfin-plugin-gelato = final.callPackage ./gelato.nix { };
