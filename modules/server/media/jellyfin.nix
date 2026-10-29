@@ -27,10 +27,14 @@ _:
                 # Jellyfin picks a subtitle or audio track only when its language code equals the
                 # preference exactly, but releases tag Norwegian as nor, nob, nno, no or nb; the patch
                 # makes any of them match. It also takes a fallback list ("nor,eng" in configure.nix),
-                # which Jellyfin's single preference can't. Built from source, so it takes a while
-                # after a nixpkgs bump.
+                # which Jellyfin's single preference can't. The search patch keeps episodes and people
+                # out of search results, where Gelato's catalogs made them bury the films and series.
+                # Built from source, so it takes a while after a nixpkgs bump.
                 services.jellyfin.package = pkgs.jellyfin.overrideAttrs (prev: {
-                    patches = (prev.patches or [ ]) ++ [ ./_jellyfin-norwegian.patch ];
+                    patches = (prev.patches or [ ]) ++ [
+                        ./_jellyfin-norwegian.patch
+                        ./_jellyfin-search.patch
+                    ];
                 });
                 users.users.jellyfin.extraGroups = [ "media" ];
 
