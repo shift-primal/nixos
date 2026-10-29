@@ -153,11 +153,14 @@ in
 
                 gelato = {
                     inherit (gelato) pluginId moviePath seriesPath;
-                    # AIOStreams' catalogs (by id suffix) that fill the home screen.
-                    catalogs = [
-                        ".tmdb.top"
-                        ".tmdb.trending"
-                    ];
+                    # AIOStreams' catalogs (by id suffix) that fill the libraries, and how many titles
+                    # each brings in per type. Gelato's default is 100, which left a couple hundred
+                    # films; clients that search only what they have synced (Infuse) find nothing
+                    # else. Trending mostly repeats Popular, so it stays small.
+                    catalogs = {
+                        ".tmdb.top" = 1000;
+                        ".tmdb.trending" = 100;
+                    };
                     # How often they are fetched again.
                     importHours = 6;
                     settings = {

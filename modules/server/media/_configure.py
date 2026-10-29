@@ -302,9 +302,10 @@ def gelato(c, jf_key, manifest):
     # change with the addon setup, so the list is replaced, keeping the settings of those it had.
     known = {(x["Id"], x["Type"]): x for x in have.get("Catalogs") or []}
     catalogs = [
-        {**known.get((cat["id"], cat["type"]), {}), "Id": cat["id"], "Type": cat["type"], "Name": cat["name"], "Enabled": True}
+        {**known.get((cat["id"], cat["type"]), {}), "Id": cat["id"], "Type": cat["type"], "Name": cat["name"], "Enabled": True, "MaxItems": size}
         for cat in Api(manifest).get("")["catalogs"]
-        if any(cat["id"].endswith(suffix) for suffix in c["catalogs"])
+        for suffix, size in c["catalogs"].items()
+        if cat["id"].endswith(suffix)
     ]
 
     want = {**c["settings"], "Url": manifest, "MoviePath": c["moviePath"], "SeriesPath": c["seriesPath"], "Catalogs": catalogs}
