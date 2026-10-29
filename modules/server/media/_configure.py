@@ -265,6 +265,11 @@ def gelato(c, jf_key, manifest):
         for suffix, size in c["catalogs"].items()
         if cat["id"].endswith(suffix)
     ]
+    # A catalog addon that is down drops its catalogs from the manifest; replacing Gelato's list
+    # with what is left would empty the libraries at the next import. Retry until it is back.
+    missing = [s for s in c["catalogs"] if not any(x["Id"].endswith(s) for x in catalogs)]
+    if missing:
+        raise RuntimeError(f"AIOStreams lists no catalog ending in {', '.join(missing)}; is its addon down?")
 
     want = {**c["settings"], "Url": manifest, "MoviePath": c["moviePath"], "SeriesPath": c["seriesPath"], "Catalogs": catalogs}
     changed = sorted(k for k, v in want.items() if have.get(k) != v)
