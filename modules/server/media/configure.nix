@@ -156,13 +156,15 @@ in
                     # AIOStreams' catalogs (by id suffix) that fill the libraries, and how many titles
                     # each brings in per type. Gelato's default is 100, which left a couple hundred
                     # films; clients that search only what they have synced (Infuse) find nothing
-                    # else. Trending mostly repeats Popular, so it stays small.
+                    # else. 10000 is all TMDB lists (500 pages of 20). Trending mostly repeats
+                    # Popular, so it stays small.
                     catalogs = {
-                        ".tmdb.top" = 1000;
+                        ".tmdb.top" = 10000;
                         ".tmdb.trending" = 100;
                     };
-                    # How often they are fetched again.
-                    importHours = 6;
+                    # How often they are fetched again. Each run pages through every catalog on the
+                    # public TMDB addon, which rate-limits, so not more often than daily.
+                    importHours = 24;
                     settings = {
                         # A series' missing seasons and episodes show up next to the ones on disk.
                         ExtendLocalSeriesTrees = true;
