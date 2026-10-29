@@ -67,6 +67,13 @@ _:
             };
             config.systemd.services.immich-server.unitConfig.RequiresMountsFor = [ cfg.mediaLocation ];
 
+            # The module puts machine learning on 3003, which homelab.apps already gives to spot
+            # (modules/hosts/kash-homelab/apps.nix); whichever starts second crash-loops. 2284 sits
+            # next to Immich and outside the apps' 300x range.
+            config.services.immich.machine-learning.environment.IMMICH_PORT = lib.mkForce "2284";
+            config.services.immich.environment.IMMICH_MACHINE_LEARNING_URL =
+                lib.mkForce "http://localhost:2284";
+
             # 12 GB shared with Jellyfin and the rest. The face and search models take 1-2 GB while a
             # job runs and unload after 5 minutes idle; the cap keeps a big first import from
             # starving the box. Background work also yields the CPU to Jellyfin's transcodes.
