@@ -18,7 +18,10 @@ in
                     environment = {
                         PORT = toString port;
                         HOST_NAME = url;
+                        NODE_OPTIONS = "--require /search-filter.js";
                     };
+                    # Drops unrated titles and person credits from search results.
+                    volumes = [ "${./_tmdb-search-filter.js}:/search-filter.js:ro" ];
                     environmentFiles = [ config.sops.templates."tmdb-addon.env".path ];
                     # Host network, so the NixOS firewall applies; only AIOStreams talks to it.
                     extraOptions = [ "--network=host" ];
