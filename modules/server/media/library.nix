@@ -4,9 +4,8 @@ let
     inherit (config) vars;
 in
 {
-    # Folders and permissions the whole media stack shares: Jellyfin reads the libraries, Decypharr
-    # puts symlinks into its mount in downloads/, Sonarr and Radarr move them into the libraries.
-    # Files copied in by hand go straight into the libraries.
+    # The library folders Jellyfin reads, next to Gelato's own (gelato.nix). Files copied in by hand
+    # go straight into them.
     flake.modules.nixos.media =
         { config, lib, ... }:
         let
@@ -15,7 +14,7 @@ in
         {
             options.homelab.media.root = lib.mkOption {
                 type = lib.types.str;
-                description = "Disk holding media/ (libraries) and downloads/.";
+                description = "Disk holding media/ (the libraries).";
                 example = "/mnt/data";
             };
 
@@ -34,7 +33,6 @@ in
                             "media/movies"
                             "media/shows"
                             "media/music"
-                            "downloads"
                         ])
                         (_: {
                             d = {
