@@ -78,8 +78,11 @@ in
                         SubtitleFetcherOrder = [ "Gelato Subtitles" ];
                         SaveSubtitlesWithMedia = false;
                     };
-                    # Screen Grabber would read the whole file for a thumbnail, as above.
-                    disabledFetchers = [ "Screen Grabber" ];
+                    # Screen Grabber reads the whole file for thumbnails; OMDb has dead Amazon image URLs and broken JSON.
+                    disabledFetchers = [
+                        "Screen Grabber"
+                        "The Open Movie Database"
+                    ];
                     # Audio in the title's original language, whatever track the release marks as
                     # default. Norwegian subtitles, else English: a comma list is a fallback order, and
                     # any Norwegian tag matches (both through _jellyfin-norwegian.patch). Jellyfin's own

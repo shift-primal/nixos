@@ -45,6 +45,10 @@
                 grok-cli
                 skills
                 inputs.nix-claude-code.packages.${pkgs.stdenv.hostPlatform.system}.stable
+
+                inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
+                inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-ide
+                inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-cli
             ];
         };
 }

@@ -31,6 +31,11 @@
             inputs.nixpkgs.follows = "nixpkgs";
         };
 
+        antigravity-nix = {
+            url = "github:jacopone/antigravity-nix";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+
         llm-agents = {
             url = "github:numtide/llm-agents.nix";
             inputs.nixpkgs.follows = "nixpkgs";
