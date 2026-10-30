@@ -13,9 +13,8 @@ in
     # The other files in this folder (boot, NVIDIA) add to this module too.
     flake.modules.nixos.${hostname} = {
         imports = [
-            nixos.base
-            nixos.workstation
-            nixos.dev
+            nixos.common
+            nixos.desktop
             ./_hardware-configuration.nix
         ];
 

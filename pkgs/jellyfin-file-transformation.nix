@@ -10,7 +10,7 @@ let
     jellyfinVersion = "12.2.0";
 in
 # File Transformation, a Jellyfin plugin that lets other plugins (SleekFin) change the web interface's
-# files as Jellyfin serves them (modules/server/media/sleekfin.nix).
+# files as Jellyfin serves them (modules/homelab/media/sleekfin.nix).
 stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "jellyfin-plugin-file-transformation";
     version = "3.0.2.0";

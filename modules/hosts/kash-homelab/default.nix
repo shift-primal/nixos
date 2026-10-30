@@ -17,17 +17,8 @@ in
         #   nixos-generate-config --show-hardware-config > _hardware-configuration.nix
         # Secrets for komodo, cloudflared, backup, monitoring and media live in secrets/hosts/kash-homelab.yaml (sops).
         imports = [
-            nixos.base
-            nixos.komodo
-            nixos.caddy
-            nixos.cloudflared
-            nixos.backup
-            nixos.monitoring
-            nixos.media
-            nixos.immich
-            nixos.pocket-id
-            nixos.opencloud
-            nixos.github-runners
+            nixos.common
+            nixos.homelab
             ./_hardware-configuration.nix
         ];
 

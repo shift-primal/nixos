@@ -3,7 +3,7 @@
 # under dotfiles/ does not.
 #
 # Modules read these as config.vars of the flake-parts module around them. Dotfiles read
-# them through ~/.config/nixos-vars/vars.lua (modules/workstation/vars-lua.nix).
+# them through ~/.config/nixos-vars/vars.lua (modules/desktop/theming/vars-lua.nix).
 { lib, ... }:
 
 {
@@ -18,9 +18,9 @@
             name = "kasper";
             fullName = "Kasper Haugestøl";
             home = "/home/${user.name}";
-            # Public SSH keys authorized on every machine (modules/base/openssh.nix). The private
+            # Public SSH keys authorized on every machine (modules/common/network/openssh.nix). The private
             # halves live in Bitwarden and are served by its SSH agent (SSH_AUTH_SOCK in
-            # modules/base/shell/zsh.nix). The homelab has no key: nothing SSHes out from it.
+            # modules/common/shell/zsh.nix). The homelab has no key: nothing SSHes out from it.
             sshKeys = {
                 personal = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKKCQ78itQutj3zwTn6g+2RwSi8zl7+mssOGsQyeekZB kash-ssh-key";
                 kash-desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOi/1l6nA7bR2D13n/Te5Xk6E/VIUcp/+CSTMOD8CTve kash-desktop";
@@ -46,7 +46,7 @@
         };
 
         # Default apps, as nixpkgs attribute names. Each one is installed by
-        # modules/workstation/default-apps.nix and its command is handed to the Hyprland keybinds.
+        # modules/desktop/apps/default-apps.nix and its command is handed to the Hyprland keybinds.
         apps = {
             terminal = "kitty";
             editor = "neovim";

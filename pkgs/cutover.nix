@@ -5,7 +5,7 @@
     jq,
 }:
 
-# Moves hostnames onto the homelab's Cloudflare Tunnel (modules/server/cloudflared.nix).
+# Moves hostnames onto the homelab's Cloudflare Tunnel (modules/homelab/edge/cloudflared.nix).
 # `cloudflared tunnel route dns --overwrite-dns` only replaces CNAMEs, so the old A/AAAA records
 # (and CNAMEs to elsewhere, e.g. Railway) are deleted first, with the API token cloudflared's
 # login stored in ~/.cloudflared/cert.pem.

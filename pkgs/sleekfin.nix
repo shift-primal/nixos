@@ -4,7 +4,7 @@
     fetchzip,
 }:
 
-# SleekFin, a Jellyfin plugin that reskins the web interface (modules/server/media/sleekfin.nix).
+# SleekFin, a Jellyfin plugin that reskins the web interface (modules/homelab/media/sleekfin.nix).
 # The release zip is the plugin folder as Jellyfin's plugin catalog would install it.
 stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "jellyfin-plugin-sleekfin";

@@ -4,7 +4,7 @@
     fetchzip,
 }:
 
-# Gelato, the Jellyfin plugin that streams Stremio addons (modules/server/media/gelato.nix). The
+# Gelato, the Jellyfin plugin that streams Stremio addons (modules/homelab/media/gelato.nix). The
 # release zip is the plugin folder as Jellyfin's plugin catalog would install it.
 stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "jellyfin-plugin-gelato";
