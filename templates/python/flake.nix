@@ -15,6 +15,7 @@
                     uv
                     pyright
                     ruff
+                    black
                     python3Packages.debugpy
                 ];
             };

@@ -4,11 +4,9 @@
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-        # oxfmt newer than nixpkgs' (pkgs/oxfmt.nix in the system flake).
-        nixos = {
-            url = "github:shift-primal/nixos";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
+        # oxfmt newer than nixpkgs' (pkgs/oxfmt.nix in the system flake). No follows: built
+        # against the system's own nixpkgs it is the copy already in the store.
+        nixos.url = "github:shift-primal/nixos";
 
         nix-vite-plus = {
             url = "github:ryoppippi/nix-vite-plus";

@@ -4,7 +4,11 @@ _:
     flake.modules.homeManager.desktop =
         { pkgs, ... }:
         {
-            home.packages = [ pkgs.tree-sitter ];
+            # nvim-treesitter compiles parsers with tree-sitter, which needs a C compiler.
+            home.packages = with pkgs; [
+                tree-sitter
+                gcc
+            ];
             dotfiles.links.nvim = "nvim";
         };
 }
