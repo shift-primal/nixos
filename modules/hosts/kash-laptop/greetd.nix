@@ -25,7 +25,7 @@ in
                 }
             ];
 
-            # The login screen itself is modules/workstation/greeter.nix. After logging out of the
+            # The login screen itself is modules/desktop/session/greeter.nix. After logging out of the
             # autologin session greetd falls back to it.
             services.greetd.settings.initial_session = {
                 command = session;

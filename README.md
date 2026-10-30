@@ -7,7 +7,7 @@ NixOS module, and live-editable dotfiles. It builds three machines:
 | -------------------- | ----------------- | ----------------------------------------------------------- |
 | `kash-desktop` | Desktop           | NVIDIA, Limine, triple boot with Windows and Arch           |
 | `kash-laptop`  | Laptop            | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
-| `kash-homelab` | HP ProDesk 400 G3 | Headless server: base only for now                          |
+| `kash-homelab` | HP ProDesk 400 G3 | Headless server: Komodo, Caddy, media, photos, files, backups |
 
 Tracks `nixos-unstable`. Unfree packages are allowed.
 
@@ -19,15 +19,15 @@ Tracks `nixos-unstable`. Unfree packages are allowed.
 - **Apps:** kitty, Neovim (LazyVim), Chrome, Vesktop, Thunderbird, yazi, btop,
   Bitwarden, Steam and others. Default apps are picked in `modules/flake/vars.nix`, and the
   Hyprland keybinds follow.
-- **Dev:** one file per language in `modules/dev/` with the toolchain, LSP,
-  formatter and debugger. Neovim's Mason is turned off; Nix installs every binary.
+- **Dev:** a dev shell template per language in `templates/` (toolchain, LSP,
+  formatter, debugger), loaded per project by direnv. Neovim's Mason is turned
+  off; Nix installs every binary. See [Dev environments](#dev-environments).
 - **Services:** Docker, Tailscale, printing (HP, mDNS discovery), fwupd,
   Wireshark, Solaar. SSH on every host is key-only and reachable only over
   Tailscale; the authorized keys are in `vars.user.sshKeys`.
 - **Homelab:** [Komodo](https://komo.do) for deploys and Caddy in front of it
-  (`modules/server/`), plus a 4 TB data disk at `/mnt/data`. Komodo and Caddy are
-  left out of the host until its age key is in `.sops.yaml` (see
-  [Secrets](#secrets)).
+  (`modules/homelab/`), Jellyfin and a streaming stack, Immich, OpenCloud,
+  Pocket ID, nightly restic backups, plus a 4 TB data disk at `/mnt/data`.
 - **Helpers:** `sudo rebuild switch|boot [host]` (aliased `rb:switch` / `rb:boot`;
   the host defaults to the hostname) and, on the desktop,
   `sudo reboot-to windows|arch|limine`. Both run without a password and only
@@ -42,15 +42,17 @@ paths containing `/_` are skipped, which keeps `_hardware-configuration.nix` out
 
 Files add to _aspects_ (`flake.modules.nixos.<aspect>` and
 `flake.modules.homeManager.<aspect>`), and several files can feed the same
-aspect. The aspects are `base` (every host), `workstation` (GUI machines), `dev`,
-`komodo`, `caddy`, `cloudflared`, `backup` and one per host. Each NixOS aspect pulls in its Home Manager
-side, so a host only lists NixOS aspects:
+aspect. There are three roles, one folder each: `common` (every host),
+`desktop` (GUI machines) and `homelab` (the server), plus one aspect per host.
+Inside a role, files are grouped by use case (`desktop/session/`,
+`homelab/media/`, ...). Each NixOS aspect pulls in its Home Manager side, so a
+host only lists NixOS aspects:
 
-| Host                 | Aspects                          |
-| -------------------- | -------------------------------- |
-| `kash-desktop` | `base`, `workstation`, `dev`     |
-| `kash-laptop`  | `base`, `workstation`, `dev`     |
-| `kash-homelab` | `base`, `komodo`, `caddy`, `cloudflared`, `backup` |
+| Host           | Aspects               |
+| -------------- | --------------------- |
+| `kash-desktop` | `common`, `desktop`   |
+| `kash-laptop`  | `common`, `desktop`   |
+| `kash-homelab` | `common`, `homelab`   |
 
 Shared values (user, paths, locale, keyboard, cursor, default apps, SSH keys)
 live once in `modules/flake/vars.nix` as `config.vars`. Per-machine values
@@ -59,13 +61,12 @@ live once in `modules/flake/vars.nix` as `config.vars`. Per-machine values
 
 ```
 flake.nix         inputs, mkFlake over modules/
-modules/flake/    flake-parts setup and the shared values (vars.nix)
-modules/base/     every host: nix, locale, users, ssh, shell, CLI tools, Home Manager
-modules/workstation/  GUI machines: Hyprland, greeter, audio, apps, theming
-modules/dev/      languages, Docker, Wireshark
-modules/server/   one aspect per service (komodo, caddy, cloudflared, backup), each with its vhost and secrets
-modules/secrets/  sops-nix
+modules/flake/    flake-parts setup, shared values (vars.nix), packages and templates outputs
+modules/common/   every host: nix/, system/, network/, shell/, CLI tools, Home Manager, sops-nix
+modules/desktop/  GUI machines: session/, hardware/, apps/, theming/, dev/ (editor tooling, Docker)
+modules/homelab/  the server: edge/ (Caddy, tunnel), apps/ (Komodo, Immich, ...), media/, ops/
 modules/hosts/    one folder per machine: aspect list, hardware, bootloader, GPU
+templates/        per-project dev shells (node, python, rust, go, c, dotnet)
 pkgs/             packages that are not in nixpkgs
 secrets/          sops-encrypted secrets (recipients in .sops.yaml)
 dotfiles/         hypr, kitty, nvim, zsh, starship, noctalia (symlinked, not copied)
@@ -81,21 +82,41 @@ need from Nix (hostname, keyboard, cursor, app commands) are written to
 ## Adding things
 
 One feature is one file, with its NixOS and Home Manager parts together (see
-`modules/dev/docker.nix`). New files have to be `git add`ed before a build sees
+`modules/desktop/dev/docker.nix`). New files have to be `git add`ed before a build sees
 them.
 
-- **Feature:** a new file in the aspect's folder that adds to
+- **Feature:** a new file in the role's use-case folder that adds to
   `flake.modules.nixos.<aspect>` and/or `flake.modules.homeManager.<aspect>`.
   Values used in more than one place go in `modules/flake/vars.nix`.
-- **CLI tool:** `modules/base/cli.nix`. **GUI app:** `modules/workstation/apps.nix`,
+- **CLI tool:** `modules/common/cli.nix` (every host) or `modules/desktop/dev/cli.nix`
+  (desktops only). **GUI app:** `modules/desktop/apps/apps.nix`,
   or `vars.apps` if it is a default app with a keybind.
-- **Language:** a new `modules/dev/<lang>.nix` with its toolchain, LSP,
-  formatter and debugger.
+- **Language:** a dev shell in `templates/<lang>/` with its toolchain, LSP,
+  formatter and debugger, registered in `modules/flake/templates.nix`.
 - **Machine-only setting** (GPU, bootloader, disks): a file in
   `modules/hosts/<hostname>/` adding to `flake.modules.nixos.<hostname>`.
   Hyprland tweaks go in `dotfiles/hypr/hyprland/hosts/<hostname>.lua`.
 - **Package not in nixpkgs:** `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
 - **Host:** see below.
+
+## Dev environments
+
+Language toolchains are not installed system-wide. Each project gets its own dev
+shell from a template in `templates/`:
+
+```sh
+cd ~/code/my-app
+nix flake init -t ~/nixos#node     # or python, rust, go, c, dotnet
+direnv allow
+```
+
+This writes a `flake.nix` with the dev shell, an `.envrc` (`use flake`) and a
+`.gitignore` for `.direnv/`. From then on the shell loads when you `cd` into the
+project and unloads when you leave; nix-direnv caches it, so re-entering is
+instant, and keeps it safe from garbage collection. Change the package list in
+the project's `flake.nix` to suit it. Start Neovim from inside the project so it
+sees the project's language servers. Tooling for configs and scripts (nix, lua,
+shell, toml, markdown, docker) stays global in `modules/desktop/dev/`.
 
 ## Installing on a new machine
 
@@ -118,7 +139,8 @@ them.
      `system.stateVersion` to the value in the installer's
      `/etc/nixos/configuration.nix`.
    - Pick a bootloader in `boot.nix` and a GPU module (`nvidia.nix` / `intel.nix`).
-   - A server only imports `base`; copy `kash-homelab` instead and skip
+   - A server imports `common` (plus `homelab` for these services); copy
+     `kash-homelab` instead and skip
      the Hyprland and Noctalia files below.
    - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines
      from its `/etc/nixos/hardware-configuration.nix` too.
@@ -151,7 +173,7 @@ machine-specific values:
 - `dotfiles/noctalia/hosts/*.toml` and `dotfiles/noctalia/settings/*.toml`:
   monitor names and wallpaper paths.
 - `dotfiles/hypr/hyprland/hosts/*.lua`: monitor layout.
-- `modules/base/cli.nix` and `modules/workstation/apps.nix`: drop what you don't use.
+- `modules/common/cli.nix`, `modules/desktop/dev/cli.nix` and `modules/desktop/apps/apps.nix`: drop what you don't use.
 
 ## Secrets
 
@@ -184,7 +206,7 @@ derived from their SSH host key, so there is no key file to copy.
 
 ## Backups (homelab)
 
-`modules/server/backup.nix` runs restic every night around 03:00 to a private R2
+`modules/homelab/ops/backup.nix` runs restic every night around 03:00 to a private R2
 bucket. It copies `/var/lib/docker/volumes`, the paths features add to
 `homelab.backup.paths` (Komodo's keys and data), and database dumps taken just
 before: Komodo's MongoDB, plus every container labelled `homelab.backup=postgres`

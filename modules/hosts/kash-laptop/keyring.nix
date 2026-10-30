@@ -6,7 +6,7 @@ in
 {
     flake.modules.nixos.kash-laptop = {
         # Autologin (greetd.nix) types no password, so PAM can't unlock the keyring from
-        # modules/workstation/keyring.nix and it would prompt every boot. Seed an unencrypted login
+        # modules/desktop/session/keyring.nix and it would prompt every boot. Seed an unencrypted login
         # keyring instead: the LUKS passphrase already guards the disk.
         home-manager.users.${vars.user.name} =
             {

@@ -18,11 +18,11 @@ in
             ];
         };
 
-        # Libraries (modules/server/media/library.nix).
+        # Libraries (modules/homelab/media/library.nix).
         homelab.media.root = mountPoint;
-        # Photos and videos from the phones (modules/server/immich.nix).
+        # Photos and videos from the phones (modules/homelab/apps/immich.nix).
         services.immich.mediaLocation = "${mountPoint}/immich";
-        # OpenCloud's files and state (modules/server/opencloud.nix).
+        # OpenCloud's files and state (modules/homelab/apps/opencloud.nix).
         services.opencloud.stateDir = "${mountPoint}/opencloud";
     };
 }

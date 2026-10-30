@@ -15,9 +15,8 @@ in
         # _hardware-configuration.nix is generated on the laptop itself, and holds the LUKS devices:
         #   nixos-generate-config --show-hardware-config > _hardware-configuration.nix
         imports = [
-            nixos.base
-            nixos.workstation
-            nixos.dev
+            nixos.common
+            nixos.desktop
             ./_hardware-configuration.nix
         ];
 

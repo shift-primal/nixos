@@ -1,8 +1,8 @@
 _:
 
 {
-    # HD 530 (Skylake, Gen9) for Jellyfin and Immich transcoding (modules/server/media/jellyfin.nix,
-    # modules/server/immich.nix). VA-API rather
+    # HD 530 (Skylake, Gen9) for Jellyfin and Immich transcoding (modules/homelab/media/jellyfin.nix,
+    # modules/homelab/apps/immich.nix). VA-API rather
     # than QSV: QSV on Gen9 needs intel-media-sdk, which is end of life and marked insecure in nixpkgs.
     flake.modules.nixos.kash-homelab =
         { pkgs, ... }:
