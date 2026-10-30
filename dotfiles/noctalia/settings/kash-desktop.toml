@@ -218,6 +218,9 @@ flake_dir = "/home/kasper/nixos"
 nixos_configuration = "kash-desktop"
 use_themed_logos = true
 
+[plugin_settings."nightwatch75/claude-cockpit"]
+editor_command = "nvim"
+
 [plugins]
 enabled = [
     "noctalia/bitwarden",
