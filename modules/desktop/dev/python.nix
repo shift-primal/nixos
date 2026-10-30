@@ -30,12 +30,7 @@ _:
             };
         in
         {
-            home.packages = with pkgs; [
-                pythonWithSolaar
-                pyright
-                ruff
-                black
-                pipx
-            ];
+            # For scripts. Project tooling (pyright, ruff, uv) comes from templates/python.
+            home.packages = [ pythonWithSolaar ];
         };
 }

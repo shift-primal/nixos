@@ -1,18 +1,14 @@
-{ config, inputs, ... }:
+{ config, ... }:
 
 let
     inherit (config) vars;
 in
 {
     flake.modules.homeManager.desktop =
+        { config, ... }:
         {
-            config,
-            lib,
-            pkgs,
-            ...
-        }:
-        {
-            # oxfmt and oxlint config.
+            # oxfmt and oxlint config. The tools themselves come from each project's dev shell
+            # (templates/node).
             dotfiles.links.oxc = "oxc";
 
             # oxfmt finds its config by searching up from cwd, so this gives the CLI the same
@@ -21,29 +17,5 @@ in
                 config.lib.file.mkOutOfStoreSymlink "${vars.flakeDir}/dotfiles/oxc/oxfmtrc.json";
 
             programs.zsh.sessionVariables.npm_config_manage_package_manager_versions = "false";
-
-            home.packages = with pkgs; [
-                nodejs
-                pnpm
-                sassc
-
-                node-gyp
-                gnumake
-
-                # lsp / formatters
-                oxfmt
-                oxlint
-                biome
-                typescript
-                astro-language-server
-                tailwindcss-language-server
-                inputs.nix-vite-plus.packages.${pkgs.stdenv.hostPlatform.system}.vp
-
-                # dependencies
-                vscode-js-debug
-                (writeShellScriptBin "js-debug-adapter" ''
-                    exec ${lib.getExe vscode-js-debug} "$@"
-                '')
-            ];
         };
 }
