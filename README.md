@@ -61,7 +61,7 @@ live once in `modules/flake/vars.nix` as `config.vars`. Per-machine values
 
 ```
 flake.nix         inputs, mkFlake over modules/
-modules/flake/    flake-parts setup, shared values (vars.nix), packages and templates outputs
+modules/flake/    flake-parts setup, shared values (vars.nix), overlay, templates output
 modules/common/   every host: nix/, system/, network/, shell/, CLI tools, Home Manager, sops-nix
 modules/desktop/  GUI machines: session/, hardware/, apps/, theming/, dev/ (editor tooling, Docker)
 modules/homelab/  the server: edge/ (Caddy, tunnel), apps/ (Komodo, Immich, ...), media/, ops/

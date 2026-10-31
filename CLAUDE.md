@@ -69,8 +69,7 @@ Home Manager as a NixOS module, in the dendritic pattern (flake-parts + import-t
 ```
 flake.nix            inputs; outputs = mkFlake over (import-tree ./modules)
 modules/
-  flake/             systems, flake.modules option, vars option, overlay, packages output,
-                     templates output
+  flake/             systems, flake.modules option, vars option, overlay, templates output
   common/            aspect `common`, every host
     nix/             nix settings, gc, /etc/nixos link, rebuild helper
     system/          boot basics, locale, zram, fwupd, users, base packages

@@ -4,10 +4,6 @@
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-        # oxfmt newer than nixpkgs' (pkgs/oxfmt.nix in the system flake). No follows: built
-        # against the system's own nixpkgs it is the copy already in the store.
-        nixos.url = "github:shift-primal/nixos";
-
         nix-vite-plus = {
             url = "github:ryoppippi/nix-vite-plus";
             inputs.nixpkgs.follows = "nixpkgs";
@@ -15,12 +11,7 @@
     };
 
     outputs =
-        {
-            nixpkgs,
-            nixos,
-            nix-vite-plus,
-            ...
-        }:
+        { nixpkgs, nix-vite-plus, ... }:
         let
             system = "x86_64-linux";
             pkgs = nixpkgs.legacyPackages.${system};
@@ -36,7 +27,7 @@
                     gnumake
 
                     # lsp / formatters
-                    nixos.packages.${system}.oxfmt
+                    oxfmt
                     oxlint
                     biome
                     typescript
