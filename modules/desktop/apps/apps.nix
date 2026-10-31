@@ -19,7 +19,7 @@ _:
                 mpv
                 inkscape
                 onlyoffice
-                libreoffice-fresh
+                libreoffice
             ];
         };
 }
