@@ -141,7 +141,13 @@ _:
             frontPage = true;
             # Status checks hit every service on 127.0.0.1 (src/server/services.ts in homehub).
             hostNetwork = true;
-            environment.APP_ENV = "prod";
+            environment = {
+                APP_ENV = "prod";
+                # Read-only Beszel account, made by beszel-configure (homelab/ops/monitoring/beszel.nix).
+                BESZEL_URL = "http://127.0.0.1:8090";
+                BESZEL_EMAIL = "homehub@homehub.local";
+            };
+            secrets = [ "BESZEL_PASSWORD" ];
         };
     };
 }

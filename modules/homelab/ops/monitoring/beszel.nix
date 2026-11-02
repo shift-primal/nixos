@@ -26,6 +26,17 @@ in
             agentPort = 45876;
             api = "http://127.0.0.1:${toString hub.port}/api";
 
+            # Read-only accounts for apps that show Beszel's stats (homehub): any app in homelab.apps
+            # (hosts/kash-homelab/apps.nix) with a BESZEL_EMAIL and a BESZEL_PASSWORD secret.
+            readers = lib.mapAttrsToList (name: app: {
+                email = app.environment.BESZEL_EMAIL;
+                passwordFile = config.sops.secrets."apps/${name}/BESZEL_PASSWORD".path;
+            }) (
+                lib.filterAttrs (
+                    _: app: app.environment ? BESZEL_EMAIL && lib.elem "BESZEL_PASSWORD" app.secrets
+                ) config.homelab.apps
+            );
+
             # Synced into the hub on every start: systems not listed here are deleted.
             configYml = (pkgs.formats.yaml { }).generate "beszel-config.yml" {
                 systems = [
@@ -33,6 +44,9 @@ in
                         name = hostName;
                         host = "127.0.0.1";
                         port = agentPort;
+                        # Listing any user drops the default (the first one), so the owner goes first.
+                        # A reader made after this start is added by beszel-configure.
+                        users = [ config.homelab.beszel.email ] ++ map (r: r.email) readers;
                     }
                 ];
             };
@@ -85,6 +99,13 @@ in
                     user=$(jq -r .record.id <<< "$auth")
                     call() { curl -fsS -H "Authorization: $token" -H 'Content-Type: application/json' "$@"; }
 
+                    # Only a superuser can create users. The first-start migration made one with the same login.
+                    su=$(jq -n --arg e ${lib.escapeShellArg config.homelab.beszel.email} \
+                        --rawfile p ${keysDir}/password '{identity: $e, password: ($p | rtrimstr("\n"))}' |
+                        curl -fsS -H 'Content-Type: application/json' -d @- \
+                            ${api}/collections/_superusers/auth-with-password | jq -r .token)
+                    sucall() { curl -fsS -H "Authorization: $su" -H 'Content-Type: application/json' "$@"; }
+
                     # Created from config.yml as the hub starts.
                     system=""
                     until [ -n "$system" ]; do
@@ -105,6 +126,26 @@ in
                     fi
                     jq --arg n "$ntfy" '{settings: (.settings + {webhooks: [$n], emails: []})}' <<< "$settings" |
                         call -X PATCH -d @- "${api}/collections/user_settings/records/$(jq -r .id <<< "$settings")" > /dev/null
+
+                    # Readers: created, or reset to the sops password, as role readonly, and given this system.
+                    members=("$user")
+                    ${lib.concatMapStrings (r: ''
+                        body=$(jq -n --arg e ${lib.escapeShellArg r.email} --rawfile p ${r.passwordFile} \
+                            '($p | rtrimstr("\n")) as $p | {email: $e, password: $p, passwordConfirm: $p, role: "readonly", verified: true}')
+                        id=$(sucall -G ${api}/collections/users/records \
+                            --data-urlencode "filter=email='${r.email}'" | jq -r '.items[0].id // empty')
+                        if [ -z "$id" ]; then
+                            id=$(sucall -d "$body" ${api}/collections/users/records | jq -r .id)
+                        # Only on a changed password: setting it logs the app out.
+                        elif ! jq '{identity: .email, password}' <<< "$body" |
+                            curl -fsS -o /dev/null -H 'Content-Type: application/json' -d @- \
+                                ${api}/collections/users/auth-with-password; then
+                            sucall -X PATCH -d "$body" "${api}/collections/users/records/$id" > /dev/null
+                        fi
+                        members+=("$id")
+                    '') readers}
+                    jq -n '{users: $ARGS.positional}' --args "''${members[@]}" |
+                        sucall -X PATCH -d @- "${api}/collections/systems/records/$system" > /dev/null
 
                     ${lib.concatStrings (
                         lib.mapAttrsToList (name: a: ''
