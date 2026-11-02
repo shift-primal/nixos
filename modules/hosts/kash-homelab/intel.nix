@@ -18,6 +18,9 @@ _:
 
             systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD";
 
+            # Video engine load in Beszel (modules/homelab/ops/monitoring/beszel.nix), to see transcodes.
+            services.beszel.agent.environment.GPU_COLLECTOR = [ "intel_gpu_top" ];
+
             services.jellyfin = {
                 hardwareAcceleration = {
                     enable = true;
