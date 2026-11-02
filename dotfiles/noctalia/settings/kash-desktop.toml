@@ -10,7 +10,7 @@ font_family = "Monaspace Neon NF"
 font_weight = 600
 margin_ends = 0
 radius = 0
-start = [ "group:g4", "sysmon", "nightwatch75/claude-cockpit:widget" ]
+start = [ "group:g4", "sysmon", "bar" ]
 thickness = 32
 widget_spacing = 14
 
@@ -213,6 +213,9 @@ daily_folder = "05 Journal/Daily"
 refresh_interval = 19
 vault_path = "/home/kasper/obsidian/vaults/Kasper"
 
+[plugin_settings."jrohland/claudecode"]
+currency = "usd"
+
 [plugin_settings."mindnbytes/nix-status"]
 flake_dir = "/home/kasper/nixos"
 nixos_configuration = "kash-desktop"
@@ -224,7 +227,6 @@ editor_command = "nvim"
 [plugins]
 enabled = [
     "noctalia/bitwarden",
-    "nightwatch75/claude-cockpit",
     "mindnbytes/nix-status",
     "gamaraan/mx-control",
     "raycursive/github-prs",
@@ -233,7 +235,8 @@ enabled = [
     "kenn/keybind-cheatsheet",
     "tmelik/system-monitor",
     "alexander/screen-toolkit",
-    "davemhammer/obsidian"
+    "davemhammer/obsidian",
+    "felipeartur/ai-usagebar"
 ]
 
 [shell]
@@ -323,6 +326,9 @@ directory = "/home/kasper/Pictures/wallpapers"
 
     [wallpaper.monitors.DP-3]
     path = "/home/kasper/Pictures/wallpapers/nix-1.png"
+
+[widget.bar]
+type = "felipeartur/ai-usagebar:bar"
 
 [widget.clock]
 tooltip_format = "{:%a %d. %b - %y}"

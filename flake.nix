@@ -45,6 +45,11 @@
             url = "github:ryoppippi/nix-vite-plus";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+
+        ai-usagebar = {
+            url = "github:akitaonrails/ai-usagebar";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
 
     # Every .nix file under modules/ is a flake-parts module, imported automatically.

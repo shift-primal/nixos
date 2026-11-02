@@ -13,12 +13,6 @@ _:
                     themePackages = [ pkgs.nixos-bgrt-plymouth ];
                 };
 
-                initrd = {
-                    # Plymouth starts in the initrd and takes passphrases through systemd-ask-password.
-                    systemd.enable = true;
-                    verbose = false;
-                };
-
                 # Keep kernel and systemd messages off the splash.
                 consoleLogLevel = 3;
                 kernelParams = [
