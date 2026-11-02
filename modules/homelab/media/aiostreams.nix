@@ -34,6 +34,10 @@ in
                             BASE_URL = "http://127.0.0.1:${toString port}";
                             PORT = toString port;
                             TZ = config.time.timeZone;
+                            # Its per-IP limits are for public instances. Here every request comes from
+                            # Jellyfin on 127.0.0.1, and Gelato's catalog import asks for hundreds of
+                            # titles at once: about half of them got "Rate Limit Exceeded" and were skipped.
+                            DISABLE_RATE_LIMITS = "true";
                         };
                         environmentFiles = [
                             config.sops.templates."aiostreams.env".path
