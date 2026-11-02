@@ -24,5 +24,7 @@ in
         services.immich.mediaLocation = "${mountPoint}/immich";
         # OpenCloud's files and state (modules/homelab/apps/opencloud.nix).
         services.opencloud.stateDir = "${mountPoint}/opencloud";
+        # Usage graph and Disk alert (modules/homelab/ops/monitoring/beszel.nix).
+        services.beszel.agent.environment.EXTRA_FILESYSTEMS = mountPoint;
     };
 }

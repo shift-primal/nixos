@@ -2,7 +2,8 @@ _:
 
 {
     # Watches every SATA disk (the SSD and the 4 TB HDD) and pushes a SMART warning, failing
-    # self-test or overheating through ntfy-alert (ntfy.nix).
+    # self-test or overheating through ntfy-alert (ntfy.nix). Beszel (beszel.nix) graphs the same
+    # SMART data but can't schedule self-tests, so smartd stays.
     flake.modules.nixos.homelab =
         {
             config,
