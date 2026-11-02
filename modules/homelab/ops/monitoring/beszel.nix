@@ -89,7 +89,12 @@ in
                     jq
                 ];
                 text = ''
-                    until curl -fsS -o /dev/null ${api}/health; do sleep 2; done
+                    # The hub takes a few seconds to listen after a switch; give up (and let systemd retry) after 2 min.
+                    for i in $(seq 60); do
+                        curl -fs -o /dev/null ${api}/health && break
+                        [ "$i" -lt 60 ] || { echo "hub not answering on ${api}" >&2; exit 1; }
+                        sleep 2
+                    done
 
                     auth=$(jq -n --arg e ${lib.escapeShellArg config.homelab.beszel.email} \
                         --rawfile p ${keysDir}/password '{identity: $e, password: ($p | rtrimstr("\n"))}' |
@@ -153,6 +158,7 @@ in
                                 ${api}/beszel/user-alerts > /dev/null
                         '') alerts
                     )}
+                    echo "ntfy webhook and ${toString (builtins.length (builtins.attrNames alerts))} alert rules set for ${hostName}"
                 '';
             };
         in
