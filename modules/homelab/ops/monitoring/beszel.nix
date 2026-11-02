@@ -127,7 +127,7 @@ in
                     jq --arg n "$ntfy" '{settings: (.settings + {webhooks: [$n], emails: []})}' <<< "$settings" |
                         call -X PATCH -d @- "${api}/collections/user_settings/records/$(jq -r .id <<< "$settings")" > /dev/null
 
-                    # Readers: created or reset to the sops password, role readonly, and given this system.
+                    # Readers: created, or reset to the sops password, as role readonly, and given this system.
                     members=("$user")
                     ${lib.concatMapStrings (r: ''
                         body=$(jq -n --arg e ${lib.escapeShellArg r.email} --rawfile p ${r.passwordFile} \
@@ -136,7 +136,10 @@ in
                             --data-urlencode "filter=email='${r.email}'" | jq -r '.items[0].id // empty')
                         if [ -z "$id" ]; then
                             id=$(sucall -d "$body" ${api}/collections/users/records | jq -r .id)
-                        else
+                        # Only on a changed password: setting it logs the app out.
+                        elif ! jq '{identity: .email, password}' <<< "$body" |
+                            curl -fsS -o /dev/null -H 'Content-Type: application/json' -d @- \
+                                ${api}/collections/users/auth-with-password; then
                             sucall -X PATCH -d "$body" "${api}/collections/users/records/$id" > /dev/null
                         fi
                         members+=("$id")
