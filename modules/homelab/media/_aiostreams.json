@@ -330,7 +330,8 @@
   "excludeCachedFromServices": [],
   "excludeCachedFromStreamTypes": [],
   "preferredEncodes": [
-    "AVC"
+    "AVC",
+    "HEVC"
   ],
   "preferredStreamTypes": [],
   "preferredVisualTags": [],
