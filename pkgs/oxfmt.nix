@@ -1,6 +1,3 @@
-# nixpkgs' oxfmt (0.68) can't format .astro. Newer oxfmt can, but only with @astrojs/compiler-rs
-# next to it, which oxfmt doesn't bundle and nixpkgs doesn't package; ship it in node_modules.
-# Drop the version bump once nixpkgs catches up.
 {
     lib,
     stdenv,
@@ -21,7 +18,6 @@ let
             inherit hash;
         };
 
-    # compiler-rs loads compiler-binding, which loads the native module for this platform
     astro = lib.mapAttrs npmTarball {
         compiler-rs = "sha512-IvwYLB8t1M86rKO4oPdBi9GP4gzXcgrVlNgocjwos1jeeUuEIV8d9Crn1PvYD/5IKteWOxpIHomf7e8iYlkE+Q==";
         compiler-binding = "sha512-lEn76+0JcMQ5RDXU0wSMWJg2ZppiZvSULpghC29cfv4o9bhvWFDbQjsCtvjjXN9iVLFQ7fL3wTR2L2UU13mP8g==";
@@ -52,7 +48,7 @@ oxfmt.overrideAttrs (
         };
 
         nativeBuildInputs = prev.nativeBuildInputs ++ [ autoPatchelfHook ];
-        # the native module links libgcc_s
+
         buildInputs = (prev.buildInputs or [ ]) ++ [ stdenv.cc.cc.lib ];
 
         postInstall = (prev.postInstall or "") + ''

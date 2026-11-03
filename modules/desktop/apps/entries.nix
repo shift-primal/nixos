@@ -4,7 +4,7 @@ _:
     flake.modules.homeManager.desktop =
         { lib, ... }:
         let
-            # Desktop entries to hide from the launcher.
+
             hidden = [
                 "qv4l2"
                 "qvidcap"

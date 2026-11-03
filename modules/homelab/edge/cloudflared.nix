@@ -1,8 +1,7 @@
 _:
 
 {
-    # Public way in. The tunnel dials out to Cloudflare, so no port is open on the router or the
-    # firewall. Every hostname routed to it lands on Caddy (caddy.nix), which picks the site.
+
     flake.modules.nixos.homelab =
         { config, lib, ... }:
         let
@@ -15,7 +14,7 @@ _:
             };
 
             config = {
-                # The JSON `cloudflared tunnel create` writes to ~/.cloudflared/<id>.json.
+
                 sops.secrets."cloudflared/credentials".restartUnits = [ "cloudflared-tunnel-${id}.service" ];
 
                 services.cloudflared = {

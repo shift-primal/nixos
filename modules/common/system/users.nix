@@ -7,15 +7,13 @@ in
     flake.modules.nixos.common =
         { pkgs, ... }:
         {
-            # Login shell. Home Manager owns the zsh config (modules/common/shell/zsh.nix), so the
-            # system-wide compinit and prompt are turned off.
+
             programs.zsh = {
                 enable = true;
                 enableGlobalCompInit = false;
                 promptInit = "";
             };
 
-            # Features that need a group add it themselves (docker.nix, wireshark.nix, i2c.nix).
             users.users.${vars.user.name} = {
                 isNormalUser = true;
                 description = vars.user.fullName;

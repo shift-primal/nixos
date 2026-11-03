@@ -5,9 +5,7 @@ let
 in
 {
     flake.modules.nixos.kash-laptop = {
-        # Autologin (greetd.nix) types no password, so PAM can't unlock the keyring from
-        # modules/desktop/session/keyring.nix and it would prompt every boot. Seed an unencrypted login
-        # keyring instead: the LUKS passphrase already guards the disk.
+
         home-manager.users.${vars.user.name} =
             {
                 config,
@@ -16,7 +14,7 @@ in
                 ...
             }:
             let
-                # Plaintext keyring header, as read by gnome-keyring's gkm-secret-textual.c.
+
                 emptyKeyring = pkgs.writeText "login.keyring" ''
                     [keyring]
                     display-name=Login
@@ -27,8 +25,7 @@ in
                 '';
             in
             {
-                # Copied, not linked: gnome-keyring rewrites the file as secrets are stored. An existing
-                # keyring is left alone so stored secrets are never wiped.
+
                 home.activation.seedLoginKeyring = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
                     keyrings="${config.xdg.dataHome}/keyrings"
                     if [ ! -e "$keyrings/login.keyring" ]; then

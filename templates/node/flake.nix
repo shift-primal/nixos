@@ -26,7 +26,6 @@
                     node-gyp
                     gnumake
 
-                    # lsp / formatters
                     oxfmt
                     oxlint
                     biome
@@ -35,7 +34,6 @@
                     tailwindcss-language-server
                     nix-vite-plus.packages.${system}.vp
 
-                    # nvim-dap looks for js-debug-adapter
                     vscode-js-debug
                     (writeShellScriptBin "js-debug-adapter" ''
                         exec ${lib.getExe vscode-js-debug} "$@"

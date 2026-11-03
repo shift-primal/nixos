@@ -1,15 +1,11 @@
 _:
 
 let
-    # The Resource Sync to create once in the Komodo UI: name "homelab", "Files on host",
-    # resource path ".". Core reads it from /syncs/<sync name>.
+
     syncName = "homelab";
 in
 {
-    # Web apps built from their own git repos, each a Komodo Stack (declared through a Resource Sync
-    # generated here) plus its Caddy vhost, so the port lives in one place. An app with its own
-    # compose file runs that; any other gets a one-service compose file built from its Dockerfile.
-    # Komodo builds on this host and keeps the images local; nothing is pushed to a registry.
+
     flake.modules.nixos.homelab =
         {
             config,
@@ -25,12 +21,9 @@ in
 
             secretName = name: key: "apps/${name}/${key}";
             envFile = name: "app-${name}.env";
-            # Komodo reads these as `KEY = value` lines.
+
             lines = attrs: lib.concatLines (lib.mapAttrsToList (k: v: "${k} = ${v}") attrs);
 
-            # The compose settings of an app without its own compose file: one service, built from the
-            # Dockerfile at the root of Komodo's checkout. Compose resolves a relative context against
-            # the override's directory in /etc, hence the absolute one.
             single = name: app: {
                 files = [ ];
                 service = "app";
@@ -41,15 +34,14 @@ in
                     services.app = {
                         image = "${name}:latest";
                         build.context = "${periphery.rootDirectory}/stacks/${name}";
-                        # Komodo runs `compose pull` after the build; the image only exists here.
+
                         pull_policy = "never";
                         restart = "unless-stopped";
                         inherit (app) environment;
                     }
                     // lib.optionalAttrs app.hostNetwork {
                         network_mode = "host";
-                        # The app listens on its host port itself, on localhost only so the LAN can't
-                        # skip Caddy (with host networking the firewall would be the only guard).
+
                         environment = app.environment // {
                             HOST = "127.0.0.1";
                             PORT = toString app.port;
@@ -63,8 +55,7 @@ in
                     };
                 }
                 // lib.optionalAttrs (namedVolumes app != { }) {
-                    # `name` keeps compose from prefixing the project, so the volume a Deployment made
-                    # before is reused.
+
                     volumes = lib.mapAttrs (volume: _: { name = volume; }) (namedVolumes app);
                 };
             };
@@ -88,21 +79,18 @@ in
                             {
                                 inherit (app) repo branch;
                                 git_account = app.gitAccount;
-                                # Builds the compose file's `build:` services, so a push redeploys from source.
+
                                 run_build = true;
                                 webhook_enabled = true;
-                                # The default deploys only when the compose files changed; the code a push
-                                # changes is in the image, so that would never redeploy.
+
                                 webhook_force_deploy = true;
-                                # A fixed path: a rebuild changes the store path, and a Stack still pointing
-                                # at an old one (sync not executed, or garbage collected) can't deploy,
-                                # webhooks included. Compose takes absolute -f paths as they are.
+
                                 file_paths = compose.files ++ [ (overridePath name) ];
                             }
                         else
                             {
                                 file_contents = lib.generators.toYAML { } (composeWithPort compose app);
-                                # Prebuilt images: redeploy when a newer one is pushed.
+
                                 poll_for_updates = true;
                                 auto_update = true;
                             }
@@ -114,8 +102,7 @@ in
                         post_deploy.command = "${compose.postDeploy}";
                     }
                     // lib.optionalAttrs (app.secrets != [ ]) {
-                        # For ${VAR} interpolation in the compose file. Untracked, so Komodo never
-                        # reads or shows the values.
+
                         additional_env_files = [
                             {
                                 path = config.sops.templates.${envFile name}.path;
@@ -126,8 +113,6 @@ in
                 }
             ) allApps;
 
-            # Binds the served container to localhost (Docker bypasses the firewall, and Caddy is the
-            # way in), on top of whatever the stack's own override adds.
             composeWithPort =
                 compose: app:
                 lib.recursiveUpdate (lib.optionalAttrs (!app.hostNetwork) {
@@ -141,7 +126,6 @@ in
             overrideFile = name: "komodo/stacks/${name}-override.yml";
             overridePath = name: "/etc/${overrideFile name}";
 
-            # Copied rather than linked: Core's container can't follow links into /nix/store.
             syncDir = pkgs.runCommand "komodo-sync-${syncName}" { } ''
                 mkdir $out
                 cp ${(pkgs.formats.toml { }).generate "apps.toml" resources} $out/apps.toml
@@ -319,7 +303,6 @@ in
                     ) allApps
                 );
 
-                # Changes here take effect on the Stack's next deploy; the sync shows no diff for them.
                 environment.etc = lib.mapAttrs' (
                     name: app:
                     lib.nameValuePair (overrideFile name) { source = override name (composeOf name app) app; }
@@ -333,14 +316,10 @@ in
                     }
                 ) (lib.filterAttrs (_: app: app.secrets != [ ]) allApps);
 
-                # A new store path per change, so Core restarts (a few seconds of UI downtime, apps
-                # keep running) and the sync shows the diff to execute.
                 virtualisation.oci-containers.containers.komodo-core.volumes = [
                     "${syncDir}:/syncs/${syncName}:ro"
                 ];
 
-                # Only the tunnel reaches Caddy, so Cloudflare's CF-Connecting-IP is the real client.
-                # Without it every visitor looks like cloudflared on 127.0.0.1.
                 services.caddy.virtualHosts = lib.mapAttrs' (
                     _: app:
                     lib.nameValuePair "http://${app.domain}" {
@@ -354,8 +333,7 @@ in
 
                 homelab.localNames = lib.mkMerge (
                     lib.mapAttrsToList (
-                        _: app:
-                        lib.genAttrs (app.localNames ++ lib.optional app.frontPage hostname) (_: app.port)
+                        _: app: lib.genAttrs (app.localNames ++ lib.optional app.frontPage hostname) (_: app.port)
                     ) allApps
                 );
             };

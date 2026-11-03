@@ -1,9 +1,5 @@
-# Single source of truth for values used by more than one module, or by the
-# live-edited dotfiles. Changing a value here needs a rebuild; editing a file
-# under dotfiles/ does not.
 #
-# Modules read these as config.vars of the flake-parts module around them. Dotfiles read
-# them through ~/.config/nixos-vars/vars.lua (modules/desktop/theming/vars-lua.nix).
+
 { lib, ... }:
 
 {
@@ -12,15 +8,12 @@
         description = "Values shared by modules and dotfiles.";
     };
 
-    # hostname and stateVersion are per machine: set in modules/hosts/<hostname>/default.nix.
     config.vars = rec {
         user = {
             name = "kasper";
             fullName = "Kasper Haugestøl";
             home = "/home/${user.name}";
-            # Public SSH keys authorized on every machine (modules/common/network/openssh.nix). The private
-            # halves live in Bitwarden and are served by its SSH agent (SSH_AUTH_SOCK in
-            # modules/common/shell/zsh.nix). The homelab has no key: nothing SSHes out from it.
+
             sshKeys = {
                 personal = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKKCQ78itQutj3zwTn6g+2RwSi8zl7+mssOGsQyeekZB kash-ssh-key";
                 kash-desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOi/1l6nA7bR2D13n/Te5Xk6E/VIUcp/+CSTMOD8CTve kash-desktop";
@@ -28,7 +21,6 @@
             };
         };
 
-        # /etc/nixos links here. Dotfiles are linked out of the store from dotfiles/.
         flakeDir = "${user.home}/nixos";
 
         timeZone = "Europe/Oslo";
@@ -45,8 +37,6 @@
             size = 24;
         };
 
-        # Default apps, as nixpkgs attribute names. Each one is installed by
-        # modules/desktop/apps/default-apps.nix and its command is handed to the Hyprland keybinds.
         apps = {
             terminal = "kitty";
             editor = "neovim";

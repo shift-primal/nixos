@@ -4,9 +4,7 @@ let
     inherit (config) vars;
 in
 {
-    # Exposes modules/flake/vars.nix to the live-edited Lua dotfiles as
-    # ~/.config/nixos-vars/vars.lua. Load it with:
-    #   dofile(os.getenv("HOME") .. "/.config/nixos-vars/vars.lua")
+
     flake.modules.homeManager.desktop =
         {
             lib,

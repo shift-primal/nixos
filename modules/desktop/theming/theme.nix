@@ -4,7 +4,7 @@ _:
     flake.modules.homeManager.desktop =
         { pkgs, ... }:
         {
-            # The portal reads this and reports "prefer dark" to apps.
+
             dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
 
             gtk = {

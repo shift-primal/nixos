@@ -1,11 +1,7 @@
 _:
 
 {
-    # Gelato: a Jellyfin plugin that makes everything AIOStreams (aiostreams.nix) knows browsable and
-    # searchable in Jellyfin, on every client. Pressing play asks AIOStreams for the best release
-    # Real-Debrid has and streams it, so nothing has to be requested first. Its titles live in folders
-    # of their own inside the Filmer and Serier libraries; media-configure (configure.nix) sets the
-    # plugin up and adds those folders.
+
     flake.modules.nixos.homelab =
         {
             config,

@@ -4,13 +4,7 @@ let
     inherit (config) vars;
 in
 {
-    # Beszel: CPU, memory, disk, network, temperature, per-container (Docker) and systemd history for
-    # this host, with alerts pushed through ntfy (ntfy.nix). Tailscale only, at
-    # https://<host>.<tailnet>.ts.net:8090 (edge/tailscale-https.nix); never on the tunnel.
-    # The hub reads the agent over SSH on 127.0.0.1. Everything it would otherwise ask for in the UI
-    # is set here: the account and SSH key are made on the box on first start (beszel-keys), the
-    # system comes from config.yml, and beszel-configure writes the ntfy URL and alert rules.
-    # Log in as `homelab.beszel.email` with the password from `sudo cat /var/lib/beszel-keys/password`.
+
     flake.modules.nixos.homelab =
         {
             config,
@@ -21,12 +15,11 @@ in
         let
             hub = config.services.beszel.hub;
             hostName = config.networking.hostName;
-            # Made here, so the repo holds no secret and a new install needs no sops step.
+
             keysDir = "/var/lib/beszel-keys";
             agentPort = 45876;
             api = "http://127.0.0.1:${toString hub.port}/api";
 
-            # Synced into the hub on every start: systems not listed here are deleted.
             configYml = (pkgs.formats.yaml { }).generate "beszel-config.yml" {
                 systems = [
                     {
@@ -38,10 +31,6 @@ in
                 ];
             };
 
-            # Name → threshold (value) and how many minutes it must hold (min) before alerting.
-            # Disk covers / and the agent's EXTRA_FILESYSTEMS (hosts/kash-homelab/data.nix). Status: agent unreachable.
-            # SystemdFailed: any failed unit, e.g. the backup or media-configure. SMART warnings and
-            # failures alert without a rule; smartd.nix still runs the self-tests.
             alerts = {
                 Status = {
                     value = 0;
@@ -76,7 +65,7 @@ in
                     jq
                 ];
                 text = ''
-                    # The hub takes a few seconds to listen after a switch; give up (and let systemd retry) after 2 min.
+
                     for i in $(seq 60); do
                         curl -fs -o /dev/null ${api}/health && break
                         [ "$i" -lt 60 ] || { echo "hub not answering on ${api}" >&2; exit 1; }
@@ -91,14 +80,14 @@ in
                     user=$(jq -r .record.id <<< "$auth")
                     call() { curl -fsS -H "Authorization: $token" -H 'Content-Type: application/json' "$@"; }
 
-                    # Only a superuser can create users. The first-start migration made one with the same login.
+
                     su=$(jq -n --arg e ${lib.escapeShellArg config.homelab.beszel.email} \
                         --rawfile p ${keysDir}/password '{identity: $e, password: ($p | rtrimstr("\n"))}' |
                         curl -fsS -H 'Content-Type: application/json' -d @- \
                             ${api}/collections/_superusers/auth-with-password | jq -r .token)
                     sucall() { curl -fsS -H "Authorization: $su" -H 'Content-Type: application/json' "$@"; }
 
-                    # Created from config.yml as the hub starts.
+
                     system=""
                     until [ -n "$system" ]; do
                         system=$(call -G ${api}/collections/systems/records \
@@ -106,7 +95,7 @@ in
                         [ -n "$system" ] || sleep 2
                     done
 
-                    # https://ntfy.sh/<topic> → Shoutrrr's ntfy://ntfy.sh/<topic>. No email: no SMTP set up.
+
                     ntfy="$(sed 's|^https://|ntfy://|' ${
                         config.sops.secrets."ntfy/url".path
                     })?priority=high&tags=warning"
@@ -119,8 +108,8 @@ in
                     jq --arg n "$ntfy" '{settings: (.settings + {webhooks: [$n], emails: []})}' <<< "$settings" |
                         call -X PATCH -d @- "${api}/collections/user_settings/records/$(jq -r .id <<< "$settings")" > /dev/null
 
-                    # Only the owner, which Homepage (apps/homepage.nix) logs in as: deletes the read-only
-                    # accounts the old homehub dashboard used.
+
+
                     sucall -G ${api}/collections/users/records --data-urlencode "filter=role='readonly'" |
                         jq -r '.items[].id' | while read -r id; do
                             sucall -X DELETE "${api}/collections/users/records/$id"
@@ -149,7 +138,7 @@ in
                 services.beszel.hub = {
                     enable = true;
                     host = "127.0.0.1";
-                    # USER_EMAIL and USER_PASSWORD: read once, by the migration that creates the database.
+
                     environmentFile = "${keysDir}/hub.env";
                 };
 
@@ -157,7 +146,7 @@ in
                     requires = [ "beszel-keys.service" ];
                     after = [ "beszel-keys.service" ];
                     serviceConfig.LoadCredential = [ "id_ed25519:${keysDir}/id_ed25519" ];
-                    # The hub keeps its SSH key and config.yml in its PocketBase data dir.
+
                     preStart = ''
                         mkdir -p beszel_data
                         install -m 600 "$CREDENTIALS_DIRECTORY/id_ed25519" beszel_data/id_ed25519
@@ -167,7 +156,7 @@ in
 
                 services.beszel.agent = {
                     enable = true;
-                    # Disk health and temperatures, with -n standby so the HDD stays spun down.
+
                     smartmon.enable = true;
                     environment = {
                         LISTEN = "127.0.0.1:${toString agentPort}";
@@ -198,7 +187,7 @@ in
                         [ -s id_ed25519 ] || ssh-keygen -q -t ed25519 -N "" -C beszel-hub -f id_ed25519
                         printf 'USER_EMAIL=%s\nUSER_PASSWORD=%s\n' \
                             ${lib.escapeShellArg config.homelab.beszel.email} "$(cat password)" > hub.env
-                        # Homepage's Beszel widget logs in as this account (apps/homepage.nix).
+
                         printf 'HOMEPAGE_VAR_BESZEL_PASSWORD=%s\n' "$(cat password)" > homepage.env
                     '';
                 };
@@ -208,7 +197,7 @@ in
                     wantedBy = [ "multi-user.target" ];
                     after = [ "beszel-hub.service" ];
                     requires = [ "beszel-hub.service" ];
-                    # Restarts whenever the script changes, as it is in ExecStart.
+
                     serviceConfig = {
                         Type = "exec";
                         ExecStart = lib.getExe configure;
@@ -221,8 +210,6 @@ in
 
                 homelab.tailscaleHttps = [ hub.port ];
 
-                # The password and key, so a restored hub keeps its login and the agent still trusts it.
-                # The metrics history isn't worth the backup space.
                 homelab.backup.paths = [ keysDir ];
             };
         };

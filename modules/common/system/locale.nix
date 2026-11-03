@@ -12,7 +12,6 @@ in
             inherit (vars.keyboard) layout variant;
         };
 
-        # Builds the console keymap from the xkb layout above.
         console.useXkbConfig = true;
     };
 }

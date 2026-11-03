@@ -7,7 +7,7 @@ in
     flake.modules.homeManager.desktop =
         { pkgs, ... }:
         {
-            # Hyprland reads the same name and size from vars.lua (hyprland/cursor.lua).
+
             home.pointerCursor = {
                 enable = true;
                 package = pkgs.${vars.cursor.package};

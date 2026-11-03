@@ -6,16 +6,9 @@ let
     stateDir = "/var/lib/gha";
 in
 {
-    # Self-hosted GitHub Actions runners, so private repos stop spending billed minutes (public
-    # repos run free on GitHub's own runners and must never use these: a fork PR would run its code
-    # here). A workflow opts in with `runs-on: [self-hosted, homelab]`.
+
     #
-    # Each runner is an Ubuntu container, so workflows written for ubuntu-latest (setup-node,
-    # `playwright install --with-deps`, apt) run unchanged, next to its own Docker daemon (dind) for
-    # `services:` and `docker build`. Sharing its network namespace, job steps reach service
-    # containers on localhost as on GitHub, two runners can both publish 5432, and nothing is
-    # published on this host. dind is privileged, so a job can get root here: only attach repos
-    # whose every writer you trust. Ephemeral: one job per container, then a fresh one registers.
+
     flake.modules.nixos.homelab =
         { config, lib, ... }:
         let
@@ -44,8 +37,6 @@ in
                 '';
             };
 
-            # Built per runner, then merged per top-level option: merging whole configs computed from
-            # cfg would recurse, since the module system can't tell they don't define cfg itself.
             config =
                 let
                     runners = lib.mapAttrsToList (
@@ -67,18 +58,15 @@ in
                                 containers.${dind} = {
                                     image = dindImage;
                                     privileged = true;
-                                    # Socket only: dind's default TCP 2375 would be reachable without
-                                    # auth from every container on the host's bridge.
+
                                     cmd = [ "--host=unix:///var/run/docker.sock" ];
                                     volumes = [
                                         "${dir}/docker:/var/lib/docker"
                                         "${dir}/run:/var/run"
-                                        # Same path in both, so bind mounts of the workspace into
-                                        # job containers (Docker actions, `container:` jobs) find it.
+
                                         "${dir}/work:/tmp/runner"
                                     ];
-                                    # Lower CPU weight than everything else, so Jellyfin and the apps
-                                    # win. Two busy runners can take 10 of the 12 GB: add more with care.
+
                                     extraOptions = [
                                         "--cpus=3"
                                         "--cpu-shares=256"
@@ -115,13 +103,12 @@ in
                                 mkdir -p ${dir}/docker ${dir}/run ${dir}/work
                             '';
                             systemd.services."docker-gha-${name}" = {
-                                # A clean workspace for every job, like GitHub's runners.
+
                                 preStart = lib.mkBefore ''
-                                    # Emptied, not recreated: dind holds a bind mount of this directory.
+
                                     find ${dir}/work -mindepth 1 -delete
                                 '';
-                                # An ephemeral runner exits 0 after its job; start the next one. A
-                                # bad token also exits, so wait long enough not to hammer GitHub.
+
                                 serviceConfig = {
                                     Restart = lib.mkForce "always";
                                     RestartSec = 30;
@@ -137,10 +124,7 @@ in
                     systemd = lib.mkMerge [
                         (merge "systemd")
                         {
-                            # dind keeps images (postgres, build cache) between jobs for speed; drop
-                            # what no job used in a week. The runner updates itself when GitHub
-                            # requires it, so a fresh image saves every new container redoing that
-                            # (Docker's --pull has no "newer", and "always" would hit Hub every job).
+
                             services.gha-prune = lib.mkIf (cfg != { }) {
                                 description = "Prune the GitHub runners' Docker caches";
                                 script = ''

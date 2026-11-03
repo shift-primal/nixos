@@ -4,8 +4,7 @@ let
     inherit (config) vars;
 in
 {
-    # The library folders Jellyfin reads, next to Gelato's own (gelato.nix). Files copied in by hand
-    # go straight into them.
+
     flake.modules.nixos.homelab =
         { config, lib, ... }:
         let
@@ -24,8 +23,6 @@ in
                     members = [ vars.user.name ];
                 };
 
-                # Group-writable and setgid, so every service and the user (copying files in over
-                # SSH) can manage what the others wrote.
                 systemd.tmpfiles.settings.media =
                     lib.genAttrs
                         (map (dir: "${root}/${dir}") [

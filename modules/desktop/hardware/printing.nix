@@ -9,7 +9,6 @@ _:
                 drivers = [ pkgs.hplip ];
             };
 
-            # Finds network printers over mDNS.
             services.avahi = {
                 enable = true;
                 nssmdns4 = true;

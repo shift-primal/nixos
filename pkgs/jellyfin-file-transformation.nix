@@ -6,15 +6,14 @@
 }:
 
 let
-    # Built per Jellyfin version: a Jellyfin update needs the matching zip (Release-<version>.zip).
+
     jellyfinVersion = "12.2.0";
 in
-# File Transformation, a Jellyfin plugin that lets other plugins (SleekFin) change the web interface's
-# files as Jellyfin serves them (modules/homelab/media/sleekfin.nix).
+
 stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "jellyfin-plugin-file-transformation";
     version = "3.0.2.0";
-    # Its folder name in Jellyfin's plugin folder, before the version (jellyfin.nix).
+
     passthru.pluginName = "File Transformation";
 
     src = fetchzip {
@@ -23,7 +22,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
         stripRoot = false;
     };
 
-    # The zip has no meta.json; Jellyfin's catalog writes one from its manifest, so this does too.
     meta_json = writeText "meta.json" (
         builtins.toJSON {
             guid = "5e87cc92-571a-4d8d-8d98-d2d4147f9f90";

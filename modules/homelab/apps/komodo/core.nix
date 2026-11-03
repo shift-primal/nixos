@@ -1,16 +1,14 @@
 _:
 
 let
-    # Matches the komodo package in nixpkgs, which runs Periphery (periphery.nix).
-    # Bump both together: Core and Periphery speak a versioned protocol.
+
     coreImage = "ghcr.io/moghtech/komodo-core:2.3.3";
     mongoImage = "mongo:8.0";
     network = "komodo";
     dataDir = "/var/lib/komodo-core";
 in
 {
-    # Komodo Core and its MongoDB. nixpkgs has no Core module and does not build its web UI,
-    # so Core runs from the upstream image, laid out like upstream's mongo.compose.yaml.
+
     flake.modules.nixos.homelab =
         { config, lib, ... }:
         let
@@ -51,7 +49,7 @@ in
                             "${dataDir}/mongo/config:/data/configdb"
                         ];
                         environmentFiles = [ config.sops.templates."komodo-mongo.env".path ];
-                        # Keeps Komodo's "stop all containers" away from its own database.
+
                         labels."komodo.skip" = "";
                         networks = [ network ];
                     };
@@ -59,25 +57,24 @@ in
                     containers.komodo-core = {
                         image = coreImage;
                         dependsOn = [ "komodo-mongo" ];
-                        # Localhost only: Caddy (caddy.nix) is the way in, and Periphery dials it here.
+
                         ports = [ "127.0.0.1:9120:9120" ];
                         volumes = [
                             "${dataDir}/keys:/config/keys"
                             "${dataDir}/backups:/backups"
-                            # Periphery writes its public key here on first start (periphery.nix).
+
                             "${config.services.komodo-periphery.rootDirectory}/keys:/periphery-keys:ro"
                         ];
                         environment = {
                             KOMODO_HOST = "https://${cfg.domain}";
-                            # The webhook URLs the UI shows point here.
+
                             KOMODO_WEBHOOK_BASE_URL = "https://${cfg.webhookDomain}";
                             KOMODO_DATABASE_ADDRESS = "komodo-mongo:27017";
-                            # No Cloudflare Access in front: this login is the only guard on the public
-                            # UI, so nobody can sign up and the admin is the one account.
+
                             KOMODO_LOCAL_AUTH = "true";
                             KOMODO_INIT_ADMIN_USERNAME = "admin";
                             KOMODO_DISABLE_USER_REGISTRATION = "true";
-                            # Single admin; the type-the-name confirm on every deploy is just friction.
+
                             KOMODO_DISABLE_CONFIRM_DIALOG = "true";
                             KOMODO_FIRST_SERVER_NAME = hostname;
                             KOMODO_PERIPHERY_PUBLIC_KEY = "file:/periphery-keys/periphery.pub";
@@ -89,7 +86,6 @@ in
                     };
                 };
 
-                # Containers resolve each other by name only on a user-defined network.
                 systemd.services.docker-network-komodo = {
                     description = "Docker network for Komodo";
                     after = [ "docker.service" ];
@@ -122,7 +118,7 @@ in
                             d.mode = "0700";
                         })
                     // {
-                        # Periphery reads core.pub from here (periphery.nix), nobody else gets in.
+
                         "${dataDir}".d.mode = "0755";
                         "${dataDir}/keys".d = {
                             mode = "0750";
@@ -130,14 +126,11 @@ in
                         };
                     };
 
-                # Values go in secrets/hosts/<hostname>.yaml (sops), e.g. from `openssl rand -hex 32`:
-                # base64 can put `+/=` into the MongoDB connection string.
-                # The host fails to build until that file exists.
                 sops.secrets = {
                     "komodo/db-password" = { };
                     "komodo/jwt-secret" = { };
                     "komodo/webhook-secret" = { };
-                    # Only read on Core's first start, to create the admin user.
+
                     "komodo/admin-password" = { };
                 };
 
@@ -160,7 +153,6 @@ in
                     restartUnits = [ "docker-komodo-core.service" ];
                 };
 
-                # Mongo's files are dumped instead of copied live (backup.nix).
                 homelab.backup = {
                     paths = [ dataDir ];
                     exclude = [ "${dataDir}/mongo" ];

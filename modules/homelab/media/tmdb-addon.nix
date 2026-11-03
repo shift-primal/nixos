@@ -6,9 +6,7 @@ let
     url = "http://127.0.0.1:${toString port}";
 in
 {
-    # The TMDB addon AIOStreams' "The Movie Database" preset (_aiostreams.json) gets catalogs, search
-    # and metadata from, run here with our own TMDB key. The public instance it uses otherwise
-    # (tmdb.elfhosted.com) took 2-14 s per search and rate-limited Gelato's catalog import.
+
     flake.modules.nixos.homelab =
         { config, ... }:
         {
@@ -19,27 +17,25 @@ in
                         PORT = toString port;
                         HOST_NAME = url;
                         NODE_OPTIONS = "--require /search-filter.js";
-                        # It won't start without a fanart.tv key, which only adds title logos. A
-                        # placeholder lets it start; logo lookups then fail quietly and TMDB's are used.
+
                         FANART_API = "none";
                     };
-                    # Drops unrated titles and person credits from search results.
+
                     volumes = [ "${./_tmdb-search-filter.js}:/search-filter.js:ro" ];
                     environmentFiles = [ config.sops.templates."tmdb-addon.env".path ];
-                    # Host network, so the NixOS firewall applies; only AIOStreams talks to it.
+
                     extraOptions = [ "--network=host" ];
                 };
-                # The preset builds its manifest URL from this instead of the public instance.
+
                 aiostreams.environment.TMDB_ADDON_URL = url;
             };
 
             sops.secrets."media/tmdb-api-key" = { };
-            # The v3 API key (sent as api_key=), not the read access token.
+
             sops.templates."tmdb-addon.env".content = ''
                 TMDB_API=${config.sops.placeholder."media/tmdb-api-key"}
             '';
 
-            # AIOStreams takes a user config only if every addon's manifest answers (configure.nix).
             systemd.services.docker-aiostreams = {
                 wants = [ "docker-tmdb-addon.service" ];
                 after = [ "docker-tmdb-addon.service" ];

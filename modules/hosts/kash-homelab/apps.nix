@@ -1,9 +1,7 @@
 _:
 
 {
-    # Web apps moved over from Coolify on the Hetzner VPS (modules/homelab/apps/komodo/apps.nix).
-    # Ports count up from 3001; containers listen on 3000 unless containerPort says otherwise.
-    # Secret values go in secrets/hosts/kash-homelab.yaml under apps/<app>/<key>.
+
     flake.modules.nixos.kash-homelab.homelab.apps = {
         pokemon = {
             domain = "pokemon.haugestol.com";
@@ -15,7 +13,7 @@ _:
             domain = "spot.haugestol.com";
             port = 3003;
             repo = "shift-primal/spot";
-            # SQLite (DB_PATH). It had no volume on Coolify, so every redeploy there started empty.
+
             volumes.spot-data = "/app/server/data";
         };
 
@@ -29,7 +27,6 @@ _:
             ];
         };
 
-        # wastescope. Its compose file runs migrations and reseeds the demo accounts on each deploy.
         ws = {
             domain = "ws.haugestol.com";
             port = 3005;
@@ -40,7 +37,7 @@ _:
                     "migrate"
                     "seed"
                 ];
-                # Nightly pg_dumpall (backup.nix).
+
                 override.services.db.labels."homelab.backup" = "postgres";
             };
             environment.BETTER_AUTH_URL = "https://ws.haugestol.com";
@@ -50,8 +47,6 @@ _:
             ];
         };
 
-        # Images come from klyndre's own GitHub Actions (ghcr, public), so this is the whole compose
-        # file. Its repo's docker-compose.yml is Coolify-flavoured (SERVICE_* values, exclude_from_hc).
         klyndre = {
             domain = "klyndre.haugestol.com";
             port = 3006;
@@ -83,7 +78,7 @@ _:
                                     timeout = "5s";
                                     retries = 10;
                                 };
-                                # Nightly pg_dumpall (backup.nix).
+
                                 labels."homelab.backup" = "postgres";
                             };
                             migrate = {
@@ -92,8 +87,7 @@ _:
                                 depends_on.db.condition = "service_healthy";
                                 environment.DATABASE_URL = databaseUrl;
                             };
-                            # Only one bot may be logged in to Discord: stop the old one before deploying.
-                            # No YOUTUBE_PROXY: on a home connection the bot streams YouTube directly.
+
                             bot = {
                                 image = "ghcr.io/shift-primal/klyndre-bot:latest";
                                 restart = "unless-stopped";

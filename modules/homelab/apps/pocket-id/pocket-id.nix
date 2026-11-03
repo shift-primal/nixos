@@ -1,10 +1,7 @@
 _:
 
 {
-    # Pocket ID: one login for the homelab's web apps, with passkeys instead of passwords. Public
-    # through the tunnel, since phones and the desktop sync apps sign in from anywhere. Users, groups
-    # and the apps (OIDC clients) are declared below and in each app's file (opencloud.nix), and
-    # pocket-id-provision (_provision.py) writes them in through Pocket ID's API.
+
     flake.modules.nixos.homelab =
         {
             config,
@@ -16,16 +13,12 @@ _:
             cfg = config.homelab.pocketId;
             inherit (config.services.pocket-id) dataDir;
             port = 1411;
-            # Made on the box on first start, so the repo holds no secret and a new install needs no
-            # sops step. The nightly backup keeps a copy: without encryption-key a restored database
-            # is unreadable.
+
             keysDir = "/var/lib/pocket-id-keys";
             db = "${dataDir}/data/pocket-id.db";
             env = (pkgs.formats.keyValue { }).generate "pocket-id.env" config.services.pocket-id.settings;
             inherit (lib) mkOption types;
 
-            # `sudo pocket-id-login <user>` prints a link that signs in once, valid an hour. That is how
-            # a new user gets in to add their first passkey, and the way back in after losing one.
             login = pkgs.writeShellScriptBin "pocket-id-login" ''
                 set -euo pipefail
                 set -a
@@ -127,12 +120,12 @@ _:
                         APP_URL = "https://${cfg.domain}";
                         HOST = "127.0.0.1";
                         PORT = toString port;
-                        # Caddy (caddy.nix) passes on the visitor's address, for rate limits and the audit log.
+
                         TRUST_PROXY = true;
                         ANALYTICS_DISABLED = true;
-                        # Application settings come from here, not the admin UI, so they stay in Nix.
+
                         UI_CONFIG_DISABLED = true;
-                        # pocket-id-provision creates users without one; on (the default), it fails.
+
                         REQUIRE_USER_EMAIL = false;
                     };
                     credentials = {
@@ -164,7 +157,7 @@ _:
                     wantedBy = [ "multi-user.target" ];
                     after = [ "pocket-id.service" ];
                     requires = [ "pocket-id.service" ];
-                    # Restarts whenever the script or settings change, as both are in ExecStart.
+
                     serviceConfig = {
                         Type = "exec";
                         ExecStart = "${provision} ${pkgs.writeText "pocket-id-provision.json" (builtins.toJSON settings)}";
@@ -181,14 +174,13 @@ _:
                     reverse_proxy 127.0.0.1:${toString port}
                 '';
 
-                # The SQLite database is dumped instead of copied live (backup.nix).
                 homelab.backup = {
                     paths = [
                         dataDir
                         keysDir
                     ];
                     exclude = [ "${db}*" ];
-                    # Empty until Pocket ID's first start.
+
                     dumps."pocket-id.sql.gz" = ''
                         { [ ! -e ${db} ] || ${lib.getExe pkgs.sqlite} -readonly ${db} .dump; } | ${lib.getExe pkgs.gzip}
                     '';

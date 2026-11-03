@@ -52,7 +52,5 @@
         };
     };
 
-    # Every .nix file under modules/ is a flake-parts module, imported automatically.
-    # Paths containing /_ are skipped (hardware-configuration.nix files).
     outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
 }

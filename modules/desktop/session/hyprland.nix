@@ -2,7 +2,7 @@ _:
 
 {
     flake.modules.nixos.desktop = {
-        # Hyprland itself is configured live from dotfiles/hypr.
+
         programs = {
             hyprland = {
                 enable = true;
@@ -14,7 +14,6 @@ _:
             dconf.enable = true;
         };
 
-        # Used by the Noctalia shell for battery and power profile widgets.
         services = {
             upower.enable = true;
             power-profiles-daemon.enable = true;

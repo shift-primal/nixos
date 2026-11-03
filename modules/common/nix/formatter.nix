@@ -1,9 +1,7 @@
 _:
 
 let
-    # nixfmt has no config file, so the style is baked into the binary. Every nixfmt on PATH
-    # (Neovim, treefmt, `nix fmt`, projects made from templates/) formats the same way.
-    # The indent is mirrored in dotfiles/nvim/lua/config/autocmds.lua.
+
     nixfmt =
         pkgs:
         pkgs.symlinkJoin {
@@ -26,7 +24,6 @@ in
             ];
         };
 
-    # `nix fmt` runs treefmt with the repo's treefmt.toml and the nixfmt above.
     perSystem =
         { pkgs, ... }:
         {

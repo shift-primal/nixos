@@ -1,9 +1,7 @@
 _:
 
 {
-    # Per-project dev shells: `nix flake init -t ~/nixos#<name>`, then `direnv allow`. The env
-    # loads on cd (nix-direnv, modules/common/shell/tools.nix). Project toolchains and their
-    # LSPs live here, not in modules/desktop/dev/.
+
     flake.templates = {
         node = {
             path = ../../templates/node;

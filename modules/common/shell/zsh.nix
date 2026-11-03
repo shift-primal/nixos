@@ -8,8 +8,7 @@ _:
             dotDirRel = lib.removePrefix "${config.home.homeDirectory}/" dotDir;
         in
         {
-            # .zshrc is the live-edited dotfiles/zsh/.zshrc (see modules/common/dotfiles.nix).
-            # Everything Home Manager generates goes to hm-init.zsh, which that file sources.
+
             home.file."${dotDirRel}/.zshrc".enable = lib.mkForce false;
             home.file."${dotDirRel}/hm-init.zsh".text = config.programs.zsh.initContent;
 
@@ -34,7 +33,6 @@ _:
                     COMPLETION_WAITING_DOTS = "true";
                 };
 
-                # EDITOR and VISUAL are set system-wide from modules/flake/vars.nix (modules/common/system/packages.nix).
                 sessionVariables = {
                     SSH_AUTH_SOCK = "$HOME/.bitwarden-ssh-agent.sock";
                     PNPM_HOME = "$HOME/.local/share/pnpm";
@@ -50,7 +48,7 @@ _:
                         "eza"
                     ];
                     extraConfig = ''
-                        # Nix profile completion dirs fail compaudit and stall the first prompt.
+
                         ZSH_DISABLE_COMPFIX=true
                         zstyle ':omz:update' mode reminder
                     '';

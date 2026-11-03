@@ -12,7 +12,7 @@ in
 
         nixpkgs = {
             config.allowUnfree = true;
-            # Packages from pkgs/ (modules/flake/overlay.nix), available as pkgs.<name> in every module.
+
             overlays = [ default ];
         };
     };

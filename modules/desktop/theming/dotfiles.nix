@@ -15,9 +15,9 @@ in
                 "kitty" = "kitty";
                 "noctalia/config.toml" = "noctalia/config.toml";
                 "noctalia/host.toml" = "noctalia/hosts/${hostName}.toml";
+                "noctalia/palettes" = "noctalia/palettes";
             };
 
-            # Noctalia writes anything it saves to settings.toml. One file per host.
             xdg.stateFile."noctalia/settings.toml" = {
                 source = config.lib.file.mkOutOfStoreSymlink "${vars.flakeDir}/dotfiles/noctalia/settings/${hostName}.toml";
                 force = true;

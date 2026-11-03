@@ -12,10 +12,7 @@ in
             ...
         }:
         let
-            # Fixed flake and actions only, so the sudo rule below doesn't hand out a
-            # general nixos-rebuild. The aliases are in dotfiles/zsh/.zshrc.
-            # The host is the current hostname, or the optional second argument for when the
-            # hostname doesn't match a config yet (a fresh install or a rename).
+
             rebuild = pkgs.writeShellScriptBin "rebuild" ''
                 set -euo pipefail
                 case "''${1:-}" in

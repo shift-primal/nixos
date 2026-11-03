@@ -1,7 +1,7 @@
 _:
 
 {
-    # System-wide fallback fonts.
+
     flake.modules.nixos.desktop =
         { pkgs, ... }:
         {
@@ -14,7 +14,6 @@ _:
             ];
         };
 
-    # The user's own fonts. Monaspace Neon NF is the kitty font (dotfiles/kitty/kitty.conf).
     flake.modules.homeManager.desktop =
         { pkgs, ... }:
         {
@@ -22,14 +21,6 @@ _:
 
             home.packages = with pkgs; [
                 monaspace
-                bagnard
-                circular-std
-                (google-fonts.override {
-                    fonts = [
-                        "DMSerifDisplay"
-                        "JosefinSans"
-                    ];
-                })
             ];
         };
 }

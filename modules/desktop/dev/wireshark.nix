@@ -7,7 +7,6 @@ in
     flake.modules.nixos.desktop =
         { pkgs, ... }:
         {
-            # Creates the wireshark group, which gives capture rights.
             programs.wireshark = {
                 enable = true;
                 package = pkgs.wireshark;

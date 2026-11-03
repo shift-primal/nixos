@@ -5,8 +5,7 @@ let
     hm = config.flake.modules.homeManager;
 in
 {
-    # Each NixOS aspect brings its Home Manager twin (flake.modules.homeManager.<aspect>),
-    # so hosts only list NixOS aspects. desktop/home.nix does the same.
+
     flake.modules.nixos.common = {
         imports = [ inputs.home-manager.nixosModules.home-manager ];
 

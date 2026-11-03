@@ -7,8 +7,7 @@ in
     flake.modules.homeManager.desktop =
         { config, lib, ... }:
         let
-            # ~/.claude/skills/<name> = dotfiles/claude/skills/<name>, one link per skill folder.
-            # Not one link for the whole folder: Claude Code writes its own synced/ there.
+
             skills = lib.attrNames (
                 lib.filterAttrs (_: type: type == "directory") (builtins.readDir ../../../dotfiles/claude/skills)
             );

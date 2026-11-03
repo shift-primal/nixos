@@ -1,19 +1,7 @@
 _:
 
 {
-    # Homepage (gethomepage.dev): the homelab's dashboard. Home LAN and tailnet
-    # only, at http://hub.local and http://<hostname> (edge/local-names.nix). Domains and ports are
-    # read from the modules that own them, and every app in homelab.apps with a domain gets a tile.
-    # The status dots are HTTP checks against 127.0.0.1, made server-side. Widget credentials:
-    #   Beszel:   the owner account (the widget needs a superuser), password from beszel-keys
-    #             (ops/monitoring/beszel.nix).
-    #   Jellyfin: an API key homepage-keys (below) creates through Jellyfin's API.
-    #   ntfy:     server and topic, cut from the ntfy/url secret (ops/monitoring/ntfy.nix) by
-    #             homepage-keys.
-    #   Caddy:    its admin API on localhost, no login.
-    #   Komodo, Immich, Tailscale: keys made in their UIs, in sops under homepage/<key> (below).
-    #             The host fails to activate until they are in secrets/hosts/<hostname>.yaml. A
-    #             Tailscale API key expires after at most 90 days.
+
     flake.modules.nixos.homelab =
         {
             config,
@@ -24,7 +12,7 @@ _:
         let
             cfg = config.services.homepage-dashboard;
             beszel = config.services.beszel.hub;
-            # jellyfin.nix
+
             jellyfinPort = 8096;
             keysDir = "/var/lib/homepage-keys";
             sopsKeys = [
@@ -56,10 +44,8 @@ _:
         {
             services.homepage-dashboard = {
                 enable = true;
-                # Caddy keeps the Host header, which Homepage checks against this list.
-                allowedHosts = lib.concatStringsSep "," (
-                    names ++ [ "127.0.0.1:${toString cfg.listenPort}" ]
-                );
+
+                allowedHosts = lib.concatStringsSep "," (names ++ [ "127.0.0.1:${toString cfg.listenPort}" ]);
 
                 settings = {
                     title = hostName;
@@ -84,7 +70,6 @@ _:
                     };
                 };
 
-                # Runs on the host, so these are the host's own numbers (Beszel keeps the history).
                 widgets = [
                     {
                         resources = {
@@ -119,7 +104,7 @@ _:
                                     type = "jellyfin";
                                     url = local jellyfinPort;
                                     key = "{{HOMEPAGE_VAR_JELLYFIN_KEY}}";
-                                    # Jellyfin 10.12 and later.
+
                                     version = 2;
                                     enableBlocks = true;
                                     enableNowPlaying = true;
@@ -130,7 +115,7 @@ _:
                                     ];
                                 };
                             })
-                            # Only Jellyfin talks to these two; the tiles are for their status.
+
                             (tile "AIOStreams" {
                                 description = "Streams for Gelato";
                                 siteMonitor = config.homelab.media.aiostreams.url;
@@ -138,7 +123,7 @@ _:
                             })
                             (tile "TMDB addon" {
                                 description = "Catalogs and search";
-                                # tmdb-addon.nix
+
                                 siteMonitor = local 1337;
                                 icon = "mdi-movie-search";
                             })
@@ -149,7 +134,7 @@ _:
                             (tile "Komodo" {
                                 href = "https://${config.homelab.komodo.domain}";
                                 description = "Deploys";
-                                # komodo/core.nix
+
                                 siteMonitor = local 9120;
                                 icon = "komodo.svg";
                                 widget = {
@@ -168,11 +153,11 @@ _:
                                 widget = {
                                     type = "beszel";
                                     url = local beszel.port;
-                                    # Version 2 logs in as a PocketBase superuser.
+
                                     version = 2;
                                     username = config.homelab.beszel.email;
                                     password = "{{HOMEPAGE_VAR_BESZEL_PASSWORD}}";
-                                    # Matches the system's name as well as its id.
+
                                     systemId = hostName;
                                     fields = [
                                         "status"
@@ -205,7 +190,7 @@ _:
                                 icon = "caddy.svg";
                                 widget = {
                                     type = "caddy";
-                                    # Caddy's default admin endpoint.
+
                                     url = "http://127.0.0.1:2019";
                                 };
                             })
@@ -246,9 +231,8 @@ _:
                 ];
             };
 
-            # systemd reads these as root, so they stay 0600 and out of Homepage's own reach.
             services.homepage-dashboard.environmentFiles = [
-                # Written by beszel-keys (ops/monitoring/beszel.nix).
+
                 "/var/lib/beszel-keys/homepage.env"
                 "${keysDir}/keys.env"
                 config.sops.templates."homepage.env".path
@@ -266,7 +250,7 @@ _:
             };
 
             systemd.services.homepage-dashboard = {
-                # Next.js listens on all interfaces unless told otherwise; Caddy is the only way in.
+
                 environment.HOSTNAME = "127.0.0.1";
                 requires = [ "beszel-keys.service" ];
                 after = [
@@ -276,11 +260,6 @@ _:
                 wants = [ "homepage-keys.service" ];
             };
 
-            # Values for the widgets that need no sops key, collected on boot (or by restarting
-            # homepage-keys, then homepage-dashboard). The
-            # Jellyfin key is made with media-configure's key (media/_configure.py), which
-            # media-configure writes into Jellyfin's database on its first run. Never fails, so
-            # Homepage starts regardless; a widget whose value is missing shows an error.
             systemd.services.homepage-keys = {
                 description = "Collect Homepage's widget keys";
                 after = [
@@ -305,11 +284,11 @@ _:
                     out=${keysDir}/keys.env
                     : > "$out.new"
 
-                    # https://ntfy.sh/<topic> → server and topic.
+
                     ntfy=$(cat ${config.sops.secrets."ntfy/url".path})
                     printf 'HOMEPAGE_VAR_NTFY_URL=%s\nHOMEPAGE_VAR_NTFY_TOPIC=%s\n' "''${ntfy%/*}" "''${ntfy##*/}" >> "$out.new"
 
-                    # The node's stable ID, the one that ends in CNTRL.
+
                     device=$(tailscale status --json 2>/dev/null | jq -r '.Self.ID // empty' || true)
                     [ -n "$device" ] && printf 'HOMEPAGE_VAR_TAILSCALE_DEVICE=%s\n' "$device" >> "$out.new"
 
