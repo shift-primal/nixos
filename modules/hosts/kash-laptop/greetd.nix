@@ -13,7 +13,7 @@ in
         }:
         let
 
-            session = "${lib.getExe' config.programs.niri.package "niri-session"}";
+            session = "${lib.getExe pkgs.uwsm} start -e -D Hyprland hyprland.desktop";
         in
         {
 

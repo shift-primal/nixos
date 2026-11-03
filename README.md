@@ -7,7 +7,6 @@ NixOS module, and live-editable dotfiles. It builds three machines:
 | -------------------- | ----------------- | ----------------------------------------------------------- |
 | `kash-desktop` | Desktop           | NVIDIA, Limine, triple boot with Windows and Arch           |
 | `kash-laptop`  | Laptop            | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
-| `kash-homelab` | HP ProDesk 400 G3 | Headless server: Komodo, Caddy, media, photos, files, backups |
 
 Tracks `nixos-unstable`. Unfree packages are allowed.
 
@@ -25,9 +24,8 @@ Tracks `nixos-unstable`. Unfree packages are allowed.
 - **Services:** Docker, Tailscale, printing (HP, mDNS discovery), fwupd,
   Wireshark, Solaar. SSH on every host is key-only and reachable only over
   Tailscale; the authorized keys are in `vars.user.sshKeys`.
-- **Homelab:** [Komodo](https://komo.do) for deploys and Caddy in front of it
-  (`modules/homelab/`), Jellyfin and a streaming stack, Immich, OpenCloud,
-  Pocket ID, nightly restic backups, plus a 4 TB data disk at `/mnt/data`.
+- **Homelab:** moved to its own repo,
+  [shift-primal/homelab](https://github.com/shift-primal/homelab).
 - **Helpers:** `sudo rebuild switch|boot [host]` (aliased `rb:switch` / `rb:boot`;
   the host defaults to the hostname) and, on the desktop,
   `sudo reboot-to windows|arch|limine`. Both run without a password and only
