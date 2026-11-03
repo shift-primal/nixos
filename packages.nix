@@ -93,6 +93,8 @@ in
             stylua
             shfmt
             tombi
+            sops
+            age
             marksman
             oxfmt
             mise

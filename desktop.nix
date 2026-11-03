@@ -115,11 +115,6 @@ in
 
         programs.noctalia.enable = true;
 
-        programs.btop = {
-            enable = true;
-            settings.color_theme = "tokyo-night";
-        };
-
         home.sessionVariables.SUDO_ASKPASS = "${pkgs.writeShellScript "sudo-askpass" ''
             exec ${lib.getExe pkgs.zenity} --password --title="sudo"
         ''}";
