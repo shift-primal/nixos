@@ -18,6 +18,8 @@ if [[ -r $vp_env ]]; then
   source "$vp_env"
 fi
 
+eval "$(mise activate zsh)"
+
 alias nvimcfg='cd ~/.config/nvim && nvim .'
 alias py='python'
 alias ff='fastfetch'

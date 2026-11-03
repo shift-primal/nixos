@@ -93,8 +93,9 @@ in
             stylua
             shfmt
             tombi
-            prettier
             marksman
+            oxfmt
+            mise
             dockerfile-language-server
             docker-compose-language-service
             hadolint

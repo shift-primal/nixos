@@ -61,6 +61,7 @@ in
                         "kitty" = "kitty";
                         "nvim" = "nvim";
                         "oxc" = "oxc";
+                        "mise/config.toml" = "mise/config.toml";
                         "noctalia/config.toml" = "noctalia/config.toml";
                         "noctalia/host.toml" = "noctalia/hosts/${hostName}.toml";
                         "noctalia/palettes" = "noctalia/palettes";
@@ -85,6 +86,22 @@ in
                     ) skills
                 );
 
+                home.activation.miseInstall = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+                    PATH="${
+                        lib.makeBinPath (
+                            with pkgs;
+                            [
+                                git
+                                curl
+                                gnutar
+                                gzip
+                                xz
+                            ]
+                        )
+                    }:$PATH" run ${lib.getExe pkgs.mise} install --yes || true
+                    run ${lib.getExe pkgs.mise} reshim || true
+                '';
+
                 programs.git = {
                     enable = true;
                     ignores = [
@@ -97,7 +114,6 @@ in
                 programs = {
                     direnv = {
                         enable = true;
-                        nix-direnv.enable = true;
                         config.global.hide_env_diff = true;
                     };
                     zoxide.enable = true;
