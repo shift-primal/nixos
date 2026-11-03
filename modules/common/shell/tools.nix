@@ -9,6 +9,8 @@ _:
             direnv = {
                 enable = true;
                 nix-direnv.enable = true;
+                # Keeps the "loading" and "using flake" lines but drops the long "export +AR +AS ..." list.
+                config.global.hide_env_diff = true;
             };
             zoxide.enable = true;
             starship.enable = true;
