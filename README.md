@@ -121,6 +121,7 @@ sudo reboot-to windows|arch|limine        # desktop: reboot into another OS
 
 - Edits under `dotfiles/` apply immediately; Hyprland reloads on save.
 - Changes to `.nix` files, including `vars.nix`, need a rebuild.
+- Colors come from Noctalia: pick a scheme in its settings (Theme) and every app follows.
 - Noctalia saves GUI changes to `dotfiles/noctalia/settings/<hostname>.toml`, so they show up
   in `git status`. Commit them if they should stick.
 - Format Nix with `nix fmt`.
