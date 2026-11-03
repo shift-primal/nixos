@@ -219,12 +219,6 @@ countdown_seconds = 0.0
 enabled = true
 variant = "default"
 
-[theme]
-builtin = "Ayu"
-community_palette = "Oxocarbon"
-mode = "dark"
-source = "builtin"
-
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers-converted"
 

@@ -336,16 +336,6 @@ font_family = "DejaVu Sans"
     shortcut = "a"
     variant = "default"
 
-[theme]
-community_palette = "Rose Pine Alt"
-custom_palette = "Islands Dark"
-mode = "dark"
-wallpaper_scheme = "m3-content"
-
-    [theme.templates]
-    builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kitty", "qt" ]
-    community_ids = [ "claude-code", "discord", "neovim", "obsidian", "steam", "gruvbox-plus-icons", "hyprtoolkit", "fzf", "lazygit" ]
-
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers"
 

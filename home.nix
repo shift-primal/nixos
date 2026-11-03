@@ -64,7 +64,6 @@ in
                         "mise/config.toml" = "mise/config.toml";
                         "noctalia/config.toml" = "noctalia/config.toml";
                         "noctalia/host.toml" = "noctalia/hosts/${hostName}.toml";
-                        "noctalia/palettes" = "noctalia/palettes";
                     }
                     // {
                         "nixos-vars/vars.lua".text = "return ${lib.generators.toLua { } luaVars}\n";

@@ -125,14 +125,17 @@ countdown_seconds = 0.0
 enabled = true
 variant = "default"
 
-[theme]
-builtin = "Ayu"
-community_palette = "Oxocarbon"
-mode = "dark"
-source = "builtin"
-
 [widget.clock]
 tooltip_format = "{:%a %d. %b - %y}"
 
 [widget.tray]
 drawer = true
+
+[theme]
+source = "builtin"
+builtin = "Tokyo-Night"
+mode = "dark"
+
+    [theme.templates]
+    builtin_ids = []
+    community_ids = []

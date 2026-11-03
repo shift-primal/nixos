@@ -5,8 +5,7 @@ require("hyprland.animations")
 require("hyprland.keybinds")
 require("hyprland.rules")
 require("hyprland.cursor")
-
-require("noctalia").apply_theme()
+require("hyprland.colors")
 
 local vars = require("hyprland.vars")
 -- Per-machine overrides, loaded last so they win: hyprland/hosts/<hostname>.lua,

@@ -284,13 +284,6 @@ font_family = "DejaVu Sans"
     shortcut = "a"
     variant = "default"
 
-[theme]
-builtin = "Ayu"
-community_palette = "Oxocarbon"
-mode = "dark"
-source = "builtin"
-wallpaper_scheme = "m3-tonal-spot"
-
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers"
 
