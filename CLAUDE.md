@@ -18,15 +18,15 @@ packages.nix     environment.systemPackages: apps, CLI tools, config-editing too
 system.nix       nix settings, gc, /etc/nixos link, rebuild helper, boot, locale, users,
                  network, ssh, tailscale, zram, fwupd, nix-ld
 desktop.nix      Hyprland, greeter, Noctalia, portal, keyring, plymouth, fonts, steam,
-                 reboot-to, claude-desktop; HM: cursor, GTK/Qt theme, btop, askpass, trash
+                 reboot-to, claude-desktop; HM: cursor, GTK/Qt theme, askpass, trash
 hardware.nix     audio, bluetooth, i2c, solaar, printing; HM: easyeffects
 dev.nix          docker, wireshark, Rider + .NET SDK and tools, mise shims on PATH
 home.nix         Home Manager: zsh, git, direnv/zoxide/starship/fzf, every dotfile link,
-                 vars.lua, claude skills, mise install on activation
+                 vars.lua, claude skills, mise-install user service (runs after login)
 hosts/<host>/    default.nix (imports, hostName, stateVersion, bootloader, GPU, machine-only
                  config), hardware-configuration.nix
 pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped, oxfmt with Astro support
-dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia, oxc, mise, claude
+dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia, oxc, mise, btop, claude
 ```
 
 ## Where things go
@@ -70,7 +70,7 @@ dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia
    at runtime. Before committing, check the diff for anything secret-looking, and stop and ask
    if unsure.
 5. **Theme is Tokyo Night, fixed.** Noctalia uses its built-in `Tokyo-Night` with templates
-   off (`dotfiles/noctalia/config.toml`); kitty, Neovim, btop and Hyprland borders set it
+   off (`dotfiles/noctalia/config.toml`); kitty, Neovim, btop (`dotfiles/btop/btop.conf`) and Hyprland borders set it
    directly. Do not re-enable wallpaper-generated colors or Noctalia templates.
 
 ## Style
