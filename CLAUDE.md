@@ -51,7 +51,9 @@ Home Manager as a NixOS module, in the dendritic pattern (flake-parts + import-t
    template, `templates/<lang>/flake.nix`; projects load it with direnv, and
    Neovim started inside the project sees it. Tooling for editing configs and
    scripts anywhere (nix, lua, shell, toml, markdown, docker) goes in
-   `modules/desktop/dev/<language>.nix`.
+   `modules/desktop/dev/<language>.nix`. Exception: a GUI IDE started from the
+   launcher never sees direnv, so its toolchain goes in its own file and
+   is installed system-wide (the .NET SDK in `modules/desktop/dev/rider.nix`).
 7. **No plaintext secrets in the repo; it is public.** Never commit passwords,
    API keys, tokens, private keys, Wi-Fi passphrases, password hashes or
    anything else that grants access in plaintext. That includes `dotfiles/`,

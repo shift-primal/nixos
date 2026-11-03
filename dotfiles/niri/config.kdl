@@ -1,0 +1,247 @@
+// Shared niri config for every desktop host. Keyboard layout, cursor and the per-machine file
+// (hosts/<hostname>.kdl, monitors) come from ~/.config/nixos-vars/vars.kdl, included at the end.
+// Ported from dotfiles/hypr; both sessions are listed in the greeter.
+
+input {
+    keyboard {
+        repeat-delay 250
+        repeat-rate 30
+        numlock
+    }
+
+    mouse {
+        accel-profile "flat"
+        accel-speed -0.2
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+        click-method "clickfinger"
+        accel-profile "flat"
+        accel-speed -0.2
+    }
+}
+
+layout {
+    gaps 12
+    center-focused-column "never"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+    default-column-width { proportion 0.5; }
+
+    focus-ring {
+        off
+    }
+
+    // Colors are overridden by noctalia.kdl once Noctalia has written it.
+    border {
+        width 2
+        active-color "#e6b450"
+        inactive-color "#0b0e14"
+        urgent-color "#d95757"
+    }
+
+    shadow {
+        on
+        softness 8
+        spread 2
+        offset x=0 y=2
+        color "#1a1a1aee"
+    }
+}
+
+prefer-no-csd
+
+blur {
+    passes 2
+    offset 3
+}
+
+animations {
+    window-open {
+        duration-ms 200
+        curve "cubic-bezier" 0.12 0.92 0.08 1
+    }
+    window-close {
+        duration-ms 150
+        curve "cubic-bezier" 0.12 0.92 0.08 1
+    }
+}
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+spawn-at-startup "noctalia"
+spawn-at-startup "bitwarden-desktop"
+spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
+spawn-sh-at-startup "wl-paste --type image --watch cliphist store"
+spawn-sh-at-startup "wl-clip-persist --clipboard regular"
+spawn-sh-at-startup "v4l2-ctl -d /dev/video0 --set-ctrl=focus_automatic_continuous=0"
+
+window-rule {
+    geometry-corner-radius 8
+    clip-to-geometry true
+}
+
+// Steam's friends list, settings and other dialogs; the main window stays tiled.
+window-rule {
+    match app-id="^steam$"
+    exclude title="^Steam$"
+    open-floating true
+}
+
+window-rule {
+    match title="^Picture[- ]in[- ][Pp]icture$"
+    open-floating true
+    default-column-width { proportion 0.25; }
+    default-window-height { proportion 0.25; }
+    default-floating-position x=32 y=32 relative-to="bottom-right"
+}
+
+window-rule {
+    match app-id="^Bitwarden$"
+    block-out-from "screencast"
+}
+
+layer-rule {
+    match namespace="^noctalia-background-"
+    background-effect {
+        blur true
+    }
+}
+
+// Keeps the wallpaper visible behind workspaces in the overview.
+layer-rule {
+    match namespace="^noctalia-(wallpaper|backdrop)"
+    place-within-backdrop true
+}
+
+// Default apps are picked in ~/nixos/modules/flake/vars.nix; ~/.config/nixos-vars/apps/<role>
+// links to the binary. Hyprland's universal copy/paste/cut (Mod+C/V/X) has no niri equivalent:
+// there is no action that sends a shortcut to the focused window.
+binds {
+    Mod+Shift+Slash { show-hotkey-overlay; }
+
+    // Noctalia
+    Mod+Space hotkey-overlay-title="Noctalia launcher" { spawn-sh "noctalia msg panel-toggle launcher"; }
+    Mod+Escape hotkey-overlay-title="Noctalia control center" { spawn-sh "noctalia msg panel-toggle control-center"; }
+    Mod+Comma hotkey-overlay-title="Noctalia settings" { spawn-sh "noctalia msg settings-toggle"; }
+
+    // Media and brightness
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
+    XF86AudioMute allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
+    Mod+Alt+Left allow-when-locked=true hotkey-overlay-title="Previous song" { spawn-sh "noctalia msg media previous"; }
+    Mod+Alt+Right allow-when-locked=true hotkey-overlay-title="Next song" { spawn-sh "noctalia msg media next"; }
+    Mod+Alt+Space allow-when-locked=true hotkey-overlay-title="Play/pause song" { spawn-sh "noctalia msg media toggle"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
+
+    // Screenshot and recording
+    Mod+Shift+S hotkey-overlay-title="Screen toolkit" { spawn-sh "noctalia msg plugin alexander/screen-toolkit:service all toggle"; }
+    Mod+S hotkey-overlay-title="Screenshot region" { spawn-sh "noctalia msg screenshot-region"; }
+    Mod+R hotkey-overlay-title="Record region (gpu-screen-recorder, no portal)" {
+        spawn "bash" "-c" r#"
+            pattern='gpu-screen-recorder -w [0-9]+x[0-9]+\+[0-9]+\+[0-9]+'
+            if pgrep -f "$pattern" >/dev/null; then
+                pkill -INT -f "$pattern"
+            else
+                region=$(slurp -f "%wx%h+%x+%y")
+                [ -z "$region" ] && exit 0
+                mkdir -p "$HOME/Videos/Recordings"
+                out="$HOME/Videos/Recordings/recording_$(date +%Y%m%d_%H%M%S).mp4"
+                gpu-screen-recorder -w "$region" -f 60 -k h264 -ac opus \
+                    -a default_output -cursor yes -cr limited -o "$out" >/dev/null 2>&1 & disown
+            fi
+        "#;
+    }
+
+    // Session. Mod+Shift+M is Spotify, so quitting moved to Mod+Shift+Q.
+    Mod+Ctrl+L hotkey-overlay-title="Lock computer" { spawn-sh "noctalia msg session lock"; }
+    Ctrl+Alt+Delete hotkey-overlay-title="Power menu" { spawn-sh "noctalia msg panel-toggle session"; }
+    Mod+Shift+Q { quit; }
+
+    // Tools
+    Mod+Y hotkey-overlay-title="Clipboard history" { spawn-sh "noctalia msg panel-toggle clipboard"; }
+    Mod+B hotkey-overlay-title="Keybind cheatsheet" { spawn-sh "noctalia msg panel-toggle kenn/keybind-cheatsheet:cheatsheet"; }
+    Mod+Shift+C hotkey-overlay-title="Color picker" { spawn-sh "noctalia msg plugin alexander/screen-toolkit:service all colorPicker"; }
+    Mod+M hotkey-overlay-title="Measure screen" { spawn-sh "noctalia msg plugin alexander/screen-toolkit:service all measure"; }
+
+    // Apps
+    Mod+Return hotkey-overlay-title="Terminal" { spawn "~/.config/nixos-vars/apps/terminal"; }
+    Mod+E hotkey-overlay-title="File explorer" { spawn-sh "~/.config/nixos-vars/apps/terminal -e ~/.config/nixos-vars/apps/explorer"; }
+    Mod+Shift+N hotkey-overlay-title="Text editor" { spawn-sh "~/.config/nixos-vars/apps/terminal -e ~/.config/nixos-vars/apps/editor"; }
+    Mod+Shift+B hotkey-overlay-title="Web browser" { spawn "~/.config/nixos-vars/apps/browser"; }
+    Mod+Shift+D hotkey-overlay-title="Discord" { spawn "~/.config/nixos-vars/apps/discord"; }
+    Mod+Shift+E hotkey-overlay-title="Email" { spawn "~/.config/nixos-vars/apps/email"; }
+    Mod+Shift+M hotkey-overlay-title="Spotify" { spawn-sh "~/.config/nixos-vars/apps/terminal -e ~/.config/nixos-vars/apps/spotify"; }
+
+    // Windows
+    Mod+W repeat=false { close-window; }
+    Mod+T { toggle-window-floating; }
+    Mod+Shift+T { switch-focus-between-floating-and-tiling; }
+    Mod+F { fullscreen-window; }
+
+    // Focus and move: left/right go through columns, then to the next monitor; up/down go
+    // through the windows in a column, then to the next workspace.
+    Mod+Left  { focus-column-or-monitor-left; }
+    Mod+Right { focus-column-or-monitor-right; }
+    Mod+Up    { focus-window-or-workspace-up; }
+    Mod+Down  { focus-window-or-workspace-down; }
+    Mod+H     { focus-column-or-monitor-left; }
+    Mod+L     { focus-column-or-monitor-right; }
+    Mod+K     { focus-window-or-workspace-up; }
+    Mod+J     { focus-window-or-workspace-down; }
+
+    Mod+Shift+Left  { move-column-left-or-to-monitor-left; }
+    Mod+Shift+Right { move-column-right-or-to-monitor-right; }
+    Mod+Shift+Up    { move-window-up-or-to-workspace-up; }
+    Mod+Shift+Down  { move-window-down-or-to-workspace-down; }
+    Mod+Shift+H     { move-column-left-or-to-monitor-left; }
+    Mod+Shift+L     { move-column-right-or-to-monitor-right; }
+    Mod+Shift+K     { move-window-up-or-to-workspace-up; }
+    Mod+Shift+J     { move-window-down-or-to-workspace-down; }
+
+    Mod+Ctrl+Left  { focus-monitor-left; }
+    Mod+Ctrl+Right { focus-monitor-right; }
+    Mod+Ctrl+Shift+Left  { move-column-to-monitor-left; }
+    Mod+Ctrl+Shift+Right { move-column-to-monitor-right; }
+
+    Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
+    Mod+WheelScrollRight { focus-column-right; }
+    Mod+WheelScrollLeft  { focus-column-left; }
+
+    // Layout. Hyprland's togglesplit/swapsplit (Mod+G, Mod+Ctrl+G) become column width and maximize.
+    Mod+G { switch-preset-column-width; }
+    Mod+Shift+G { switch-preset-column-width-back; }
+    Mod+Ctrl+G { maximize-column; }
+    Mod+BracketLeft  { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+    Mod+O repeat=false { toggle-overview; }
+
+    // Workspaces are per monitor: Mod+N is the Nth workspace on the focused monitor.
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+}
+
+// Written by Noctalia's niri template (theme colors), like hypr/noctalia.lua.
+include optional=true "noctalia.kdl"
+
+include "~/.config/nixos-vars/vars.kdl"

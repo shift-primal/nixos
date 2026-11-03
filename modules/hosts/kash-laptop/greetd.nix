@@ -12,8 +12,9 @@ in
             ...
         }:
         let
-            # Same command as the "Hyprland (uwsm-managed)" session from programs.hyprland.withUWSM.
-            session = "${lib.getExe pkgs.uwsm} start -e -D Hyprland hyprland.desktop";
+            # Same command as the "Niri" session from programs.niri. Back to Hyprland:
+            # "${lib.getExe pkgs.uwsm} start -e -D Hyprland hyprland.desktop".
+            session = "${lib.getExe' config.programs.niri.package "niri-session"}";
         in
         {
             # Autologin skips the only login prompt, so it is only safe when the disk is encrypted and the

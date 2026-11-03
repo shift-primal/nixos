@@ -6,13 +6,13 @@ in
 {
     flake.modules.nixos.desktop = {
         # Login screen for every host. Per-host autologin is added in modules/hosts/<hostname>/greetd.nix.
-        # The greeter lists the sessions installed by programs.hyprland (including the UWSM one).
+        # The greeter lists the sessions installed by programs.niri and programs.hyprland. To go back
+        # to Hyprland, pick "Hyprland (uwsm-managed)": the plain "Hyprland" entry skips
+        # graphical-session.target, so xdg-desktop-portal (file pickers, screen sharing) refuses to start.
         services.displayManager.noctalia-greeter = {
             enable = true;
             settings = {
-                # The plain "Hyprland" entry skips graphical-session.target, so xdg-desktop-portal
-                # (file pickers, screen sharing) refuses to start. Pre-select the UWSM one.
-                session.default = "Hyprland (uwsm-managed)";
+                session.default = "Niri";
                 keyboard.layout = vars.keyboard.layout;
                 cursor.size = vars.cursor.size;
             };

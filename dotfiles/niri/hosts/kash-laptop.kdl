@@ -1,0 +1,9 @@
+// Caps/Escape swap is services.xserver.xkb.options in modules/hosts/kash-laptop/keyboard.nix:
+// niri replaces the whole xkb block, so it is set together with the layout in vars.kdl.
+
+output "eDP-1" {
+    mode "1920x1200"
+    scale 1.25
+}
+
+// External monitors are placed to the right of eDP-1 by default.
