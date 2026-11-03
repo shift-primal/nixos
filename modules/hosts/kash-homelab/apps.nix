@@ -132,13 +132,13 @@ _:
             ];
         };
 
-        # The homelab's own dashboard. Home LAN and tailnet only: hub.local, or http://kash-homelab
-        # over Tailscale. API keys for the apps it reads go in `secrets`, so they stay server-side.
+        # The old dashboard, kept at homehub.local until Homepage (homelab/apps/homepage.nix), which
+        # took over hub.local and http://kash-homelab, has proven itself. API keys for the apps it
+        # reads go in `secrets`, so they stay server-side.
         homehub = {
             port = 3009;
             repo = "shift-primal/homehub";
-            localNames = [ "hub.local" ];
-            frontPage = true;
+            localNames = [ "homehub.local" ];
             # Status checks hit every service on 127.0.0.1 (src/server/services.ts in homehub).
             hostNetwork = true;
             environment = {
