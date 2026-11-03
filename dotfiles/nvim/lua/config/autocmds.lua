@@ -14,7 +14,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
--- nixfmt only emits spaces; keep this in sync with --indent in ~/nixos/treefmt.toml
+-- nixfmt only emits spaces; keep this in sync with --indent in ~/nixos/modules/common/nix/formatter.nix
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "nix",
 	callback = function()

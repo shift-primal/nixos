@@ -12,7 +12,8 @@ return {
 			lua = { "stylua" },
 			cs = { "csharpier" },
 			toml = { "tombi" },
-			nix = { "treefmt" },
+			-- treefmt where a project has a treefmt.toml, otherwise the global nixfmt
+			nix = { "treefmt_project", "nixfmt", stop_after_first = true },
 			javascript = web_biome,
 			javascriptreact = web_biome,
 			typescript = web_biome,
@@ -47,6 +48,7 @@ return {
 			oxfmt = { prepend_args = { "-c", vim.fs.normalize("~/.config/oxc/oxfmtrc.json") } },
 			biome = { command = "biome", require_cwd = true },
 			["biome-check"] = { command = "biome" },
+			treefmt_project = { inherit = "treefmt", require_cwd = true },
 			prettier_project = { inherit = "prettier", require_cwd = true },
 			stylua = {
 				prepend_args = { "--indent-type", "Tabs", "--indent-width", "4" },
