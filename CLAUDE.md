@@ -1,168 +1,93 @@
 # NixOS config
 
-Flake for `kash-desktop` (desktop), `kash-laptop` (laptop) and `kash-homelab`
-(homelab server), with
-Home Manager as a NixOS module, in the dendritic pattern (flake-parts + import-tree).
-`/etc/nixos` links here (`modules/common/nix/flake-link.nix`). Apply with `sudo nixos-rebuild switch --flake ~/nixos`.
+Flake for `kash-desktop` and `kash-laptop`, with Home Manager as a NixOS module. Plain NixOS
+modules: no flake-parts, no import-tree, no aspects. `/etc/nixos` links here
+(`system.nix`). Apply with `sudo nixos-rebuild switch`.
 
-## Rules
+The home server is a separate repo, `shift-primal/homelab` (`~/homelab`). Nothing here builds it.
 
-1. **Every file is a flake-parts module.** Every `.nix` file under `modules/` is
-   imported automatically by import-tree; there are no `default.nix` import
-   lists. Paths containing `/_` are skipped, which keeps generated
-   `_hardware-configuration.nix` files out. A file adds config to an _aspect_:
-   `flake.modules.nixos.<aspect>` and/or `flake.modules.homeManager.<aspect>`.
-   Several files feed the same aspect and merge. There are three role aspects,
-   one folder each: `common` (every host), `desktop` (kash-desktop and
-   kash-laptop: GUI, apps, editor tooling) and `homelab` (the server's
-   services), plus one per host. Subfolders inside a role group files by use
-   case and do not affect evaluation. Each NixOS aspect brings its Home Manager
-   twin (`desktop/home.nix`, `common/home-manager.nix`; `homelab` has none), so
-   a host only lists NixOS aspects: `common` plus `desktop` or `homelab`.
-2. **One concern per file, whole feature in one file.** A feature that needs a
-   service, a user group, packages and a dotfile link (e.g.
-   `modules/desktop/dev/docker.nix`) sets all of it in one file, on both the NixOS and
-   Home Manager side. Add a feature as a new file in the matching use-case folder of its role.
-3. **One source of truth.** A value used in more than one place lives in
-   `config.vars` (`modules/flake/vars.nix`: user, paths, locale, keyboard,
-   cursor, default apps) and is read from there, never retyped. Read it from the
-   flake-parts module around the inner one, because the inner module's `config`
-   is the NixOS/HM one:
-   `{ config, ... }: let inherit (config) vars; in { flake.modules.nixos.x = { pkgs, ... }: ...; }`.
-   `inputs` comes the same way. There are no `specialArgs`. Per-machine values
-   live in the host's `default.nix`: `networking.hostName` and
-   `system.stateVersion`; Home Manager reads them through `osConfig`. Never
-   hard-code `kasper`, `/home/kasper`, the hostname or `~/nixos`; use
-   `vars.user.name`, `vars.user.home`, `osConfig.networking.hostName` (or
-   `config.networking.hostName` in NixOS modules), `vars.flakeDir`.
-4. **Dotfiles stay live-editable.** Program configs (hypr, kitty, nvim, zsh,
-   starship) live in `dotfiles/` and are linked with `mkOutOfStoreSymlink`
-   through the `dotfiles.links` option (`modules/common/dotfiles.nix`); each
-   feature adds its own entries. Edits apply without a rebuild. Do not convert
-   them to Home Manager `programs.<x>.settings`.
-5. **Dotfiles read Nix values from `~/.config/nixos-vars/vars.lua`**, which
-   `modules/desktop/theming/vars-lua.nix` generates from `config.vars`. Hyprland
-   loads it through `dotfiles/hypr/hyprland/vars.lua`. To share a new value, add
-   it to `modules/flake/vars.nix` and to `luaVars` in
-   `modules/desktop/theming/vars-lua.nix`, not to the Lua files.
-6. **Nix installs every binary.** No Mason or other in-editor installers; Mason
-   is disabled in `dotfiles/nvim/lua/plugins/lsp/mason.lua`. Tooling for a
-   project language (LSP, formatter, linter, debugger) goes in its dev shell
-   template, `templates/<lang>/flake.nix`; projects load it with direnv, and
-   Neovim started inside the project sees it. Tooling for editing configs and
-   scripts anywhere (nix, lua, shell, toml, markdown, docker) goes in
-   `modules/desktop/dev/<language>.nix`. Exception: a GUI IDE started from the
-   launcher never sees direnv, so its toolchain goes in its own file and
-   is installed system-wide (the .NET SDK in `modules/desktop/dev/rider.nix`).
-7. **No plaintext secrets in the repo; it is public.** Never commit passwords,
-   API keys, tokens, private keys, Wi-Fi passphrases, password hashes or
-   anything else that grants access in plaintext. That includes `dotfiles/`,
-   since everything there is tracked too. The one exception is sops-encrypted
-   files under `secrets/` (recipients in `.sops.yaml`, wiring in
-   `modules/common/secrets.nix`): only commit one after checking that its values
-   read `ENC[...]` and it ends with `sops:` metadata. Do not put secrets in Nix
-   strings either: they end up in the world-readable `/nix/store`. Use
-   `sops.secrets` / `sops.templates` (decrypted to `/run/secrets` at activation)
-   or Bitwarden via `bws` at runtime. Before committing, check the diff for
-   anything secret-looking, and stop and ask if unsure.
+The user is not a Nix expert and wants the config kept simple. Prefer the plainest NixOS idiom
+that works; do not add abstractions, options or helper layers.
 
 ## Layout
 
 ```
-flake.nix            inputs; outputs = mkFlake over (import-tree ./modules)
-modules/
-  flake/             systems, flake.modules option, vars option, overlay, templates output
-  common/            aspect `common`, every host
-    nix/             nix settings, gc, /etc/nixos link, rebuild helper
-    system/          boot basics, locale, zram, fwupd, users, base packages
-    network/         networking, ssh, tailscale
-    shell/           zsh, direnv/zoxide/starship/fzf
-    cli.nix          CLI tools for every host
-    home-manager.nix, dotfiles.nix (dotfiles.links option), secrets.nix (sops-nix)
-  desktop/           aspect `desktop`, GUI machines
-    session/         Hyprland, greeter, portal, plymouth, Noctalia, keyring, askpass, reboot-to
-    hardware/        audio, easyeffects, bluetooth, printing, logitech, i2c
-    apps/            GUI apps, default apps, media, steam, clipboard, trash, desktop entries
-    theming/         theme, cursor, fonts, vars.lua, desktop dotfile links
-    dev/             editor tooling for configs and scripts, neovim, docker, wireshark,
-                     claude skills, desktop-only CLI tools (cli.nix)
-  homelab/           aspect `homelab`, the server; each service adds its own Caddy vhost
-                     and sops secrets
-    edge/            caddy, cloudflared, tailscale-https, local-names
-    apps/            komodo (deploys), immich, opencloud, pocket-id, homepage (dashboard)
-    media/           jellyfin and the streaming stack
-    ops/             backup, monitoring, github-runners
-  hosts/<hostname>/  default.nix (nixosConfiguration, aspect list, hostName, stateVersion),
-                     _hardware-configuration.nix, boot.nix, GPU and other machine-only files
-templates/<lang>/    per-project dev shells (node, python, rust, go, c, dotnet)
-pkgs/                overlay of packages not in nixpkgs (pkgs/default.nix), one file each
-secrets/             sops-encrypted YAML only
-dotfiles/            live-edited configs
+flake.nix        inputs; nixosConfigurations (specialArgs = { inputs, vars }), formatter, overlay
+vars.nix         plain attrset: user, flakeDir, hosts (ssh aliases), locale, keyboard, cursor, apps
+packages.nix     environment.systemPackages: apps, CLI tools, config-editing tools
+system.nix       nix settings, gc, /etc/nixos link, rebuild helper, boot, locale, users,
+                 network, ssh, tailscale, zram, fwupd, nix-ld
+desktop.nix      Hyprland, greeter, Noctalia, portal, keyring, plymouth, fonts, steam,
+                 reboot-to, claude-desktop; HM: cursor, GTK/Qt theme, btop, askpass, trash
+hardware.nix     audio, bluetooth, i2c, solaar, printing; HM: easyeffects
+dev.nix          docker, wireshark, Rider + .NET SDK and tools, mise shims on PATH
+home.nix         Home Manager: zsh, git, direnv/zoxide/starship/fzf, every dotfile link,
+                 vars.lua, claude skills, mise install on activation
+hosts/<host>/    default.nix (imports, hostName, stateVersion, bootloader, GPU, machine-only
+                 config), hardware-configuration.nix
+pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped, oxfmt with Astro support
+dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia, oxc, mise, claude
 ```
 
 ## Where things go
 
-- GUI app: `modules/desktop/apps/apps.nix`. If it is a default app bound to a key,
-  add it to `vars.apps` instead (nixpkgs attribute name). The command reaches
-  the keybinds automatically through `meta.mainProgram`.
-- CLI tool: `modules/common/cli.nix` if the homelab needs it too, otherwise
-  `modules/desktop/dev/cli.nix`.
-- New language: a dev shell in `templates/<lang>/` (`flake.nix`, `.envrc` with
-  `use flake`, `.gitignore` with `.direnv/`) and an entry in
-  `modules/flake/templates.nix`. Used with `nix flake init -t ~/nixos#<lang>`.
-- System service or hardware: a new file in the matching use-case folder of its
-  role (`desktop/hardware/`, `homelab/apps/`, ...). If it
-  only applies to one machine (GPU, bootloader, monitors), put it in
-  `modules/hosts/<hostname>/`, adding to `flake.modules.nixos.<hostname>`.
-- New aspect (e.g. a second server role): a new folder whose files add to it,
-  plus a `home.nix` like `modules/desktop/home.nix` if it has a Home Manager
-  side. Hosts import it by name.
-- Secret: declare it in the feature that uses it (`sops.secrets."<name>" = { };`,
-  or `sops.templates` for env files) and add the value with
-  `sops secrets/hosts/<hostname>.yaml` (`common.yaml` for every host).
-- Hyprland setting for one machine (monitors, input tweaks):
-  `dotfiles/hypr/hyprland/hosts/<hostname>.lua`. It loads last from `hyprland.lua`,
-  so set only the keys that differ; the shared files stay as they are.
-- New machine: copy a folder in `modules/hosts/`, name it after the hostname, set
-  `hostname`, `system.stateVersion` and the aspect list in its `default.nix`, and
-  save the `hardware-configuration.nix` generated on that machine there as
-  `_hardware-configuration.nix`. First switch:
-  `sudo nixos-rebuild switch --flake ~/nixos#<hostname>`; move the installer's
-  `/etc/nixos` away so the link can be created. For secrets, add its host key to
-  `.sops.yaml` and run `sops updatekeys` on the files it should read.
-- Web app on the homelab: an entry in `homelab.apps` (`modules/hosts/kash-homelab/apps.nix`).
-  `modules/homelab/apps/komodo/apps.nix` turns it into a Komodo Stack (Resource Sync
-  "homelab") and a Caddy vhost; move its domain onto the tunnel with `cutover <domain>`.
-  Its secret env vars (`secrets`) come from sops keys `apps/<app>/<key>`.
-  A LAN/Tailscale-only app gets `localNames` (e.g. `hub.local`, announced over mDNS by
-  `modules/homelab/edge/local-names.nix`) instead of a `domain`.
-- Tailscale-only service with its own port: open the port on `tailscale0` and add
-  it to `homelab.tailscaleHttps` (`modules/homelab/edge/tailscale-https.nix`), which serves it as
-  `https://<host>.<tailnet>.ts.net:<port>`.
-- Media stack setting that lives in an app's own database (Jellyfin libraries and users, the
-  AIOStreams user, Gelato's settings and catalogs): `modules/homelab/media/configure.nix`, applied
-  through each app's API by `_configure.py` (the `media-configure` service).
+- App or CLI tool: `packages.nix`. A default app bound to a key goes in `vars.apps` instead
+  (nixpkgs attribute name); the keybinds read it through `vars.lua`.
+- Dev tool for a language (runtime, LSP, formatter, linter): `dotfiles/mise/config.toml`, not
+  Nix. Mason stays disabled (`dotfiles/nvim/lua/plugins/lsp/mason.lua`); mise is the one place
+  dev tools live. Nix keeps only tools for editing this config, oxfmt (`pkgs/oxfmt.nix`, needed
+  for `.astro`), and the .NET SDK and tools for Rider (`dev.nix`), because a GUI IDE started
+  from the launcher does not see the shell PATH.
+- System service or hardware: the topical file (`desktop.nix`, `hardware.nix`, `dev.nix`,
+  `system.nix`). Home Manager config for that feature goes in the same file under
+  `home-manager.users.${vars.user.name}`, so a feature stays in one place.
+- Only one machine (monitors, GPU, bootloader): `hosts/<host>/default.nix`.
+- New dotfile: put it in `dotfiles/` and add a line to the `xdg.configFile` link list in
+  `home.nix`.
+- Hyprland setting for one machine: `dotfiles/hypr/hyprland/hosts/<hostname>.lua`. It loads last
+  from `hyprland.lua`, so set only the keys that differ.
 - Package not in nixpkgs: `pkgs/<name>.nix`, registered in `pkgs/default.nix`.
-- New dotfile dir: put it in `dotfiles/` and add it to `dotfiles.links` in the
-  feature that uses it.
+- New machine: copy a folder in `hosts/`, add the hostname to the list in `flake.nix` and to
+  `vars.hosts`, save its generated `hardware-configuration.nix` there. First switch:
+  `sudo nixos-rebuild switch --flake ~/nixos#<hostname>` after moving the installer's
+  `/etc/nixos` away.
+
+## Rules
+
+1. **One source of truth.** A value used in more than one place lives in `vars.nix` and is read
+   from there. Modules get it as an argument: `{ pkgs, vars, ... }:`. Never hard-code `kasper`,
+   `/home/kasper`, the hostname or `~/nixos`; use `vars.user.name`, `vars.user.home`,
+   `config.networking.hostName`, `vars.flakeDir`.
+2. **Dotfiles stay live-editable.** Program configs live in `dotfiles/` and are linked with
+   `mkOutOfStoreSymlink` (the `link` helper in `home.nix`). Edits apply without a rebuild. Do not
+   convert them to Home Manager `programs.<x>.settings`.
+3. **Dotfiles read Nix values from `~/.config/nixos-vars/vars.lua`**, generated in `home.nix`
+   from `vars.nix`. Hyprland loads it through `dotfiles/hypr/hyprland/vars.lua`. To share a new
+   value, add it to `vars.nix` and to `luaVars` in `home.nix`.
+4. **No plaintext secrets in the repo; it is public.** Never commit passwords, API keys, tokens,
+   private keys, Wi-Fi passphrases or anything else that grants access, including in `dotfiles/`
+   and in Nix strings (they end up in the world-readable `/nix/store`). Use Bitwarden via `bws`
+   at runtime. Before committing, check the diff for anything secret-looking, and stop and ask
+   if unsure.
+5. **Theme is Tokyo Night, fixed.** Noctalia uses its built-in `Tokyo-Night` with templates
+   off (`dotfiles/noctalia/config.toml`); kitty, Neovim, btop and Hyprland borders set it
+   directly. Do not re-enable wallpaper-generated colors or Noctalia templates.
 
 ## Style
 
-- File header: `_:` when no args are used, otherwise only the args used
-  (`{ config, inputs, ... }:`). Same for the inner NixOS/HM module.
+- No comments by default. A comment stays only where a line would otherwise look wrong and
+  someone would "fix" it, such as a workaround.
+- File header: only the args used (`{ pkgs, vars, ... }:`).
 - `with pkgs; [ ... ]` for package lists.
-- Comments say why, not what. Point to the other file when two files depend on
-  each other (e.g. "started from autostart.lua").
-- Format with `nixfmt`.
+- Format with `nix fmt`.
 
 ## Working here
 
-- The flake only sees files git tracks. `git add` new files before building;
-  import-tree does not see untracked files either.
-- Verify with `nix build --no-link .#nixosConfigurations.<hostname>.config.system.build.toplevel`,
-  and compare against the running system with
-  `nix store diff-closures /run/current-system <result>`.
-- Edits under `dotfiles/` go live immediately. Hyprland hot-reloads, so a Lua
-  edit that needs a new `vars.lua` value breaks until the rebuild. Tell the
-  user to rebuild before testing.
+- The flake only sees files git tracks. `git add` new files before building.
+- Verify with `nix build --no-link .#nixosConfigurations.<hostname>.config.system.build.toplevel`
+  for both hosts, and compare with `nix store diff-closures /run/current-system <result>`. Do
+  not build scratch test projects to check config changes.
+- Edits under `dotfiles/` go live immediately. Hyprland hot-reloads, so a Lua edit that needs a
+  new `vars.lua` value breaks until the rebuild. Tell the user to rebuild before testing.
+- Tell the user to apply with plain `sudo nixos-rebuild switch`.
 - Do not commit unless asked.

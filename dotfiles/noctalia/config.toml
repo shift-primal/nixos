@@ -1,5 +1,5 @@
 # Shared base for every host. Per-machine differences (monitors, wallpaper paths) live in
-# hosts/<hostname>.toml, which loads after this file (linked as host.toml in modules/desktop/theming/dotfiles.nix).
+# hosts/<hostname>.toml, which loads after this file (linked as host.toml in home.nix).
 config_version = 15
 
 [bar.default]
