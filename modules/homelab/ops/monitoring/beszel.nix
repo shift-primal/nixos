@@ -26,17 +26,6 @@ in
             agentPort = 45876;
             api = "http://127.0.0.1:${toString hub.port}/api";
 
-            # Read-only accounts for apps that show Beszel's stats (homehub): any app in homelab.apps
-            # (hosts/kash-homelab/apps.nix) with a BESZEL_EMAIL and a BESZEL_PASSWORD secret.
-            readers = lib.mapAttrsToList (name: app: {
-                email = app.environment.BESZEL_EMAIL;
-                passwordFile = config.sops.secrets."apps/${name}/BESZEL_PASSWORD".path;
-            }) (
-                lib.filterAttrs (
-                    _: app: app.environment ? BESZEL_EMAIL && lib.elem "BESZEL_PASSWORD" app.secrets
-                ) config.homelab.apps
-            );
-
             # Synced into the hub on every start: systems not listed here are deleted.
             configYml = (pkgs.formats.yaml { }).generate "beszel-config.yml" {
                 systems = [
@@ -44,9 +33,7 @@ in
                         name = hostName;
                         host = "127.0.0.1";
                         port = agentPort;
-                        # Listing any user drops the default (the first one), so the owner goes first.
-                        # A reader made after this start is added by beszel-configure.
-                        users = [ config.homelab.beszel.email ] ++ map (r: r.email) readers;
+                        users = [ config.homelab.beszel.email ];
                     }
                 ];
             };
@@ -132,24 +119,13 @@ in
                     jq --arg n "$ntfy" '{settings: (.settings + {webhooks: [$n], emails: []})}' <<< "$settings" |
                         call -X PATCH -d @- "${api}/collections/user_settings/records/$(jq -r .id <<< "$settings")" > /dev/null
 
-                    # Readers: created, or reset to the sops password, as role readonly, and given this system.
-                    members=("$user")
-                    ${lib.concatMapStrings (r: ''
-                        body=$(jq -n --arg e ${lib.escapeShellArg r.email} --rawfile p ${r.passwordFile} \
-                            '($p | rtrimstr("\n")) as $p | {email: $e, password: $p, passwordConfirm: $p, role: "readonly", verified: true}')
-                        id=$(sucall -G ${api}/collections/users/records \
-                            --data-urlencode "filter=email='${r.email}'" | jq -r '.items[0].id // empty')
-                        if [ -z "$id" ]; then
-                            id=$(sucall -d "$body" ${api}/collections/users/records | jq -r .id)
-                        # Only on a changed password: setting it logs the app out.
-                        elif ! jq '{identity: .email, password}' <<< "$body" |
-                            curl -fsS -o /dev/null -H 'Content-Type: application/json' -d @- \
-                                ${api}/collections/users/auth-with-password; then
-                            sucall -X PATCH -d "$body" "${api}/collections/users/records/$id" > /dev/null
-                        fi
-                        members+=("$id")
-                    '') readers}
-                    jq -n '{users: $ARGS.positional}' --args "''${members[@]}" |
+                    # Only the owner, which Homepage (apps/homepage.nix) logs in as: deletes the read-only
+                    # accounts the old homehub dashboard used.
+                    sucall -G ${api}/collections/users/records --data-urlencode "filter=role='readonly'" |
+                        jq -r '.items[].id' | while read -r id; do
+                            sucall -X DELETE "${api}/collections/users/records/$id"
+                        done
+                    jq -n --arg u "$user" '{users: [$u]}' |
                         sucall -X PATCH -d @- "${api}/collections/systems/records/$system" > /dev/null
 
                     ${lib.concatStrings (
@@ -222,6 +198,8 @@ in
                         [ -s id_ed25519 ] || ssh-keygen -q -t ed25519 -N "" -C beszel-hub -f id_ed25519
                         printf 'USER_EMAIL=%s\nUSER_PASSWORD=%s\n' \
                             ${lib.escapeShellArg config.homelab.beszel.email} "$(cat password)" > hub.env
+                        # Homepage's Beszel widget logs in as this account (apps/homepage.nix).
+                        printf 'HOMEPAGE_VAR_BESZEL_PASSWORD=%s\n' "$(cat password)" > homepage.env
                     '';
                 };
 
