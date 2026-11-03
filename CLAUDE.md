@@ -87,7 +87,7 @@ modules/
   homelab/           aspect `homelab`, the server; each service adds its own Caddy vhost
                      and sops secrets
     edge/            caddy, cloudflared, tailscale-https, local-names
-    apps/            komodo (deploys), immich, opencloud, pocket-id
+    apps/            komodo (deploys), immich, opencloud, pocket-id, homepage (dashboard)
     media/           jellyfin and the streaming stack
     ops/             backup, monitoring, github-runners
   hosts/<hostname>/  default.nix (nixosConfiguration, aspect list, hostName, stateVersion),

@@ -30,6 +30,8 @@ in
         # The "homelab" tunnel (cloudflared.nix). Route a hostname to it with
         #   cloudflared tunnel route dns homelab <host>
         homelab.tunnel.id = "9533558e-052d-442c-9790-c20eb59c4b8e";
+        # Tailscale admin console, DNS page. Not secret: it is in every ts.net certificate.
+        homelab.tailnet = "tail2b3796.ts.net";
 
         homelab.pocketId = {
             domain = "id.haugestol.com";

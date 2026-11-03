@@ -19,6 +19,12 @@ _:
             tailscale = lib.getExe config.services.tailscale.package;
         in
         {
+            options.homelab.tailnet = lib.mkOption {
+                type = lib.types.str;
+                example = "tail1234.ts.net";
+                description = "The tailnet's MagicDNS domain, for links to the ports served here.";
+            };
+
             options.homelab.tailscaleHttps = lib.mkOption {
                 type = with lib.types; listOf port;
                 default = [ ];
