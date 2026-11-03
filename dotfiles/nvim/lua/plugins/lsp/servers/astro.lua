@@ -1,22 +1,11 @@
--- astro-ls loads TypeScript as a JS library, which TS 7 no longer ships
--- (no tsserverlibrary.js). Use the project's TS when it is <= 6, otherwise the
--- TS 6 bundled inside the Nix astro-language-server package.
+-- astro-ls needs TypeScript <= 6 (TS 7 has no tsserverlibrary.js); fall back to the
+-- TS 6 bundled with mise's astro-ls when the project's TS is missing or too new
 local function bundled_tsdk()
-	local bin = vim.fn.exepath("astro-ls")
-	if bin == "" then
-		return nil
-	end
-	local root = vim.fn.resolve(bin):match("^(.-/lib/node_modules/astro%-language%-server)/")
-	if not root then
-		return nil
-	end
-	return vim.fn.glob(root .. "/node_modules/.pnpm/typescript@*/node_modules/typescript/lib", false, true)[1]
+	local pattern = "~/.local/share/mise/installs/npm-astrojs-language-server/*/node_modules/.mise/typescript@*/node_modules/typescript/lib"
+	return vim.fn.glob(vim.fn.expand(pattern), false, true)[1]
 end
 
 return {
-	mason = false,
-
-	-- astro-ls ships Emmet built in; this is the only way to turn it off
 	settings = {
 		emmet = { showExpandedAbbreviation = "never" },
 	},
@@ -30,18 +19,4 @@ return {
 		config.init_options.typescript = config.init_options.typescript or {}
 		config.init_options.typescript.tsdk = tsdk
 	end,
-
-	handlers = {
-		-- when tsc type-checks .astro through the content mapper (tsc.lua), drop
-		-- astro-ls's copy of the same TypeScript diagnostics
-		["textDocument/publishDiagnostics"] = function(err, result, ctx)
-			local bufnr = vim.uri_to_bufnr(result.uri)
-			if #vim.lsp.get_clients({ bufnr = bufnr, name = "tsc" }) > 0 then
-				result.diagnostics = vim.tbl_filter(function(d)
-					return d.source ~= "ts"
-				end, result.diagnostics)
-			end
-			vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx)
-		end,
-	},
 }

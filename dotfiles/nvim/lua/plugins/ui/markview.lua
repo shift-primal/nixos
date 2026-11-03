@@ -4,10 +4,9 @@ return {
 
 	opts = {
 		preview = {
-			icon_provider = "devicons", -- "mini" or "devicons"
+			icon_provider = "devicons",
 		},
 	},
 
-	-- Completion for `blink.cmp`
 	dependencies = { "saghen/blink.cmp" },
 }

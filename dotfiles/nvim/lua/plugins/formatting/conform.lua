@@ -12,7 +12,6 @@ return {
 			lua = { "stylua" },
 			cs = { "csharpier" },
 			toml = { "tombi" },
-			-- treefmt where a project has a treefmt.toml, otherwise the global nixfmt
 			nix = { "treefmt_project", "nixfmt", stop_after_first = true },
 			javascript = web_biome,
 			javascriptreact = web_biome,
@@ -37,7 +36,7 @@ return {
 			oxfmt_project = {
 				inherit = "oxfmt",
 				require_cwd = true,
-				-- ~/.oxfmtrc.json is the global fallback (modules/desktop/dev/web.nix), not a project config
+				-- ~/.oxfmtrc.json is the global fallback linked by home.nix, not a project config
 				cwd = function(self, ctx)
 					local root = oxfmt_root(self, ctx)
 					if root ~= vim.uv.os_homedir() then

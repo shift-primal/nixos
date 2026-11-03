@@ -17,8 +17,6 @@ return {
 				},
 				convert = {
 					magick = {
-						-- icons rasterize at their viewBox size (often 256);
-						-- -resize caps the rendered image, tweak NxN to taste
 						vector = { "-density", "192", "-background", "none", "{src}[{page}]", "-resize", "256x256" },
 					},
 				},

@@ -34,8 +34,6 @@ return {
 			)
 		end
 
-		---@param token string
-		---@param max_pct number value that a "100%" token maps to
 		local function oklch_num(token, max_pct)
 			if token == "none" then
 				return 0
@@ -103,7 +101,6 @@ return {
 				shorthand = {
 					pattern = "()#%x%x%x()%f[^%x%w]",
 					group = function(_, _, data)
-						---@type string
 						local match = data.full_match
 						if match == "#add" then
 							return
