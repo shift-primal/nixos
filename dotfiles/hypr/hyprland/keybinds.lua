@@ -64,20 +64,8 @@ hl.bind(MOD .. " + S", noctalia("screenshot-region"), { description = "Screensho
 
 hl.bind(
 	MOD .. " + R",
-	hl.dsp.exec_cmd(
-		"bash -c '"
-			.. 'if pgrep -f "gpu-screen-recorder -w [0-9]+x[0-9]+\\+[0-9]+\\+[0-9]+" >/dev/null; then '
-			.. 'pkill -INT -f "gpu-screen-recorder -w [0-9]+x[0-9]+\\+[0-9]+\\+[0-9]+"; '
-			.. "else "
-			.. 'region=$(slurp -f "%wx%h+%x+%y"); '
-			.. '[ -z "$region" ] && exit 0; '
-			.. 'mkdir -p "$HOME/Videos/Recordings"; '
-			.. 'out="$HOME/Videos/Recordings/recording_$(date +%Y%m%d_%H%M%S).mp4"; '
-			.. 'gpu-screen-recorder -w "$region" -f 60 -k h264 -ac opus '
-			.. '-a default_output -cursor yes -cr limited -o "$out" >/dev/null 2>&1 & disown; '
-			.. "fi'"
-	),
-	{ description = "Record region (gpu-screen-recorder, no portal)" }
+	noctalia("plugin noctalia/screen_recorder:service all toggle region"),
+	{ description = "Record region - Toggle" }
 )
 
 -- Session

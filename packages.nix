@@ -20,7 +20,6 @@ in
         map (name: pkgs.${name}) (lib.attrValues vars.apps)
         ++ (with pkgs; [
             bitwarden-desktop
-            obsidian
             filezilla
             vlc
             mpv
@@ -69,7 +68,6 @@ in
             rbw
             bitwarden-cli
             bws
-            obsidian-headless
             libnotify
             yt-dlp
             ffmpeg

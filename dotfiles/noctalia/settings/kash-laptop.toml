@@ -223,7 +223,8 @@ enabled = [
     "cleboost/ssh-launcher",
     "kenn/keybind-cheatsheet",
     "tmelik/system-monitor",
-    "alexander/screen-toolkit"
+    "alexander/screen-toolkit",
+    "noctalia/screen_recorder"
 ]
 
 [shell]

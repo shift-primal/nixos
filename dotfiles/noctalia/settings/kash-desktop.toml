@@ -1,18 +1,22 @@
 config_version = 16
 
 [bar.default]
-background_opacity = 0.69999998435378075
-capsule_radius = 80
-capsule_thickness = 0.74999998696148396
+background_opacity = 0.99999997764825821
+border = "on_surface"
+capsule_fill = "hover"
+capsule_radius = "auto"
+center = [ "workspaces" ]
+compositor_blur = false
+concave_edge_corners = false
 contact_shadow = true
 end = [ "media", "group:dev", "group:g3", "group:g5", "group:g1", "group:g2" ]
 font_family = "Monaspace Neon NF"
 font_weight = 600
-margin_ends = 0
-radius = 0
-start = [ "group:g4", "sysmon", "bar" ]
-thickness = 32
-widget_spacing = 14
+padding = 16
+panel_overlap = 0
+start = [ "session", "group:g6", "group:g4" ]
+thickness = 40
+widget_spacing = 16
 
     [[bar.default.capsule_group]]
     accordion = false
@@ -22,7 +26,7 @@ widget_spacing = 14
     enabled = true
     fill = "surface_container"
     id = "dev"
-    members = [ "status", "raycursive/github-prs:bar", "8bury/mini-docker:mini-docker", "mindnbytes/nix-status:status" ]
+    members = [ "raycursive/github-prs:bar", "8bury/mini-docker:mini-docker" ]
     opacity = 1.0
     padding = 8.0
     widget_spacing = 10
@@ -45,33 +49,21 @@ widget_spacing = 14
     enabled = true
     fill = "surface_container"
     id = "g2"
-    members = [ "notifications", "tray", "session" ]
+    members = [ "notifications", "clock", "tray" ]
     opacity = 1.0
     padding = 6.0
     radius = 80.0
 
     [[bar.default.capsule_group]]
-    accordion = false
+    accordion = true
     accordion_direction = "end"
     border_width = 1.0
     enabled = true
     fill = "surface_container"
     id = "g3"
-    members = [ "clipboard", "gamaraan/mx-control:mx" ]
+    members = [ "recorder", "clipboard", "gamaraan/mx-control:mx" ]
     opacity = 1.0
     padding = 6.0
-
-    [[bar.default.capsule_group]]
-    accordion = false
-    accordion_direction = "end"
-    border_width = 1.0
-    enabled = true
-    fill = "surface_container"
-    id = "g4"
-    members = [ "launcher", "wallpaper", "workspaces" ]
-    opacity = 1.0
-    padding = 6.0
-    radius = 80.0
 
     [[bar.default.capsule_group]]
     accordion = false
@@ -81,6 +73,30 @@ widget_spacing = 14
     fill = "surface_container"
     id = "g5"
     members = [ "network", "bluetooth" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 80.0
+
+    [[bar.default.capsule_group]]
+    accordion = true
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "g4"
+    members = [ "wallhaven", "wallpaper" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 80.0
+
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "g6"
+    members = [ "mindnbytes/nix-status:status", "summary" ]
     opacity = 1.0
     padding = 6.0
     radius = 80.0
@@ -241,26 +257,14 @@ widget_order = [
         show_unlock_hint = true
         show_weather = true
 
-[plugin_settings."davemhammer/obsidian"]
-daily_folder = "05 Journal/Daily"
-refresh_interval = 19
-vault_path = "/home/kasper/obsidian/vaults/Kasper"
-
-[plugin_settings."jrohland/claudecode"]
-currency = "usd"
-
 [plugin_settings."mindnbytes/nix-status"]
 flake_dir = "/home/kasper/nixos"
 nixos_configuration = "kash-desktop"
 use_themed_logos = true
 
-[plugin_settings."nightwatch75/claude-cockpit"]
-editor_command = "nvim"
-
 [plugins]
 enabled = [
     "noctalia/bitwarden",
-    "mindnbytes/nix-status",
     "gamaraan/mx-control",
     "raycursive/github-prs",
     "8bury/mini-docker",
@@ -268,8 +272,10 @@ enabled = [
     "kenn/keybind-cheatsheet",
     "tmelik/system-monitor",
     "alexander/screen-toolkit",
-    "davemhammer/obsidian",
-    "felipeartur/ai-usagebar"
+    "nightwatch75/file-search",
+    "noctalia/screen_recorder",
+    "noctalia/wallhaven",
+    "srounce/systemd"
 ]
 
 [shell]
@@ -277,6 +283,9 @@ font_family = "DejaVu Sans"
 
     [shell.launcher]
     app_grid = true
+    category_icons_only = true
+    default_view = "all"
+    provider_prefix = ">"
 
     [shell.screenshot]
     directory = "/home/kasper/Pictures/screenshots"
@@ -338,34 +347,50 @@ font_family = "DejaVu Sans"
 
 [theme]
 community_palette = "Gruvbox Material Hard"
+mode = "dark"
 source = "community"
+wallpaper_scheme = "m3-content"
 
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers"
 
     [wallpaper.default]
-    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
     [wallpaper.last]
-    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
     [wallpaper.monitors.DP-1]
-    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
     [wallpaper.monitors.DP-2]
-    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
     [wallpaper.monitors.DP-3]
-    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
-
-[widget.bar]
-type = "felipeartur/ai-usagebar:bar"
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
 [widget.clock]
 tooltip_format = "{:%a %d. %b - %y}"
 
-[widget.status]
-type = "davemhammer/obsidian:status"
+[widget.recorder]
+type = "noctalia/screen_recorder:recorder"
+
+[widget.summary]
+show_cpu_details_in_tooltip = true
+show_cpu_temperature = false
+show_download = false
+show_gpu_temperature = "off"
+show_gpu_usage = "on"
+show_gpu_vram = "off"
+show_swap = false
+show_upload = false
+type = "tmelik/system-monitor:summary"
+
+[widget.sysmon]
+visualization = "graph"
 
 [widget.tray]
 drawer = true
+
+[widget.wallhaven]
+type = "noctalia/wallhaven:wallhaven"

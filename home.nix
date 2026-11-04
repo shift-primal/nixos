@@ -60,6 +60,7 @@ in
                         "hypr" = "hypr";
                         "kitty" = "kitty";
                         "nvim" = "nvim";
+                        "ideavim" = "ideavim";
                         "oxc" = "oxc";
                         "mise/config.toml" = "mise/config.toml";
                         "btop/btop.conf" = "btop/btop.conf";
