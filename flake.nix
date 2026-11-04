@@ -28,6 +28,11 @@
             url = "github:akitaonrails/ai-usagebar";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+
+        grimoire = {
+            url = "github:Slush97/grimoire";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
 
     outputs =

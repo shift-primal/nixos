@@ -1,4 +1,5 @@
 {
+    inputs,
     lib,
     pkgs,
     vars,
@@ -16,6 +17,7 @@ in
 
     environment.systemPackages =
         map (name: pkgs.${name}) (lib.attrValues vars.apps)
+        ++ [ inputs.grimoire.packages.${pkgs.stdenv.hostPlatform.system}.default ]
         ++ (with pkgs; [
             bitwarden-desktop
             filezilla
@@ -24,6 +26,8 @@ in
             inkscape
             (onlyoffice-desktopeditors.override { extraFontPackages = [ corefonts ]; })
             libreoffice
+
+            claude-code
 
             wl-clipboard
             cliphist
@@ -55,6 +59,7 @@ in
             trash-cli
             sqlite
             jq
+            yq
             curl
             openssl
             tree

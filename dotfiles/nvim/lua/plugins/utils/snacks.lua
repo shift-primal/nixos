@@ -9,6 +9,7 @@ end
 return {
 	"folke/snacks.nvim",
 	opts = {
+		bigfile = { line_length = math.huge },
 
 		picker = {
 			grep = {

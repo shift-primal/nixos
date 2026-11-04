@@ -23,9 +23,9 @@ enabled = true
 fill = "surface_variant"
 id = "dev"
 members = [
-  "raycursive/github-prs:bar",
-  "8bury/mini-docker:mini-docker",
-  "mindnbytes/nix-status:status",
+	"raycursive/github-prs:bar",
+	"8bury/mini-docker:mini-docker",
+	"mindnbytes/nix-status:status",
 ]
 opacity = 1.0
 padding = 8.0
@@ -93,10 +93,10 @@ radius = 80.0
 enabled = false
 schema_version = 2
 widget_order = [
-  "lockscreen-login-box@eDP-1",
-  "lockscreen-login-box@DP-3",
-  "lockscreen-login-box@DP-2",
-  "lockscreen-login-box@DP-1",
+	"lockscreen-login-box@eDP-1",
+	"lockscreen-login-box@DP-3",
+	"lockscreen-login-box@DP-2",
+	"lockscreen-login-box@DP-1",
 ]
 
 [lockscreen_widgets.grid]
@@ -218,17 +218,15 @@ show_weather = true
 
 [plugins]
 enabled = [
-  "noctalia/bitwarden",
-  "nightwatch75/claude-cockpit",
-  "mindnbytes/nix-status",
-  "gamaraan/mx-control",
-  "raycursive/github-prs",
-  "8bury/mini-docker",
-  "cleboost/ssh-launcher",
-  "kenn/keybind-cheatsheet",
-  "tmelik/system-monitor",
-  "alexander/screen-toolkit",
-  "noctalia/screen_recorder",
+	"noctalia/bitwarden",
+	"gamaraan/mx-control",
+	"raycursive/github-prs",
+	"8bury/mini-docker",
+	"cleboost/ssh-launcher",
+	"kenn/keybind-cheatsheet",
+	"tmelik/system-monitor",
+	"alexander/screen-toolkit",
+	"noctalia/screen_recorder",
 ]
 
 [shell]

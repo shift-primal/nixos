@@ -9,6 +9,7 @@ return {
 			tailwindcss = {},
 			lua_ls = {},
 			marksman = {},
+			lemminx = {},
 		},
 	},
 }

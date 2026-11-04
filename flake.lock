@@ -75,6 +75,44 @@
         "type": "github"
       }
     },
+    "grimoire": {
+      "inputs": {
+        "grimoire-social": "grimoire-social",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "vpkmerge": "vpkmerge"
+      },
+      "locked": {
+        "lastModified": 1793680022,
+        "narHash": "sha256-tAI+G8ZNkmW1JewI0d84OioTABDDurcF/TpP3RRW/rU=",
+        "owner": "Slush97",
+        "repo": "grimoire",
+        "rev": "d1049ec29dff50d92a433caabb53817232b44d9a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Slush97",
+        "repo": "grimoire",
+        "type": "github"
+      }
+    },
+    "grimoire-social": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790726909,
+        "narHash": "sha256-D69CEBrGshmGTyoYA8d0CYTdTtmY0xIrpFHDnI2vNdY=",
+        "owner": "Slush97",
+        "repo": "grimoire-social",
+        "rev": "b5811d361450ebe8d863276392ad387a31d8295b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Slush97",
+        "repo": "grimoire-social",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -178,6 +216,7 @@
     "root": {
       "inputs": {
         "ai-usagebar": "ai-usagebar",
+        "grimoire": "grimoire",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
         "nix-claude-code": "nix-claude-code",
@@ -218,6 +257,23 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "vpkmerge": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793666824,
+        "narHash": "sha256-W2lEnwHUBSiZT8z59qjLSKtNP8jfjCKRD2zGzKLBr/k=",
+        "owner": "Slush97",
+        "repo": "vpkmerge",
+        "rev": "a6740556b5d1ead213d1e26132f7a09b8d07e10f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Slush97",
+        "ref": "v0.29.1",
+        "repo": "vpkmerge",
         "type": "github"
       }
     }

@@ -38,6 +38,9 @@ hl.window_rule({ match = { class = ".*" }, opacity = string.format("%g %g", opac
 -- Steam
 hl.window_rule({ match = { class = "^(steam)$", title = "negative:^(Steam)$" }, float = true })
 
+-- JetBrains welcome screen
+hl.window_rule({ match = { class = "^(jetbrains-.*)$", title = "^(Welcome to JetBrains.*)$" }, float = true })
+
 -- Picture in picture
 hl.window_rule({
 	match = { tag = "picture-in-picture" },

@@ -15,6 +15,7 @@ ruff = "latest"
 "npm:@tailwindcss/language-server" = "latest"
 "npm:pyright" = "latest"
 "npm:prettier" = "latest"
+"github:redhat-developer/vscode-xml" = { version = "latest", asset_pattern = "lemminx-linux-x86_64.zip", bin = "lemminx" }
 
 [settings]
 node.compile = false
