@@ -13,11 +13,20 @@
 
     networking.hostName = "kash-desktop";
     system.stateVersion = "26.05";
+    environment = {
 
-    environment.systemPackages = with pkgs; [
-        sbctl
-        efibootmgr
-    ];
+        systemPackages = with pkgs; [
+            sbctl
+            efibootmgr
+        ];
+
+        sessionVariables = {
+            LIBVA_DRIVER_NAME = "nvidia";
+            GBM_BACKEND = "nvidia-drm";
+            __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+            WLR_NO_HARDWARE_CURSORS = "1";
+        };
+    };
 
     boot.loader = {
         systemd-boot.enable = false;
@@ -38,22 +47,17 @@
             '';
         };
     };
-
-    hardware.graphics.enable = true;
     services.xserver.videoDrivers = [ "nvidia" ];
-    hardware.nvidia = {
-        modesetting.enable = true;
-        powerManagement.enable = false;
-        powerManagement.finegrained = false;
-        open = true;
-        nvidiaSettings = true;
-        package = config.boot.kernelPackages.nvidiaPackages.latest;
-    };
+    hardware = {
 
-    environment.sessionVariables = {
-        LIBVA_DRIVER_NAME = "nvidia";
-        GBM_BACKEND = "nvidia-drm";
-        __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-        WLR_NO_HARDWARE_CURSORS = "1";
+        graphics.enable = true;
+        nvidia = {
+            modesetting.enable = true;
+            powerManagement.enable = false;
+            powerManagement.finegrained = false;
+            open = true;
+            nvidiaSettings = true;
+            package = config.boot.kernelPackages.nvidiaPackages.latest;
+        };
     };
 }

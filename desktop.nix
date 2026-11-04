@@ -41,32 +41,32 @@ in
         steam.enable = true;
     };
 
-    services = {
-        upower.enable = true;
-        power-profiles-daemon.enable = true;
-    };
-
     environment.sessionVariables = {
         NIXOS_OZONE_WL = "1";
         XDG_SESSION_TYPE = "wayland";
     };
+    services = {
 
-    services.displayManager.noctalia-greeter = {
-        enable = true;
-        settings = {
-            session.default = "Hyprland";
-            keyboard.layout = vars.keyboard.layout;
-            cursor.size = vars.cursor.size;
+        upower.enable = true;
+        power-profiles-daemon.enable = true;
+
+        displayManager.noctalia-greeter = {
+            enable = true;
+            settings = {
+                session.default = "Hyprland";
+                keyboard.layout = vars.keyboard.layout;
+                cursor.size = vars.cursor.size;
+            };
         };
+
+        gnome.gnome-keyring.enable = true;
+        gnome.gcr-ssh-agent.enable = false;
     };
 
     xdg.portal = {
         enable = true;
         extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
     };
-
-    services.gnome.gnome-keyring.enable = true;
-    services.gnome.gcr-ssh-agent.enable = false;
     security.pam.services.greetd.enableGnomeKeyring = true;
 
     boot = {

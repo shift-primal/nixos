@@ -39,57 +39,134 @@ in
                 };
             in
             {
-                home = {
-                    username = vars.user.name;
-                    homeDirectory = vars.user.home;
-                    inherit stateVersion;
-                };
+                programs = {
 
-                programs.home-manager.enable = true;
+                    home-manager.enable = true;
+
+                    git = {
+                        enable = true;
+                        ignores = [
+                            ".direnv/"
+                            "result"
+                            "result-*"
+                        ];
+                    };
+
+                    direnv = {
+                        enable = true;
+                        config.global.hide_env_diff = true;
+                    };
+                    zoxide.enable = true;
+                    starship.enable = true;
+                    fzf.enable = true;
+
+                    zsh = {
+                        enable = true;
+                        inherit dotDir;
+
+                        defaultKeymap = "emacs";
+                        enableCompletion = true;
+
+                        autosuggestion.enable = true;
+                        syntaxHighlighting.enable = true;
+
+                        history = {
+                            size = 10000;
+                            extended = true;
+                            path = "${dotDir}/.zsh_history";
+                        };
+
+                        localVariables = {
+                            DISABLE_AUTO_TITLE = "true";
+                            COMPLETION_WAITING_DOTS = "true";
+                        };
+
+                        sessionVariables = {
+                            SSH_AUTH_SOCK = "$HOME/.bitwarden-ssh-agent.sock";
+                            PNPM_HOME = "$HOME/.local/share/pnpm";
+                            _ZO_DOCTOR = "0";
+                            npm_config_manage_package_manager_versions = "false";
+                        };
+
+                        oh-my-zsh = {
+                            enable = true;
+                            plugins = [
+                                "git"
+                                "aliases"
+                                "colorize"
+                                "eza"
+                            ];
+                            extraConfig = ''
+                                ZSH_DISABLE_COMPFIX=true
+                                zstyle ':omz:update' mode reminder
+                            '';
+                        };
+
+                        initContent = lib.mkOrder 560 ''
+                            path=(
+                              "$HOME/.local/bin"
+                              "$PNPM_HOME/bin"
+                              "$HOME/.cargo/bin"
+                              $path
+                            )
+                        '';
+                    };
+                };
 
                 nix.gc = {
                     automatic = true;
                     dates = "weekly";
                     options = "--delete-older-than 7d";
                 };
+                xdg = {
 
-                xdg.configFile =
-                    lib.mapAttrs (_: path: { source = link path; }) {
-                        "starship.toml" = "starship.toml";
-                        "zsh/.zshrc" = "zsh/.zshrc";
-                        "hypr" = "hypr";
-                        "kitty" = "kitty";
-                        "nvim" = "nvim";
-                        "ideavim" = "ideavim";
-                        "oxc" = "oxc";
-                        "mise/config.toml" = "mise/config.toml";
-                        "btop/btop.conf" = "btop/btop.conf";
-                        "noctalia/config.toml" = "noctalia/config.toml";
-                        "noctalia/host.toml" = "noctalia/hosts/${hostName}.toml";
-                    }
-                    // {
-                        "nixos-vars/vars.lua".text = "return ${lib.generators.toLua { } luaVars}\n";
+                    configFile =
+                        lib.mapAttrs (_: path: { source = link path; }) {
+                            "starship.toml" = "starship.toml";
+                            "zsh/.zshrc" = "zsh/.zshrc";
+                            "hypr" = "hypr";
+                            "kitty" = "kitty";
+                            "nvim" = "nvim";
+                            "ideavim" = "ideavim";
+                            "oxc" = "oxc";
+                            "tombi" = "tombi";
+                            "stylua" = "stylua";
+                            "ruff" = "ruff";
+                            "mise/config.toml" = "mise/config.toml";
+                            "btop/btop.conf" = "btop/btop.conf";
+                            "noctalia/config.toml" = "noctalia/config.toml";
+                            "noctalia/host.toml" = "noctalia/hosts/${hostName}.toml";
+                        }
+                        // {
+                            "nixos-vars/vars.lua".text = "return ${lib.generators.toLua { } luaVars}\n";
+                        };
+
+                    stateFile."noctalia/settings.toml" = {
+                        source = link "noctalia/settings/${hostName}.toml";
+                        force = true;
                     };
-
-                xdg.stateFile."noctalia/settings.toml" = {
-                    source = link "noctalia/settings/${hostName}.toml";
-                    force = true;
                 };
+                home = {
 
-                home.file = {
-                    ".oxfmtrc.json".source = link "oxc/oxfmtrc.json";
-                    "${dotDirRel}/.zshrc".enable = lib.mkForce false;
-                    "${dotDirRel}/hm-init.zsh".text = config.programs.zsh.initContent;
-                }
-                // lib.listToAttrs (
-                    map (
-                        name: lib.nameValuePair ".claude/skills/${name}" { source = link "claude/skills/${name}"; }
-                    ) skills
-                );
+                    username = vars.user.name;
+                    homeDirectory = vars.user.home;
+                    inherit stateVersion;
 
-                home.activation.miseReshim = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-                    run ${lib.getExe pkgs.mise} reshim || true
-                '';
+                    file = {
+                        ".oxfmtrc.json".source = link "oxc/oxfmtrc.json";
+                        "${dotDirRel}/.zshrc".enable = lib.mkForce false;
+                        "${dotDirRel}/hm-init.zsh".text = config.programs.zsh.initContent;
+                    }
+                    // lib.listToAttrs (
+                        map (
+                            name: lib.nameValuePair ".claude/skills/${name}" { source = link "claude/skills/${name}"; }
+                        ) skills
+                    );
+
+                    activation.miseReshim = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+                        run ${lib.getExe pkgs.mise} reshim || true
+                    '';
+                };
 
                 systemd.user.services.mise-install = {
                     Unit.Description = "Install the dev tools in ~/.config/mise/config.toml";
@@ -112,77 +189,6 @@ in
                         ExecStartPost = "${lib.getExe pkgs.mise} reshim";
                     };
                     Install.WantedBy = [ "default.target" ];
-                };
-
-                programs.git = {
-                    enable = true;
-                    ignores = [
-                        ".direnv/"
-                        "result"
-                        "result-*"
-                    ];
-                };
-
-                programs = {
-                    direnv = {
-                        enable = true;
-                        config.global.hide_env_diff = true;
-                    };
-                    zoxide.enable = true;
-                    starship.enable = true;
-                    fzf.enable = true;
-                };
-
-                programs.zsh = {
-                    enable = true;
-                    inherit dotDir;
-
-                    defaultKeymap = "emacs";
-                    enableCompletion = true;
-
-                    autosuggestion.enable = true;
-                    syntaxHighlighting.enable = true;
-
-                    history = {
-                        size = 10000;
-                        extended = true;
-                        path = "${dotDir}/.zsh_history";
-                    };
-
-                    localVariables = {
-                        DISABLE_AUTO_TITLE = "true";
-                        COMPLETION_WAITING_DOTS = "true";
-                    };
-
-                    sessionVariables = {
-                        SSH_AUTH_SOCK = "$HOME/.bitwarden-ssh-agent.sock";
-                        PNPM_HOME = "$HOME/.local/share/pnpm";
-                        _ZO_DOCTOR = "0";
-                        npm_config_manage_package_manager_versions = "false";
-                    };
-
-                    oh-my-zsh = {
-                        enable = true;
-                        plugins = [
-                            "git"
-                            "aliases"
-                            "colorize"
-                            "eza"
-                        ];
-                        extraConfig = ''
-                            ZSH_DISABLE_COMPFIX=true
-                            zstyle ':omz:update' mode reminder
-                        '';
-                    };
-
-                    initContent = lib.mkOrder 560 ''
-                        path=(
-                          "$HOME/.local/bin"
-                          "$PNPM_HOME/bin"
-                          "$HOME/.cargo/bin"
-                          $path
-                        )
-                    '';
                 };
             };
     };

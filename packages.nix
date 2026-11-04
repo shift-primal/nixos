@@ -1,13 +1,11 @@
 {
     lib,
     pkgs,
-    inputs,
     vars,
     ...
 }:
 
 let
-    system = pkgs.stdenv.hostPlatform.system;
     editor = pkgs.${vars.apps.editor};
 in
 {
@@ -80,8 +78,6 @@ in
             cloudflared
             stripe-cli
             skills
-            inputs.nix-claude-code.packages.${system}.stable
-            inputs.ai-usagebar.packages.${system}.default
 
             nixfmt-wrapped
             treefmt

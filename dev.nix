@@ -25,20 +25,22 @@ in
         "docker"
         "wireshark"
     ];
+    environment = {
 
-    environment.systemPackages = [
-        dotnet
-    ]
-    ++ (with pkgs; [
-        jetbrains.rider
-        csharpier
-        fantomas
-        omnisharp-roslyn
-        fsautocomplete
-    ]);
-    environment.sessionVariables.DOTNET_ROOT = "${dotnet}/share/dotnet";
+        systemPackages = [
+            dotnet
+        ]
+        ++ (with pkgs; [
+            jetbrains.rider
+            csharpier
+            fantomas
+            omnisharp-roslyn
+            fsautocomplete
+        ]);
+        sessionVariables.DOTNET_ROOT = "${dotnet}/share/dotnet";
 
-    environment.extraInit = ''
-        export PATH="$HOME/.local/share/mise/shims:$PATH"
-    '';
+        extraInit = ''
+            export PATH="$HOME/.local/share/mise/shims:$PATH"
+        '';
+    };
 }

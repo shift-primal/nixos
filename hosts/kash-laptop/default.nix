@@ -39,8 +39,15 @@
         extraPackages = [ pkgs.intel-media-driver ];
     };
     environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
+    services = {
 
-    services.xserver.xkb.options = "caps:swapescape";
+        xserver.xkb.options = "caps:swapescape";
+
+        greetd.settings.initial_session = {
+            command = "${lib.getExe pkgs.uwsm} start -e -D Hyprland hyprland.desktop";
+            user = vars.user.name;
+        };
+    };
 
     assertions = [
         {
@@ -48,11 +55,6 @@
             message = "greetd autologin needs an encrypted root: set up LUKS first (boot.initrd.luks.devices).";
         }
     ];
-
-    services.greetd.settings.initial_session = {
-        command = "${lib.getExe pkgs.uwsm} start -e -D Hyprland hyprland.desktop";
-        user = vars.user.name;
-    };
 
     home-manager.users.${vars.user.name} =
         { config, lib, ... }:

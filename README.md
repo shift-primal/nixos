@@ -52,6 +52,8 @@ everywhere, so a stray `foo.ts` gets its language server, and Neovim sees the sa
   switches when you `cd` in.
 - JS/TS formatting and linting is oxfmt and oxlint by default. Repos with a `biome.json` use
   biome instead.
+- oxfmt, oxlint, tombi, stylua and ruff read a global config from `~/.config` (linked from
+  `dotfiles/oxc`, `tombi`, `stylua`, `ruff`) when a project has none of its own.
 - Nix still provides the tools for editing this config (nixfmt, nil, statix, lua-language-server,
   stylua, shfmt, tombi, marksman), oxfmt (the Nix build formats `.astro`), and the .NET SDK and
   tools, since Rider started from the launcher does not see the shell's PATH.
@@ -63,18 +65,18 @@ everywhere, so a stray `foo.ts` gets its language server, and Neovim sees the sa
 2. **Get the repo:** `git clone https://github.com/shift-primal/nixos ~/nixos`
    (`nix-shell -p git` if git is missing).
 3. **Add a host folder:**
-   ```sh
-   cp -r ~/nixos/hosts/kash-laptop ~/nixos/hosts/<hostname>
-   nixos-generate-config --show-hardware-config > ~/nixos/hosts/<hostname>/hardware-configuration.nix
-   ```
-   - In its `default.nix`, set `networking.hostName`, `system.stateVersion` (from the
-     installer's `/etc/nixos/configuration.nix`), the bootloader and GPU settings.
-   - Add the hostname to the list in `flake.nix` and to `hosts` in `vars.nix`.
-   - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines from its
-     `/etc/nixos/hardware-configuration.nix`.
-   - Add `dotfiles/hypr/hyprland/hosts/<hostname>.lua` (monitors, input),
-     `dotfiles/noctalia/hosts/<hostname>.toml` and `dotfiles/noctalia/settings/<hostname>.toml`.
-   - `git add` everything: the flake only sees tracked files.
+    ```sh
+    cp -r ~/nixos/hosts/kash-laptop ~/nixos/hosts/<hostname>
+    nixos-generate-config --show-hardware-config > ~/nixos/hosts/<hostname>/hardware-configuration.nix
+    ```
+    - In its `default.nix`, set `networking.hostName`, `system.stateVersion` (from the
+      installer's `/etc/nixos/configuration.nix`), the bootloader and GPU settings.
+    - Add the hostname to the list in `flake.nix` and to `hosts` in `vars.nix`.
+    - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines from its
+      `/etc/nixos/hardware-configuration.nix`.
+    - Add `dotfiles/hypr/hyprland/hosts/<hostname>.lua` (monitors, input),
+      `dotfiles/noctalia/hosts/<hostname>.toml` and `dotfiles/noctalia/settings/<hostname>.toml`.
+    - `git add` everything: the flake only sees tracked files.
 4. **Move the installer's config away** so `/etc/nixos` can link to `~/nixos`:
    `sudo mv /etc/nixos /etc/nixos.installer`
 5. **First switch:** `sudo nixos-rebuild switch --flake ~/nixos#<hostname>`. After that, plain

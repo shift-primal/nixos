@@ -49,9 +49,6 @@ return {
 			["biome-check"] = { command = "biome" },
 			treefmt_project = { inherit = "treefmt", require_cwd = true },
 			prettier_project = { inherit = "prettier", require_cwd = true },
-			stylua = {
-				prepend_args = { "--indent-type", "Tabs", "--indent-width", "4" },
-			},
 		})
 	end,
 }

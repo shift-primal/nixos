@@ -29,15 +29,17 @@ let
     '';
 in
 {
-    nix.settings.experimental-features = [
-        "nix-command"
-        "flakes"
-    ];
+    nix = {
+        settings.experimental-features = [
+            "nix-command"
+            "flakes"
+        ];
 
-    nix.gc = {
-        automatic = true;
-        dates = "weekly";
-        options = "--delete-older-than 7d";
+        gc = {
+            automatic = true;
+            dates = "weekly";
+            options = "--delete-older-than 7d";
+        };
     };
 
     nixpkgs = {
@@ -75,18 +77,66 @@ in
 
     time.timeZone = vars.timeZone;
     i18n.defaultLocale = vars.locale;
-    services.xserver.xkb = {
-        inherit (vars.keyboard) layout variant;
+    services = {
+        xserver.xkb = {
+            inherit (vars.keyboard) layout variant;
+        };
+        fwupd.enable = true;
+        tailscale.enable = true;
+
+        openssh = {
+            enable = true;
+            openFirewall = false;
+            settings = {
+                PasswordAuthentication = false;
+                KbdInteractiveAuthentication = false;
+                PermitRootLogin = "no";
+            };
+        };
     };
     console.useXkbConfig = true;
 
     zramSwap.enable = true;
-    services.fwupd.enable = true;
+    programs = {
 
-    programs.zsh = {
-        enable = true;
-        enableGlobalCompInit = false;
-        promptInit = "";
+        zsh = {
+            enable = true;
+            enableGlobalCompInit = false;
+            promptInit = "";
+        };
+
+        ssh.extraConfig = lib.concatMapStrings (host: ''
+            Host ${lib.removePrefix "kash-" host}
+                HostName ${host}
+        '') vars.hosts;
+
+        nix-ld = {
+            enable = true;
+            libraries = with pkgs; [
+                alsa-lib
+                at-spi2-atk
+                at-spi2-core
+                cairo
+                cups
+                dbus
+                expat
+                glib
+                libdrm
+                libgbm
+                libxkbcommon
+                nspr
+                nss
+                pango
+                systemd
+                libx11
+                libxcb
+                libxcomposite
+                libxdamage
+                libxext
+                libxfixes
+                libxrandr
+            ];
+        };
     };
 
     users.users.${vars.user.name} = {
@@ -105,49 +155,5 @@ in
     };
 
     networking.networkmanager.enable = true;
-    services.tailscale.enable = true;
-
-    services.openssh = {
-        enable = true;
-        openFirewall = false;
-        settings = {
-            PasswordAuthentication = false;
-            KbdInteractiveAuthentication = false;
-            PermitRootLogin = "no";
-        };
-    };
     networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22 ];
-
-    programs.ssh.extraConfig = lib.concatMapStrings (host: ''
-        Host ${lib.removePrefix "kash-" host}
-            HostName ${host}
-    '') vars.hosts;
-
-    programs.nix-ld = {
-        enable = true;
-        libraries = with pkgs; [
-            alsa-lib
-            at-spi2-atk
-            at-spi2-core
-            cairo
-            cups
-            dbus
-            expat
-            glib
-            libdrm
-            libgbm
-            libxkbcommon
-            nspr
-            nss
-            pango
-            systemd
-            libx11
-            libxcb
-            libxcomposite
-            libxdamage
-            libxext
-            libxfixes
-            libxrandr
-        ];
-    };
 }
