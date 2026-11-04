@@ -8,14 +8,14 @@ capsule_radius = 80
 capsule_thickness = 0.74999998696148396
 contact_shadow = true
 end = [
-	"media",
-	"group:dev",
-	"group:g3",
-	"group:g2",
-	"group:g1",
-	"notifications",
-	"tray",
-	"session",
+  "media",
+  "group:dev",
+  "group:g3",
+  "group:g2",
+  "group:g1",
+  "notifications",
+  "tray",
+  "session",
 ]
 font_family = "Monaspace Neon NF"
 font_weight = 600
@@ -34,10 +34,10 @@ enabled = true
 fill = "surface_variant"
 id = "dev"
 members = [
-	"nightwatch75/claude-cockpit:widget",
-	"raycursive/github-prs:bar",
-	"8bury/mini-docker:mini-docker",
-	"mindnbytes/nix-status:status",
+  "nightwatch75/claude-cockpit:widget",
+  "raycursive/github-prs:bar",
+  "8bury/mini-docker:mini-docker",
+  "mindnbytes/nix-status:status",
 ]
 opacity = 1.0
 padding = 8.0
@@ -78,15 +78,15 @@ padding = 6.0
 
 [plugins]
 enabled = [
-	"noctalia/bitwarden",
-	"nightwatch75/claude-cockpit",
-	"mindnbytes/nix-status",
-	"gamaraan/mx-control",
-	"raycursive/github-prs",
-	"8bury/mini-docker",
-	"cleboost/ssh-launcher",
-	"kenn/keybind-cheatsheet",
-	"tmelik/system-monitor",
+  "noctalia/bitwarden",
+  "nightwatch75/claude-cockpit",
+  "mindnbytes/nix-status",
+  "gamaraan/mx-control",
+  "raycursive/github-prs",
+  "8bury/mini-docker",
+  "cleboost/ssh-launcher",
+  "kenn/keybind-cheatsheet",
+  "tmelik/system-monitor",
 ]
 
 [shell]
@@ -150,11 +150,11 @@ enable_builtin_templates = true
 builtin_ids = ["btop", "gtk3", "gtk4", "hyprland", "kitty", "qt"]
 enable_community_templates = true
 community_ids = [
-	"claude-code",
-	"discord",
-	"steam",
-	"gruvbox-plus-icons",
-	"hyprtoolkit",
-	"fzf",
-	"lazygit",
+  "claude-code",
+  "discord",
+  "steam",
+  "gruvbox-plus-icons",
+  "hyprtoolkit",
+  "fzf",
+  "lazygit",
 ]

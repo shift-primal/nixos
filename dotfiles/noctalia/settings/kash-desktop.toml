@@ -112,11 +112,11 @@ reserve_space = false
 enabled = false
 schema_version = 2
 widget_order = [
-	"lockscreen-login-box@eDP-1",
-	"lockscreen-login-box@DP-3",
-	"lockscreen-login-box@DP-2",
-	"lockscreen-login-box@DP-1",
-	"lockscreen-login-box@winit",
+  "lockscreen-login-box@eDP-1",
+  "lockscreen-login-box@DP-3",
+  "lockscreen-login-box@DP-2",
+  "lockscreen-login-box@DP-1",
+  "lockscreen-login-box@winit",
 ]
 
 [lockscreen_widgets.grid]
@@ -271,18 +271,18 @@ use_themed_logos = true
 
 [plugins]
 enabled = [
-	"noctalia/bitwarden",
-	"gamaraan/mx-control",
-	"raycursive/github-prs",
-	"8bury/mini-docker",
-	"cleboost/ssh-launcher",
-	"kenn/keybind-cheatsheet",
-	"tmelik/system-monitor",
-	"alexander/screen-toolkit",
-	"nightwatch75/file-search",
-	"noctalia/screen_recorder",
-	"noctalia/wallhaven",
-	"srounce/systemd",
+  "noctalia/bitwarden",
+  "gamaraan/mx-control",
+  "raycursive/github-prs",
+  "8bury/mini-docker",
+  "cleboost/ssh-launcher",
+  "kenn/keybind-cheatsheet",
+  "tmelik/system-monitor",
+  "alexander/screen-toolkit",
+  "nightwatch75/file-search",
+  "noctalia/screen_recorder",
+  "noctalia/wallhaven",
+  "srounce/systemd",
 ]
 
 [shell]
@@ -361,14 +361,14 @@ wallpaper_scheme = "m3-content"
 
 [theme.templates]
 community_ids = [
-	"claude-code",
-	"discord",
-	"steam",
-	"gruvbox-plus-icons",
-	"hyprtoolkit",
-	"fzf",
-	"lazygit",
-	"yazi",
+  "claude-code",
+  "discord",
+  "steam",
+  "gruvbox-plus-icons",
+  "hyprtoolkit",
+  "fzf",
+  "lazygit",
+  "yazi",
 ]
 
 [wallpaper]
