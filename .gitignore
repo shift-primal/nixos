@@ -1,6 +1,4 @@
 result
 result-*
 __pycache__/
-dotfiles/nvim/lua/matugen.lua
-dotfiles/nvim/lua/plugins/base16.lua
 dotfiles/hypr/hyprtoolkit.conf

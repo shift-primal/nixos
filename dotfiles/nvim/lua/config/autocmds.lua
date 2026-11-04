@@ -1,4 +1,3 @@
--- document_color crashes with an assertion when conform applies text edits
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(args)
 		vim.lsp.document_color.enable(false, { bufnr = args.buf })

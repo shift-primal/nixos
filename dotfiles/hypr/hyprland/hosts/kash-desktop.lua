@@ -20,6 +20,7 @@ hl.monitor({
 	position = "auto",
 	scale = "1.0",
 	sdr_eotf = "srgb",
+	supports_wide_color = -1,
 })
 
 -- Right

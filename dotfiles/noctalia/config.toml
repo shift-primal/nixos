@@ -133,11 +133,12 @@ drawer = true
 
 [theme]
 source = "builtin"
-builtin = "Tokyo-Night"
+builtin = "Gruvbox"
 mode = "dark"
 
     [theme.templates]
     enable_builtin_templates = true
     builtin_ids = [ "btop", "gtk3", "gtk4", "hyprland", "kitty", "qt" ]
     enable_community_templates = true
-    community_ids = [ "claude-code", "discord", "neovim", "obsidian", "steam", "gruvbox-plus-icons", "hyprtoolkit", "fzf", "lazygit" ]
+    community_ids = [ "claude-code", "discord", "obsidian", "steam", "gruvbox-plus-icons", "hyprtoolkit", "fzf", "lazygit" ]
+

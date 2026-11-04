@@ -70,14 +70,14 @@ dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia
    at runtime. Before committing, check the diff for anything secret-looking, and stop and ask
    if unsure.
 5. **Noctalia drives every app's colors.** The scheme is picked in `dotfiles/noctalia/config.toml`
-   (`[theme]`, currently built-in `Tokyo-Night`) and its templates (`[theme.templates]`) write
-   the colors into Hyprland, kitty, btop, GTK, Qt (qt5ct/qt6ct, `desktop.nix`), Neovim, Vesktop,
+   (`[theme]`, currently built-in `Gruvbox`) and its templates (`[theme.templates]`) write
+   the colors into Hyprland, kitty, btop, GTK, Qt (qt5ct/qt6ct, `desktop.nix`), Vesktop,
    Obsidian, Steam, Claude Code, fzf, lazygit and the Gruvbox Plus folder icons. Do not set
    colors directly in an app's config. Noctalia adds and removes its own include lines
    (`require("noctalia")` in `hyprland.lua`, `include themes/noctalia.conf` in `kitty.conf`,
-   `color_theme` in `btop.conf`); leave them. Neovim loads Noctalia's `lua/matugen.lua` from
-   `lua/plugins/ui/colorscheme.lua`, falling back to tokyonight; Noctalia's generated Neovim
-   files are git-ignored.
+   `color_theme` in `btop.conf`); leave them. The exception is Neovim: it uses
+   `ellisonleao/gruvbox.nvim` (`lua/plugins/ui/colorscheme.lua`) for full Treesitter and plugin
+   highlights, so change it by hand if the Noctalia scheme changes.
 
 ## Style
 

@@ -336,23 +336,27 @@ font_family = "DejaVu Sans"
     shortcut = "a"
     variant = "default"
 
+[theme]
+community_palette = "Gruvbox Material Hard"
+source = "community"
+
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers"
 
     [wallpaper.default]
-    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-dracula.png"
+    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
 
     [wallpaper.last]
-    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-dracula.png"
+    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
 
     [wallpaper.monitors.DP-1]
-    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-dracula.png"
+    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
 
     [wallpaper.monitors.DP-2]
-    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-dracula.png"
+    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
 
     [wallpaper.monitors.DP-3]
-    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-dracula.png"
+    path = "/home/kasper/Pictures/wallpapers/gruvbox-dark-blue.png"
 
 [widget.bar]
 type = "felipeartur/ai-usagebar:bar"

@@ -1,16 +1,19 @@
 return {
-	{ "RRethy/base16-nvim", lazy = false, priority = 1000 },
+	{
+		"ellisonleao/gruvbox.nvim",
+		lazy = false,
+		priority = 1000,
+		opts = {
+			contrast = "hard",
+		},
+		init = function()
+			vim.o.background = "dark"
+		end,
+	},
 	{
 		"LazyVim/LazyVim",
 		opts = {
-			colorscheme = function()
-				local ok, matugen = pcall(require, "matugen")
-				if ok then
-					matugen.setup()
-				else
-					vim.cmd.colorscheme("tokyonight")
-				end
-			end,
+			colorscheme = "gruvbox",
 		},
 	},
 }
