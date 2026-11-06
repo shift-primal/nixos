@@ -25,8 +25,7 @@ home.nix         Home Manager: zsh, git, direnv/zoxide/starship/fzf, every dotfi
                  vars.lua, claude skills, mise-install user service (runs after login)
 hosts/<host>/    default.nix (imports, hostName, stateVersion, bootloader, GPU, machine-only
                  config), hardware-configuration.nix
-pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped, oxfmt with Astro support,
-                 hypr-autoscroll (Hyprland plugin; hyprpm does not work on NixOS)
+pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped, oxfmt with Astro support
 dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia, oxc, tombi,
                  stylua, ruff, mise, btop, claude
 ```

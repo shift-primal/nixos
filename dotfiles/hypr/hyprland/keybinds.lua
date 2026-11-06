@@ -106,12 +106,6 @@ hl.bind(
 	{ description = "Measure screen" }
 )
 
-hl.bind(
-	MOD .. " + A",
-	hl.dsp.exec_cmd("hyprctl hypr-autoscroll toggle"),
-	{ description = "Toggle middle-click autoscroll" }
-)
-
 -- App Launchers
 hl.bind(MOD .. " + RETURN", hl.dsp.exec_cmd(apps.terminal), { description = "Terminal" })
 

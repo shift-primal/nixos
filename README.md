@@ -65,18 +65,18 @@ everywhere, so a stray `foo.ts` gets its language server, and Neovim sees the sa
 2. **Get the repo:** `git clone https://github.com/shift-primal/nixos ~/nixos`
    (`nix-shell -p git` if git is missing).
 3. **Add a host folder:**
-    ```sh
-    cp -r ~/nixos/hosts/kash-laptop ~/nixos/hosts/<hostname>
-    nixos-generate-config --show-hardware-config > ~/nixos/hosts/<hostname>/hardware-configuration.nix
-    ```
-    - In its `default.nix`, set `networking.hostName`, `system.stateVersion` (from the
-      installer's `/etc/nixos/configuration.nix`), the bootloader and GPU settings.
-    - Add the hostname to the list in `flake.nix` and to `hosts` in `vars.nix`.
-    - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines from its
-      `/etc/nixos/hardware-configuration.nix`.
-    - Add `dotfiles/hypr/hyprland/hosts/<hostname>.lua` (monitors, input),
-      `dotfiles/noctalia/hosts/<hostname>.toml` and `dotfiles/noctalia/settings/<hostname>.toml`.
-    - `git add` everything: the flake only sees tracked files.
+   ```sh
+   cp -r ~/nixos/hosts/kash-laptop ~/nixos/hosts/<hostname>
+   nixos-generate-config --show-hardware-config > ~/nixos/hosts/<hostname>/hardware-configuration.nix
+   ```
+   - In its `default.nix`, set `networking.hostName`, `system.stateVersion` (from the
+     installer's `/etc/nixos/configuration.nix`), the bootloader and GPU settings.
+   - Add the hostname to the list in `flake.nix` and to `hosts` in `vars.nix`.
+   - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines from its
+     `/etc/nixos/hardware-configuration.nix`.
+   - Add `dotfiles/hypr/hyprland/hosts/<hostname>.lua` (monitors, input),
+     `dotfiles/noctalia/hosts/<hostname>.toml` and `dotfiles/noctalia/settings/<hostname>.toml`.
+   - `git add` everything: the flake only sees tracked files.
 4. **Move the installer's config away** so `/etc/nixos` can link to `~/nixos`:
    `sudo mv /etc/nixos /etc/nixos.installer`
 5. **First switch:** `sudo nixos-rebuild switch --flake ~/nixos#<hostname>`. After that, plain

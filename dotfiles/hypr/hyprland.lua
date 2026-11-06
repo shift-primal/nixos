@@ -1,7 +1,6 @@
 require("hyprland.autostart")
 require("hyprland.base")
 require("hyprland.input")
-require("hyprland.plugins")
 require("hyprland.animations")
 require("hyprland.keybinds")
 require("hyprland.rules")
