@@ -176,6 +176,20 @@ in
                     noDisplay = true;
                 });
 
+        systemd.user.services.bitwarden = {
+            Unit = {
+                Description = "Bitwarden (SSH agent)";
+                PartOf = [ "graphical-session.target" ];
+                After = [ "graphical-session.target" ];
+            };
+            Service = {
+                ExecStart = lib.getExe pkgs.bitwarden-desktop;
+                Restart = "on-failure";
+                RestartSec = 3;
+            };
+            Install.WantedBy = [ "graphical-session.target" ];
+        };
+
         systemd.user.tmpfiles.rules = [
             "e %h/.local/share/Trash/files - - - 7d"
             "e %h/.local/share/Trash/info - - - 7d"
