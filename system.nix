@@ -105,6 +105,7 @@ in
             promptInit = "";
         };
 
+        ssh.systemd-ssh-proxy.enable = false;
         ssh.extraConfig = lib.concatMapStrings (host: ''
             Host ${lib.removePrefix "kash-" host}
                 HostName ${host}
