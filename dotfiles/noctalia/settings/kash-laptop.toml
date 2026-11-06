@@ -277,16 +277,6 @@ label = "Windows"
 shortcut = "w"
 variant = "default"
 
-[[shell.session.actions]]
-action = "command"
-command = "sudo reboot-to arch"
-countdown_seconds = 0.0
-enabled = true
-glyph = "building-arch"
-label = "Arch"
-shortcut = "a"
-variant = "default"
-
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers"
 

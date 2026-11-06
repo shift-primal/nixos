@@ -26,6 +26,8 @@ in
             inkscape
             (onlyoffice-desktopeditors.override { extraFontPackages = [ corefonts ]; })
             libreoffice
+            bolt-launcher
+            lutris
 
             claude-code
 

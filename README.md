@@ -5,7 +5,7 @@ live-editable dotfiles. It builds two machines:
 
 | Host           | Machine | Notes                                                       |
 | -------------- | ------- | ----------------------------------------------------------- |
-| `kash-desktop` | Desktop | NVIDIA, Limine, triple boot with Windows and Arch           |
+| `kash-desktop` | Desktop | NVIDIA, Limine, dual boot with Windows                      |
 | `kash-laptop`  | Laptop  | Intel graphics, systemd-boot, LUKS, autologin into Hyprland |
 
 The home server lives in its own repo,
@@ -87,7 +87,7 @@ everywhere, so a stray `foo.ts` gets its language server, and Neovim sees the sa
 
 Change `user` in `vars.nix`, and the keyboard, locale and time zone if needed. Then check:
 
-- `hosts/kash-desktop/default.nix`: Arch root UUID and the Limine entries.
+- `hosts/kash-desktop/default.nix`: the Limine entries.
 - `dotfiles/noctalia/hosts/*.toml` and `dotfiles/noctalia/settings/*.toml`: monitor names and
   wallpaper paths.
 - `dotfiles/hypr/hyprland/hosts/*.lua`: monitor layout.
@@ -107,7 +107,6 @@ These have to be set up by hand after the first boot:
 | Wallpapers                 | Not in the repo. The desktop expects them in `~/Pictures/wallpapers`.                                                           |
 | Neovim plugins             | Downloaded by lazy.nvim on first start, pinned by `dotfiles/nvim/lazy-lock.json`.                                               |
 | Noctalia plugins           | Downloaded by Noctalia from the list in `dotfiles/noctalia/config.toml`.                                                        |
-| Desktop: Arch and Windows  | Share the 1 GB ESP. Arch's kernel and initramfs are copied to `/boot/arch` by hand after each Arch kernel update.               |
 | Firmware                   | `fwupdmgr refresh && fwupdmgr update`                                                                                           |
 
 ## Everyday use
@@ -118,7 +117,7 @@ sudo rebuild boot                         # apply on next boot (alias: rb:boot)
 nix flake update                          # update inputs, then rebuild
 mise up                                   # update dev tools
 homelab:switch                            # pull and switch the home server
-sudo reboot-to windows|arch|limine        # desktop: reboot into another OS
+sudo reboot-to windows|limine             # desktop: reboot into another OS
 ```
 
 - Edits under `dotfiles/` apply immediately; Hyprland reloads on save.

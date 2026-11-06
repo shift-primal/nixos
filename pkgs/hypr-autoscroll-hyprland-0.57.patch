@@ -1,0 +1,54 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index ddbcd2b..4357cfc 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -75,7 +75,7 @@ namespace {
+         CHyprSignalListener     axisListener;
+         CHyprSignalListener     focusListener;
+         CHyprSignalListener     configListener;
+-        SP<SHyprCtlCommand>     hyprctlCommand;
++        SP<IPC::Socket1::SCommand> hyprctlCommand;
+     } state;
+ 
+     uint32_t eventTimeMs() {
+@@ -298,8 +298,8 @@ namespace {
+         return {.success = false, .error = "expected one of: toggle, on, off, status"};
+     }
+ 
+-    std::string controlStatus(const eHyprCtlOutputFormat format) {
+-        if (format == FORMAT_JSON) {
++    std::string controlStatus(const IPC::Socket1::eOutputFormat format) {
++        if (format == IPC::Socket1::FORMAT_JSON) {
+             return std::format(
+                 R"({{"available":true,"enabled":{},"middleModeEnabled":{},"active":{},"sensitivity":{:.3f}}})",
+                 config.enabled->value() ? "true" : "false", state.middleModeEnabled ? "true" : "false",
+@@ -311,13 +311,13 @@ namespace {
+                            state.active ? "yes" : "no", state.runtimeSensitivity);
+     }
+ 
+-    std::string controlError(const eHyprCtlOutputFormat format, const std::string& error) {
+-        if (format == FORMAT_JSON)
++    std::string controlError(const IPC::Socket1::eOutputFormat format, const std::string& error) {
++        if (format == IPC::Socket1::FORMAT_JSON)
+             return std::format(R"({{"error":"{}"}})", error);
+         return "error: " + error + "\n";
+     }
+ 
+-    std::string hyprctlAutoscroll(const eHyprCtlOutputFormat format, const std::string request) {
++    std::string hyprctlAutoscroll(const IPC::Socket1::eOutputFormat format, const std::string request) {
+         const auto control = Autoscroll::parseControlRequest(request);
+ 
+         switch (control.action) {
+@@ -508,7 +508,11 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
+     }
+ 
+     state.hyprctlCommand = HyprlandAPI::registerHyprCtlCommand(
+-        pluginHandle, {.name = "hypr-autoscroll", .exact = false, .fn = hyprctlAutoscroll});
++        pluginHandle, {.name    = "hypr-autoscroll",
++                       .match   = IPC::Socket1::COMMAND_MATCH_PREFIX,
++                       .handler = [](const IPC::Socket1::SRequest& request) -> IPC::Socket1::SResponse {
++                           return hyprctlAutoscroll(request.format, request.command);
++                       }});
+     if (!state.hyprctlCommand)
+         throw std::runtime_error("hypr-autoscroll: failed to register hyprctl command");
+ 

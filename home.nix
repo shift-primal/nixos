@@ -36,6 +36,7 @@ in
                     hostname = hostName;
                     cursor = { inherit (vars.cursor) name size; };
                     apps = lib.mapAttrs (_: name: pkgs.${name}.meta.mainProgram) vars.apps;
+                    plugins.autoscroll = "${pkgs.hypr-autoscroll}/lib/hypr-autoscroll.so";
                 };
             in
             {

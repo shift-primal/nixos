@@ -106,6 +106,12 @@ hl.bind(
 	{ description = "Measure screen" }
 )
 
+hl.bind(
+	MOD .. " + A",
+	hl.dsp.exec_cmd("hyprctl hypr-autoscroll toggle"),
+	{ description = "Toggle middle-click autoscroll" }
+)
+
 -- App Launchers
 hl.bind(MOD .. " + RETURN", hl.dsp.exec_cmd(apps.terminal), { description = "Terminal" })
 
@@ -122,7 +128,15 @@ hl.bind(MOD .. " + SHIFT + E", hl.dsp.exec_cmd(apps.email), { description = "Ema
 hl.bind(MOD .. " + SHIFT + M", term(apps.spotify), { description = "Spotify" })
 
 -- Window Management
-hl.bind(MOD .. " + W", hl.dsp.window.close(), { description = "Close focused window" })
+local function is_wow(w)
+	return w and (w.class:lower() == "wow.exe" or w.title == "World of Warcraft")
+end
+
+hl.bind(MOD .. " + W", function()
+	if not is_wow(hl.get_active_window()) then
+		hl.dispatch(hl.dsp.window.close())
+	end
+end, { description = "Close focused window (not in WoW)" })
 
 hl.bind(MOD .. " + T", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle floating" })
 

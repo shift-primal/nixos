@@ -1,13 +1,11 @@
-" IdeaVim config for Rider. Linked to ~/.config/ideavim/ideavimrc by home.nix.
-
-" y/p use the system clipboard
+" clipboard
 set clipboard+=unnamedplus
 
-" Ctrl+S goes to Rider (Save All) in every mode
-sethandler <C-s> a:ide
+" save
+sethandler <C-s> n-v:ide i:vim
+imap <C-s> <Esc><Action>(SaveAll)
 
-" Alt+j / Alt+k move the line (or selection) down / up
-" <Action>(...) only runs from recursive maps (nmap, not nnoremap)
+" move lines up/down
 sethandler <A-j> a:vim
 sethandler <A-k> a:vim
 nmap <A-j> <Action>(MoveLineDown)

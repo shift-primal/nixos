@@ -1,268 +1,275 @@
 config_version = 16
 
 [bar.default]
-background_opacity = 0.4999999888241291
+background_opacity = 0.99999997764825821
 border = "on_surface"
 capsule_fill = "hover"
 capsule_radius = "auto"
-center = ["workspaces"]
+center = [ "workspaces" ]
 compositor_blur = false
 concave_edge_corners = false
 contact_shadow = true
-end = ["media", "group:dev", "group:g3", "group:g5", "group:g1", "group:g2"]
+end = [ "media", "group:dev", "group:g3", "group:g5", "group:g1", "group:g2" ]
 font_family = "Monaspace Neon NF"
 font_weight = 600
 padding = 16
 panel_overlap = 0
-shadow = false
-start = ["session", "group:g6", "group:g4"]
+start = [ "session", "group:g6", "group:g4" ]
 thickness = 40
 widget_spacing = 16
 
-[[bar.default.capsule_group]]
-accordion = false
-accordion_direction = "end"
-border = ""
-border_width = 1.0
-enabled = true
-fill = "surface_container"
-id = "dev"
-members = ["raycursive/github-prs:bar", "8bury/mini-docker:mini-docker"]
-opacity = 1.0
-padding = 8.0
-widget_spacing = 10
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border = ""
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "dev"
+    members = [ "raycursive/github-prs:bar", "8bury/mini-docker:mini-docker" ]
+    opacity = 1.0
+    padding = 8.0
+    widget_spacing = 10
 
-[[bar.default.capsule_group]]
-accordion = false
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_container"
-id = "g1"
-members = ["volume", "brightness", "battery"]
-opacity = 1.0
-padding = 6.0
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "g1"
+    members = [ "volume", "brightness", "battery" ]
+    opacity = 1.0
+    padding = 6.0
 
-[[bar.default.capsule_group]]
-accordion = false
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_container"
-id = "g2"
-members = ["notifications", "clock", "tray"]
-opacity = 1.0
-padding = 6.0
-radius = 80.0
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "g2"
+    members = [ "notifications", "clock", "tray" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 80.0
 
-[[bar.default.capsule_group]]
-accordion = true
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_container"
-id = "g3"
-members = ["recorder", "clipboard", "gamaraan/mx-control:mx"]
-opacity = 1.0
-padding = 6.0
+    [[bar.default.capsule_group]]
+    accordion = true
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "g3"
+    members = [ "recorder", "clipboard", "gamaraan/mx-control:mx" ]
+    opacity = 1.0
+    padding = 6.0
 
-[[bar.default.capsule_group]]
-accordion = false
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_container"
-id = "g5"
-members = ["network", "bluetooth"]
-opacity = 1.0
-padding = 6.0
-radius = 80.0
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "g5"
+    members = [ "network", "bluetooth" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 80.0
 
-[[bar.default.capsule_group]]
-accordion = true
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_container"
-id = "g4"
-members = ["wallhaven", "wallpaper"]
-opacity = 1.0
-padding = 6.0
-radius = 80.0
+    [[bar.default.capsule_group]]
+    accordion = true
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "g4"
+    members = [ "wallhaven", "wallpaper" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 80.0
 
-[[bar.default.capsule_group]]
-accordion = false
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_container"
-id = "g6"
-members = ["mindnbytes/nix-status:status", "summary"]
-opacity = 1.0
-padding = 6.0
-radius = 80.0
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    border_width = 1.0
+    enabled = true
+    fill = "surface_container"
+    id = "g6"
+    members = [ "mindnbytes/nix-status:status", "summary" ]
+    opacity = 1.0
+    padding = 6.0
+    radius = 80.0
 
 [dock]
 auto_hide = true
+background_opacity = 0.99999997764825821
+inactive_opacity = 0.99999997764825821
 launcher_position = "start"
-pinned = ["Factorio", "Deadlock"]
+pinned = [ "Factorio", "Deadlock" ]
 reserve_space = false
 
 [lockscreen_widgets]
 enabled = false
 schema_version = 2
 widget_order = [
-	"lockscreen-login-box@eDP-1",
-	"lockscreen-login-box@DP-3",
-	"lockscreen-login-box@DP-2",
-	"lockscreen-login-box@DP-1",
-	"lockscreen-login-box@winit",
+    "lockscreen-login-box@eDP-1",
+    "lockscreen-login-box@DP-3",
+    "lockscreen-login-box@DP-2",
+    "lockscreen-login-box@DP-1",
+    "lockscreen-login-box@winit"
 ]
 
-[lockscreen_widgets.grid]
-cell_size = 16
-major_interval = 4
-visible = true
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
 
-[lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
-box_height = 196.0
-box_width = 810.0
-cx = 1280.0
-cy = 1258.0
-output = "DP-1"
-placement_height = 1440.0
-placement_width = 2560.0
-rotation = 0.0
-type = "login_box"
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1280.0
+    cy = 1258.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
 
-[lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
-background_color = "surface_container"
-background_opacity = 0.88
-background_radius = 12.0
-center_password_text = false
-input_opacity = 1.0
-input_radius = 6.0
-layout = "regular"
-show_caps_lock = true
-show_keyboard_layout = true
-show_login_button = true
-show_media = true
-show_password_reveal = true
-show_session_buttons = true
-show_unlock_hint = true
-show_weather = true
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
 
-[lockscreen_widgets.widget."lockscreen-login-box@DP-2"]
-box_height = 196.0
-box_width = 810.0
-cx = 1280.0
-cy = 1258.0
-output = "DP-2"
-placement_height = 1440.0
-placement_width = 2560.0
-rotation = 0.0
-type = "login_box"
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-2"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1280.0
+    cy = 1258.0
+    output = "DP-2"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
 
-[lockscreen_widgets.widget."lockscreen-login-box@DP-2".settings]
-background_color = "surface_container"
-background_opacity = 0.88
-background_radius = 12.0
-center_password_text = false
-input_opacity = 1.0
-input_radius = 6.0
-layout = "regular"
-show_caps_lock = true
-show_keyboard_layout = true
-show_login_button = true
-show_media = true
-show_password_reveal = true
-show_session_buttons = true
-show_unlock_hint = true
-show_weather = true
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-2".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
 
-[lockscreen_widgets.widget."lockscreen-login-box@DP-3"]
-box_height = 196.0
-box_width = 810.0
-cx = 1280.0
-cy = 1258.0
-output = "DP-3"
-placement_height = 1440.0
-placement_width = 2560.0
-rotation = 0.0
-type = "login_box"
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-3"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1280.0
+    cy = 1258.0
+    output = "DP-3"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
 
-[lockscreen_widgets.widget."lockscreen-login-box@DP-3".settings]
-background_color = "surface_container"
-background_opacity = 0.88
-background_radius = 12.0
-center_password_text = false
-input_opacity = 1.0
-input_radius = 6.0
-layout = "regular"
-show_caps_lock = true
-show_keyboard_layout = true
-show_login_button = true
-show_media = true
-show_password_reveal = true
-show_session_buttons = true
-show_unlock_hint = true
-show_weather = true
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-3".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
 
-[lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
-box_height = 196.0
-box_width = 810.0
-cx = 768.0
-cy = 778.0
-output = "eDP-1"
-placement_height = 960.0
-placement_width = 1536.0
-rotation = 0.0
-type = "login_box"
+    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 768.0
+    cy = 778.0
+    output = "eDP-1"
+    placement_height = 960.0
+    placement_width = 1536.0
+    rotation = 0.0
+    type = "login_box"
 
-[lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
-background_color = "surface_container"
-background_opacity = 0.88
-background_radius = 12.0
-center_password_text = false
-input_opacity = 1.0
-input_radius = 6.0
-layout = "regular"
-show_caps_lock = true
-show_keyboard_layout = true
-show_login_button = true
-show_media = true
-show_password_reveal = true
-show_session_buttons = true
-show_unlock_hint = true
-show_weather = true
+        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
 
-[lockscreen_widgets.widget."lockscreen-login-box@winit"]
-box_height = 196.0
-box_width = 810.0
-cx = 629.0
-cy = 1198.0
-output = "winit"
-placement_height = 1380.0
-placement_width = 1258.0
-rotation = 0.0
-type = "login_box"
+    [lockscreen_widgets.widget."lockscreen-login-box@winit"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 629.0
+    cy = 1198.0
+    output = "winit"
+    placement_height = 1380.0
+    placement_width = 1258.0
+    rotation = 0.0
+    type = "login_box"
 
-[lockscreen_widgets.widget."lockscreen-login-box@winit".settings]
-background_color = "surface_container"
-background_opacity = 0.88
-background_radius = 12.0
-center_password_text = false
-input_opacity = 1.0
-input_radius = 6.0
-layout = "regular"
-show_caps_lock = true
-show_keyboard_layout = true
-show_login_button = true
-show_media = true
-show_password_reveal = true
-show_session_buttons = true
-show_unlock_hint = true
-show_weather = true
+        [lockscreen_widgets.widget."lockscreen-login-box@winit".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[notification]
+background_opacity = 0.99999997764825821
+
+[osd]
+background_opacity = 0.99999997764825821
 
 [plugin_settings."mindnbytes/nix-status"]
 flake_dir = "/home/kasper/nixos"
@@ -271,87 +278,84 @@ use_themed_logos = true
 
 [plugins]
 enabled = [
-	"noctalia/bitwarden",
-	"gamaraan/mx-control",
-	"raycursive/github-prs",
-	"8bury/mini-docker",
-	"cleboost/ssh-launcher",
-	"kenn/keybind-cheatsheet",
-	"tmelik/system-monitor",
-	"alexander/screen-toolkit",
-	"nightwatch75/file-search",
-	"noctalia/screen_recorder",
-	"noctalia/wallhaven",
-	"srounce/systemd",
+    "noctalia/bitwarden",
+    "gamaraan/mx-control",
+    "raycursive/github-prs",
+    "8bury/mini-docker",
+    "cleboost/ssh-launcher",
+    "kenn/keybind-cheatsheet",
+    "tmelik/system-monitor",
+    "alexander/screen-toolkit",
+    "nightwatch75/file-search",
+    "noctalia/screen_recorder",
+    "noctalia/wallhaven",
+    "srounce/systemd"
 ]
 
 [shell]
 avatar_path = "/home/kasper/Pictures/lash2.png"
 font_family = "DejaVu Sans"
 
-[shell.launcher]
-app_grid = true
-category_icons_only = true
-default_view = "all"
-provider_prefix = ">"
+    [shell.launcher]
+    app_grid = true
+    category_icons_only = true
+    default_view = "all"
+    provider_prefix = ">"
 
-[shell.screenshot]
-directory = "/home/kasper/Pictures/screenshots"
+    [shell.panel]
+    transparency_mode = "soft"
 
-[[shell.session.actions]]
-action = "lock"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "1"
-variant = "default"
+    [shell.screenshot]
+    directory = "/home/kasper/Pictures/screenshots"
+    region_dim_opacity = 0.74999998323619366
 
-[[shell.session.actions]]
-action = "logout"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "2"
-variant = "default"
+    [[shell.session.actions]]
+    action = "lock"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "1"
+    variant = "default"
 
-[[shell.session.actions]]
-action = "lock_and_suspend"
-countdown_seconds = 0.0
-enabled = false
-shortcut = "3"
-variant = "default"
+    [[shell.session.actions]]
+    action = "logout"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "2"
+    variant = "default"
 
-[[shell.session.actions]]
-action = "reboot"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "4"
-variant = "default"
+    [[shell.session.actions]]
+    action = "lock_and_suspend"
+    countdown_seconds = 0.0
+    enabled = false
+    shortcut = "3"
+    variant = "default"
 
-[[shell.session.actions]]
-action = "shutdown"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "s"
-variant = "destructive"
+    [[shell.session.actions]]
+    action = "reboot"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "4"
+    variant = "default"
 
-[[shell.session.actions]]
-action = "command"
-command = "sudo reboot-to windows"
-countdown_seconds = 0.0
-enabled = true
-glyph = "brand-windows-filled"
-label = "Windows"
-shortcut = "w"
-variant = "default"
+    [[shell.session.actions]]
+    action = "shutdown"
+    countdown_seconds = 0.0
+    enabled = true
+    shortcut = "s"
+    variant = "destructive"
 
-[[shell.session.actions]]
-action = "command"
-command = "sudo reboot-to arch"
-countdown_seconds = 0.0
-enabled = true
-glyph = "building-arch"
-label = "Arch"
-shortcut = "a"
-variant = "default"
+    [[shell.session.actions]]
+    action = "command"
+    command = "sudo reboot-to windows"
+    countdown_seconds = 0.0
+    enabled = true
+    glyph = "brand-windows-filled"
+    label = "Windows"
+    shortcut = "w"
+    variant = "default"
+
+    [shell.shadow]
+    alpha = 0.24999999441206455
 
 [theme]
 community_palette = "Gruvbox Material Hard"
@@ -359,35 +363,26 @@ mode = "dark"
 source = "community"
 wallpaper_scheme = "m3-content"
 
-[theme.templates]
-community_ids = [
-	"claude-code",
-	"discord",
-	"steam",
-	"gruvbox-plus-icons",
-	"hyprtoolkit",
-	"fzf",
-	"lazygit",
-	"yazi",
-]
+    [theme.templates]
+    community_ids = [ "claude-code", "discord", "steam", "gruvbox-plus-icons", "hyprtoolkit", "fzf", "lazygit", "yazi" ]
 
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers"
 
-[wallpaper.default]
-path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
+    [wallpaper.default]
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
-[wallpaper.last]
-path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
+    [wallpaper.last]
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
-[wallpaper.monitors.DP-1]
-path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
+    [wallpaper.monitors.DP-1]
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
-[wallpaper.monitors.DP-2]
-path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
+    [wallpaper.monitors.DP-2]
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
-[wallpaper.monitors.DP-3]
-path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
+    [wallpaper.monitors.DP-3]
+    path = "/home/kasper/Pictures/wallpapers/wallhaven-1pd22w.png"
 
 [widget.clock]
 tooltip_format = "{:%a %d. %b - %y}"

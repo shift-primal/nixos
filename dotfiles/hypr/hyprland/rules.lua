@@ -32,11 +32,16 @@ local function merge(base, extra)
 	return result
 end
 
--- Global opacity
-hl.window_rule({ match = { class = ".*" }, opacity = string.format("%g %g", opacity.active, opacity.inactive) })
+hl.window_rule({
+	match = { class = "^(net-runelite-client-RuneLite)$", title = "^(win[0-9]+)$" },
+	no_initial_focus = true,
+})
 
--- Steam
-hl.window_rule({ match = { class = "^(steam)$", title = "negative:^(Steam)$" }, float = true })
+-- RuneLite menus and tooltips (win0, win1, ...)
+hl.window_rule({
+	match = { class = "^(net-runelite-client-RuneLite)$", title = "^(win[0-9]+)$" },
+	no_initial_focus = true,
+})
 
 -- JetBrains welcome screen
 hl.window_rule({ match = { class = "^(jetbrains-.*)$", title = "^(Welcome to JetBrains.*)$" }, float = true })
