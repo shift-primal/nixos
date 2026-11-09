@@ -15,7 +15,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "xml", "xsd", "xsl", "xslt", "svg" },
+	pattern = { "xml", "xsd", "xsl", "xslt", "svg", "yaml", "yaml.docker-compose" },
 	callback = function()
 		vim.opt_local.expandtab = true
 		vim.opt_local.shiftwidth = 2

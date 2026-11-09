@@ -136,6 +136,10 @@ in
                 libxext
                 libxfixes
                 libxrandr
+                icu
+                openssl
+                stdenv.cc.cc.lib
+                zlib
             ];
         };
     };

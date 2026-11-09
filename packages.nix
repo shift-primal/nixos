@@ -92,17 +92,13 @@ in
             statix
             lua-language-server
             stylua
-            shfmt
             tombi
             sops
             age
-            marksman
             oxfmt
             mise
-            dockerfile-language-server
-            docker-compose-language-service
-            hadolint
             tree-sitter
             gcc
+            wowup-cf
         ]);
 }
