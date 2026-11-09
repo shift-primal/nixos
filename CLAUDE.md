@@ -39,6 +39,8 @@ dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia
   dev tools live. Nix keeps only tools for editing this config, oxfmt (`pkgs/oxfmt.nix`, needed
   for `.astro`), and the .NET SDK and tools for Rider (`dev.nix`), because a GUI IDE started
   from the launcher does not see the shell PATH.
+- Per-project pinned tools: a `flake.nix` dev shell in that project (from
+  `the-nix-way/dev-templates`), entered by direnv `use flake`. Not in this repo.
 - System service or hardware: the topical file (`desktop.nix`, `hardware.nix`, `dev.nix`,
   `system.nix`). Home Manager config for that feature goes in the same file under
   `home-manager.users.${vars.user.name}`, so a feature stays in one place.
