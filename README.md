@@ -53,7 +53,10 @@ everywhere, so a stray `foo.ts` gets its language server, and Neovim sees the sa
 - A project that wants pinned, reproducible tools gets a dev shell instead:
   `nix flake init -t github:the-nix-way/dev-templates#node`, then `direnv allow`. direnv
   enters the shell on `cd` (nix-direnv caches it), and its tools come before mise's on PATH.
-  Outside the folder the global mise tools apply again.
+  Outside the folder the global mise tools apply again. Shortcuts (`dotfiles/zsh/.zshrc`):
+  `dev new <name> <template>` makes `~/proj/<name>` with a git repo and the shell,
+  `dev init <template>` adds one to the current folder, `dev <name>` jumps to a project,
+  `dev ls` lists the templates, and plain `dev` runs `nix develop`.
 - JS/TS formatting and linting is oxfmt and oxlint by default. Repos with a `biome.json` use
   biome instead.
 - oxfmt, oxlint, tombi, stylua and ruff read a global config from `~/.config` (linked from
