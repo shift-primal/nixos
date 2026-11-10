@@ -48,7 +48,8 @@ listed in `dev.nix`. They are on PATH everywhere, so a stray `foo.ts` gets its l
 and Neovim sees the same tools. `nix flake update` and a rebuild update them.
 
 - A project that needs its own versions gets a dev shell: `dev init node` in the project
-  (templates in `templates/`, else `the-nix-way/dev-templates`). direnv enters the shell on `cd`
+  (templates in `templates/`, else `the-nix-way/dev-templates`). For `node` it also copies the
+  global oxlint and oxfmt configs from `dotfiles/oxc` in, unless the project has its own. direnv enters the shell on `cd`
   (nix-direnv caches it), and its tools come before the global ones on PATH. Shortcuts
   (`dotfiles/zsh/.zshrc`): `dev new <name> <template>` makes `~/proj/<name>` with a git repo and
   the shell, `dev <name>` jumps to a project, `dev ls` lists the templates, and plain `dev` runs
