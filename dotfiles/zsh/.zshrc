@@ -27,6 +27,36 @@ alias ls='eza'
 alias rb:switch='sudo rebuild switch'
 alias rb:boot='sudo rebuild boot'
 
+# dev <project> | dev new <name> <template> | dev init <template> | dev ls | dev
+# Projects live in ~/proj; templates come from the-nix-way/dev-templates.
+# Inside a git repo the flake files must be git-added, or nix cannot see them.
+dev() {
+  local repo=github:the-nix-way/dev-templates
+  case $1 in
+    init)
+      [[ -n $2 ]] || { echo "usage: dev init <template>  (dev ls for the list)" >&2; return 1 }
+      nix flake init -t "$repo#$2" || return
+      git rev-parse --git-dir &>/dev/null && git add flake.nix .envrc
+      direnv allow
+      ;;
+    new)
+      [[ -n $2 && -n $3 ]] || { echo "usage: dev new <name> <template>" >&2; return 1 }
+      mkdir -p ~/proj/$2 && cd ~/proj/$2 || return
+      git rev-parse --git-dir &>/dev/null || git init -q
+      dev init $3
+      ;;
+    ls) nix flake show --json $repo 2>/dev/null | jq -r '.templates | keys[]' | column ;;
+    "") nix develop ;;
+    *) cd ~/proj/$1 ;;
+  esac
+}
+_dev() {
+  if (( CURRENT == 2 )); then
+    compadd init new ls ~/proj/*(/:t)
+  fi
+}
+compdef _dev dev
+
 # Pull and switch the homelab from here; rebuild.nix lets sudo run without a password, so no tty.
 # Streams the build, then ends with a clear verdict; on failure repeats the log's end and keeps the file.
 homelab:switch() {
