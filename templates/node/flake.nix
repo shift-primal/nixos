@@ -27,7 +27,7 @@
         in
         {
             overlays.default = final: prev: {
-                nodejs = prev.nodejs_24;
+                nodejs = prev.nodejs_26;
             };
 
             devShells = forEachSupportedSystem (
