@@ -1,5 +1,4 @@
 local web = { "oxfmt_project", "prettier_project", "oxfmt", stop_after_first = true }
-local web_biome = { "oxfmt_project", "biome", "prettier_project", "oxfmt", stop_after_first = true }
 
 return {
 	"stevearc/conform.nvim",
@@ -13,14 +12,14 @@ return {
 			cs = { "csharpier" },
 			toml = { "tombi" },
 			nix = { "treefmt_project", "nixfmt", stop_after_first = true },
-			javascript = web_biome,
-			javascriptreact = web_biome,
-			typescript = web_biome,
-			typescriptreact = web_biome,
-			json = web_biome,
-			jsonc = web_biome,
-			css = web_biome,
-			vue = web_biome,
+			javascript = web,
+			javascriptreact = web,
+			typescript = web,
+			typescriptreact = web,
+			json = web,
+			jsonc = web,
+			css = web,
+			vue = web,
 			html = web,
 			json5 = web,
 			yaml = web,
