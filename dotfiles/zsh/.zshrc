@@ -36,7 +36,10 @@ dev() {
       local src=$repo
       [[ -d /etc/nixos/templates/$2 ]] && src=/etc/nixos
       nix flake init -t "$src#$2" || return
-      git rev-parse --git-dir &>/dev/null && git add flake.nix .envrc
+      if [[ $2 == node ]]; then
+        for f in oxlintrc oxfmtrc; do cp --update=none /etc/nixos/dotfiles/oxc/$f.json .$f.json; done
+      fi
+      git rev-parse --git-dir &>/dev/null && git add flake.nix .envrc .ox*rc.json(N)
       direnv allow
       ;;
     new)

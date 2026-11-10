@@ -27,7 +27,7 @@ home.nix         Home Manager: zsh, git, direnv/zoxide/starship/fzf, every dotfi
 hosts/<host>/    default.nix (imports, hostName, stateVersion, bootloader, GPU, machine-only
                  config), hardware-configuration.nix
 templates/       own dev-shell templates for `dev init`
-pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped, oxfmt with Astro support
+pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped
 dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia, oxc, tombi,
                  stylua, ruff, btop, claude
 ```

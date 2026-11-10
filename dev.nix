@@ -43,7 +43,6 @@ in
             oxlint
             biome
             prettier
-            astro-language-server
 
             python3
             uv

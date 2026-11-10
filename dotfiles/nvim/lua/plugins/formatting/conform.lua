@@ -21,7 +21,6 @@ return {
 			jsonc = web_biome,
 			css = web_biome,
 			vue = web_biome,
-			astro = web_biome,
 			html = web,
 			json5 = web,
 			yaml = web,
