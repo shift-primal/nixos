@@ -34,9 +34,12 @@ dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia
 
 - App or CLI tool: `packages.nix`. A default app bound to a key goes in `vars.apps` instead
   (nixpkgs attribute name); the keybinds read it through `vars.lua`.
-- Dev tool for a language (runtime, LSP, formatter, linter): `dotfiles/mise/config.toml`, not
-  Nix. Mason stays disabled (`dotfiles/nvim/lua/plugins/lsp/mason.lua`); mise is the one place
-  dev tools live. Nix keeps only tools for editing this config, oxfmt (`pkgs/oxfmt.nix`, needed
+- Editor-only language server: Mason, installed through Lazy. Add it to `servers` in
+  `dotfiles/nvim/lua/plugins/lsp/lsp.lua`; a server provided by mise or Nix is marked
+  `mason = false` there. Mason's `ensure_installed` stays empty
+  (`dotfiles/nvim/lua/plugins/lsp/mason.lua`) so it does not duplicate mise tools.
+- Other dev tool for a language (runtime, formatter, linter, anything also run in a terminal):
+  `dotfiles/mise/config.toml`, not Nix. Nix keeps only tools for editing this config, oxfmt (`pkgs/oxfmt.nix`, needed
   for `.astro`), and the .NET SDK and tools for Rider (`dev.nix`), because a GUI IDE started
   from the launcher does not see the shell PATH.
 - Per-project pinned tools: a `flake.nix` dev shell in that project (from

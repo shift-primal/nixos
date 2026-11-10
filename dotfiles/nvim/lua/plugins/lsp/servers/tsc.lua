@@ -1,4 +1,5 @@
 return {
+	mason = false,
 	settings = {
 		["js/ts"] = {
 			format = { enabled = false },

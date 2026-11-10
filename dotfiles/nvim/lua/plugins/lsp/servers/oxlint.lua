@@ -18,6 +18,7 @@ local OTHER = {
 }
 
 return {
+	mason = false,
 	cmd = function(dispatchers, config)
 		local root = (config or {}).root_dir
 		local exe = root and vim.fs.joinpath(root, "node_modules/.bin/oxlint")

@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+    config,
+    pkgs,
+    vars,
+    ...
+}:
 
 {
     imports = [
@@ -53,5 +58,15 @@
             nvidiaSettings = true;
             package = config.boot.kernelPackages.nvidiaPackages.latest;
         };
+    };
+
+    home-manager.users.${vars.user.name}.systemd.user.services.chatter-log = {
+        Unit.Description = "Log keyboard chatter and per-key press totals";
+        Service = {
+            ExecStart = "${pkgs.python3}/bin/python3 -u ${./chatter-log.py}";
+            Restart = "always";
+            RestartSec = 10;
+        };
+        Install.WantedBy = [ "default.target" ];
     };
 }

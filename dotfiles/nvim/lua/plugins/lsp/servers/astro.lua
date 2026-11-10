@@ -6,6 +6,7 @@ local function bundled_tsdk()
 end
 
 return {
+	mason = false,
 	settings = {
 		emmet = { showExpandedAbbreviation = "never" },
 	},
