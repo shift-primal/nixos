@@ -1,8 +1,13 @@
 -- astro-ls needs TypeScript <= 6 (TS 7 has no tsserverlibrary.js); fall back to the
--- TS 6 bundled with mise's astro-ls when the project's TS is missing or too new
+-- TS 6 bundled with Nix's astro-ls when the project's TS is missing or too new
 local function bundled_tsdk()
-	local pattern = "~/.local/share/mise/installs/npm-astrojs-language-server/*/node_modules/.mise/typescript@*/node_modules/typescript/lib"
-	return vim.fn.glob(vim.fn.expand(pattern), false, true)[1]
+	local exe = vim.uv.fs_realpath(vim.fn.exepath("astro-ls"))
+	if not exe then
+		return nil
+	end
+	local root = vim.fs.dirname(vim.fs.dirname(exe))
+	local pattern = root .. "/lib/node_modules/astro-language-server/node_modules/.pnpm/typescript@*/node_modules/typescript/lib"
+	return vim.fn.glob(pattern, false, true)[1]
 end
 
 return {

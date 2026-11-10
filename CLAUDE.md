@@ -20,15 +20,16 @@ system.nix       nix settings, gc, /etc/nixos link, rebuild helper, boot, locale
 desktop.nix      Hyprland, greeter, Noctalia, portal, keyring, plymouth, fonts, steam,
                  reboot-to, claude-desktop; HM: cursor, GTK/Qt theme, askpass, trash
 hardware.nix     audio, bluetooth, i2c, solaar, printing; HM: easyeffects
-dev.nix          docker, wireshark, Rider + .NET SDK and tools, mise shims on PATH
+dev.nix          docker, wireshark, Rider + .NET SDK and tools, global language toolchains,
+                 LSPs, formatters and linters
 home.nix         Home Manager: zsh, git, direnv/zoxide/starship/fzf, every dotfile link,
-                 vars.lua, claude skills, mise-install user service (runs after login)
+                 vars.lua, claude skills
 hosts/<host>/    default.nix (imports, hostName, stateVersion, bootloader, GPU, machine-only
                  config), hardware-configuration.nix
 templates/       own dev-shell templates for `dev init`
 pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped, oxfmt with Astro support
 dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia, oxc, tombi,
-                 stylua, ruff, mise, btop, claude
+                 stylua, ruff, btop, claude
 ```
 
 ## Where things go
@@ -36,13 +37,12 @@ dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia
 - App or CLI tool: `packages.nix`. A default app bound to a key goes in `vars.apps` instead
   (nixpkgs attribute name); the keybinds read it through `vars.lua`.
 - Editor-only language server: Mason, installed through Lazy. Add it to `servers` in
-  `dotfiles/nvim/lua/plugins/lsp/lsp.lua`; a server provided by mise or Nix is marked
+  `dotfiles/nvim/lua/plugins/lsp/lsp.lua`; a server provided by Nix is marked
   `mason = false` there. Mason's `ensure_installed` stays empty
-  (`dotfiles/nvim/lua/plugins/lsp/mason.lua`) so it does not duplicate mise tools.
-- Other dev tool for a language (runtime, formatter, linter, anything also run in a terminal):
-  `dotfiles/mise/config.toml`, not Nix. Nix keeps only tools for editing this config, oxfmt (`pkgs/oxfmt.nix`, needed
-  for `.astro`), and the .NET SDK and tools for Rider (`dev.nix`), because a GUI IDE started
-  from the launcher does not see the shell PATH.
+  (`dotfiles/nvim/lua/plugins/lsp/mason.lua`) so it does not duplicate Nix tools.
+- Other global dev tool for a language (runtime, formatter, linter, anything also run in a
+  terminal): `dev.nix`. Tools for editing this config stay in `packages.nix`. No mise.
+- A project's JS tools (typescript, oxlint, oxfmt, vite): that project's `package.json`.
 - Per-project pinned tools: a `flake.nix` dev shell in that project, entered by direnv
   `use flake`. `dev init <name>` (`dotfiles/zsh/.zshrc`) copies it from `templates/<name>` here
   (registered in `flake.nix` `templates`, based on `the-nix-way/dev-templates`), else from

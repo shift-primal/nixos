@@ -1,7 +1,7 @@
 return {
 	{
 		"mason-org/mason.nvim",
-		-- LazyVim's extras list formatters and linters that mise and Nix already provide
+		-- LazyVim's extras list formatters and linters that Nix already provides
 		opts = function(_, opts)
 			opts.ensure_installed = {}
 		end,

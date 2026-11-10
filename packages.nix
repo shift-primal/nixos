@@ -96,7 +96,6 @@ in
             sops
             age
             oxfmt
-            mise
             tree-sitter
             gcc
             wowup-cf
