@@ -52,6 +52,11 @@
 
             overlays.default = import ./pkgs;
 
+            templates.node = {
+                path = ./templates/node;
+                description = "Node.js 24 + pnpm";
+            };
+
             formatter.x86_64-linux = pkgs.writeShellApplication {
                 name = "treefmt";
                 runtimeInputs = [
