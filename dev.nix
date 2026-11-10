@@ -36,11 +36,35 @@ in
             fantomas
             omnisharp-roslyn
             fsautocomplete
+
+            nodejs
+            pnpm
+            typescript
+            oxlint
+            biome
+            prettier
+            astro-language-server
+
+            python3
+            uv
+            ruff
+            sqlfluff
+
+            go
+            gopls
+
+            rustc
+            cargo
+            rust-analyzer
+            clippy
+            rustfmt
+
+            clang-tools
+
+            hadolint
+            shfmt
+            markdownlint-cli2
         ]);
         sessionVariables.DOTNET_ROOT = "${dotnet}/share/dotnet";
-
-        extraInit = ''
-            export PATH="$HOME/.local/share/mise/shims:$PATH"
-        '';
     };
 }

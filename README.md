@@ -24,7 +24,7 @@ packages.nix     apps and CLI tools: one list
 system.nix       nix settings, boot, locale, users, network, SSH, Tailscale, nix-ld
 desktop.nix      Hyprland, greeter, Noctalia, portal, keyring, plymouth, fonts, GTK/Qt theme
 hardware.nix     audio, Bluetooth, printing, Logitech, i2c, EasyEffects
-dev.nix          Docker, Wireshark, Rider and .NET, mise shims
+dev.nix          Docker, Wireshark, Rider and .NET, global dev tools
 home.nix         Home Manager: zsh, git, every dotfile link, vars.lua for Hyprland
 hosts/<host>/    hostname, stateVersion, bootloader, GPU, hardware-configuration.nix
 pkgs/            packages not in nixpkgs (nixfmt wrapper, oxfmt with Astro support)
@@ -37,33 +37,28 @@ dotfiles/        configs linked into ~/.config, edited live
   `sudo nixos-rebuild switch`. Search names at <https://search.nixos.org/packages>.
 - **A default app bound to a key** (terminal, editor, browser, ...): change it in `vars.nix`.
   The Hyprland keybinds follow.
-- **A dev tool** (runtime, language server, formatter, linter): add it to
-  `dotfiles/mise/config.toml`, or run `mise use -g <tool>`. No rebuild needed.
+- **A dev tool** (runtime, language server, formatter, linter): add it to `dev.nix`, then
+  rebuild.
 - **Something just for now:** `nix shell nixpkgs#<name>`.
 
 ## Dev tools
 
-[mise](https://mise.jdx.dev) installs node, pnpm, python, uv, go, rust, and the language
-servers, formatters and linters listed in `dotfiles/mise/config.toml`. They are on PATH
-everywhere, so a stray `foo.ts` gets its language server, and Neovim sees the same tools.
+Nix installs node, pnpm, python, uv, go, rust and the language servers, formatters and linters
+listed in `dev.nix`. They are on PATH everywhere, so a stray `foo.ts` gets its language server,
+and Neovim sees the same tools. `nix flake update` and a rebuild update them.
 
-- `mise up` updates them. A rebuild runs `mise install`, so a new machine gets everything.
-- A project picks its own versions with `.nvmrc`, `.python-version` or `mise.toml`; mise
-  switches when you `cd` in.
-- A project that wants pinned, reproducible tools gets a dev shell instead:
-  `nix flake init -t github:the-nix-way/dev-templates#node`, then `direnv allow`. direnv
-  enters the shell on `cd` (nix-direnv caches it), and its tools come before mise's on PATH.
-  Outside the folder the global mise tools apply again. Shortcuts (`dotfiles/zsh/.zshrc`):
-  `dev new <name> <template>` makes `~/proj/<name>` with a git repo and the shell,
-  `dev init <template>` adds one to the current folder, `dev <name>` jumps to a project,
-  `dev ls` lists the templates, and plain `dev` runs `nix develop`.
+- A project that needs its own versions gets a dev shell: `dev init node` in the project
+  (templates in `templates/`, else `the-nix-way/dev-templates`). direnv enters the shell on `cd`
+  (nix-direnv caches it), and its tools come before the global ones on PATH. Shortcuts
+  (`dotfiles/zsh/.zshrc`): `dev new <name> <template>` makes `~/proj/<name>` with a git repo and
+  the shell, `dev <name>` jumps to a project, `dev ls` lists the templates, and plain `dev` runs
+  `nix develop`.
+- A project's JS tools (typescript, oxlint, oxfmt) go in its `package.json` as devDependencies.
+- Python packages go in a uv project (`uv add`), not a global `pip install`.
 - JS/TS formatting and linting is oxfmt and oxlint by default. Repos with a `biome.json` use
   biome instead.
 - oxfmt, oxlint, tombi, stylua and ruff read a global config from `~/.config` (linked from
   `dotfiles/oxc`, `tombi`, `stylua`, `ruff`) when a project has none of its own.
-- Nix still provides the tools for editing this config (nixfmt, nil, statix, lua-language-server,
-  stylua, shfmt, tombi, marksman), oxfmt (the Nix build formats `.astro`), and the .NET SDK and
-  tools, since Rider started from the launcher does not see the shell's PATH.
 
 ## Installing on a new machine
 
@@ -122,7 +117,6 @@ These have to be set up by hand after the first boot:
 sudo nixos-rebuild switch                 # apply changes (also: sudo rebuild switch, rb:switch)
 sudo rebuild boot                         # apply on next boot (alias: rb:boot)
 nix flake update                          # update inputs, then rebuild
-mise up                                   # update dev tools
 homelab:switch                            # pull and switch the home server
 sudo reboot-to windows|limine             # desktop: reboot into another OS
 ```

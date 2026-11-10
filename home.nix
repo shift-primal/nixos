@@ -133,7 +133,6 @@ in
                             "tombi" = "tombi";
                             "stylua" = "stylua";
                             "ruff" = "ruff";
-                            "mise/config.toml" = "mise/config.toml";
                             "btop/btop.conf" = "btop/btop.conf";
                             "noctalia/config.toml" = "noctalia/config.toml";
                             "noctalia/host.toml" = "noctalia/hosts/${hostName}.toml";
@@ -163,33 +162,6 @@ in
                             name: lib.nameValuePair ".claude/skills/${name}" { source = link "claude/skills/${name}"; }
                         ) skills
                     );
-
-                    activation.miseReshim = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-                        run ${lib.getExe pkgs.mise} reshim || true
-                    '';
-                };
-
-                systemd.user.services.mise-install = {
-                    Unit.Description = "Install the dev tools in ~/.config/mise/config.toml";
-                    Service = {
-                        Type = "oneshot";
-                        Environment = "PATH=${
-                            lib.makeBinPath (
-                                with pkgs;
-                                [
-                                    coreutils
-                                    git
-                                    curl
-                                    gnutar
-                                    gzip
-                                    xz
-                                ]
-                            )
-                        }";
-                        ExecStart = "${lib.getExe pkgs.mise} install --yes";
-                        ExecStartPost = "${lib.getExe pkgs.mise} reshim";
-                    };
-                    Install.WantedBy = [ "default.target" ];
                 };
             };
     };
