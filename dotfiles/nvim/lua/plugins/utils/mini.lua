@@ -70,7 +70,6 @@ return {
 			tailwind = {
 				enabled = true,
 				ft = {
-					"astro",
 					"css",
 					"heex",
 					"html",
