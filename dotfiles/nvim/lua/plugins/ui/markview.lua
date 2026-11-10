@@ -6,6 +6,9 @@ return {
 		preview = {
 			icon_provider = "devicons",
 		},
+		markdown = {
+			headings = { enable = false },
+		},
 	},
 
 	dependencies = { "saghen/blink.cmp" },
