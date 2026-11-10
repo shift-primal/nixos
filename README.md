@@ -55,7 +55,8 @@ everywhere, so a stray `foo.ts` gets its language server, and Neovim sees the sa
   enters the shell on `cd` (nix-direnv caches it), and its tools come before mise's on PATH.
   Outside the folder the global mise tools apply again. Shortcuts (`dotfiles/zsh/.zshrc`):
   `dev new <name> <template>` makes `~/proj/<name>` with a git repo and the shell,
-  `dev init <template>` adds one to the current folder, `dev <name>` jumps to a project,
+  `dev init <template>` adds one to the current folder (`templates/<name>` in this repo wins,
+  so `node` gives node 24 + pnpm), `dev <name>` jumps to a project,
   `dev ls` lists the templates, and plain `dev` runs `nix develop`.
 - JS/TS formatting and linting is oxfmt and oxlint by default. Repos with a `biome.json` use
   biome instead.

@@ -25,6 +25,7 @@ home.nix         Home Manager: zsh, git, direnv/zoxide/starship/fzf, every dotfi
                  vars.lua, claude skills, mise-install user service (runs after login)
 hosts/<host>/    default.nix (imports, hostName, stateVersion, bootloader, GPU, machine-only
                  config), hardware-configuration.nix
+templates/       own dev-shell templates for `dev init` (node: node 24 + pnpm)
 pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped, oxfmt with Astro support
 dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia, oxc, tombi,
                  stylua, ruff, mise, btop, claude
@@ -42,8 +43,9 @@ dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia
   `dotfiles/mise/config.toml`, not Nix. Nix keeps only tools for editing this config, oxfmt (`pkgs/oxfmt.nix`, needed
   for `.astro`), and the .NET SDK and tools for Rider (`dev.nix`), because a GUI IDE started
   from the launcher does not see the shell PATH.
-- Per-project pinned tools: a `flake.nix` dev shell in that project (from
-  `the-nix-way/dev-templates`), entered by direnv `use flake`. Not in this repo.
+- Per-project pinned tools: a `flake.nix` dev shell in that project, entered by direnv
+  `use flake`. `dev init <name>` (`dotfiles/zsh/.zshrc`) copies it from `templates/<name>` here
+  (registered in `flake.nix` `templates`), else from `the-nix-way/dev-templates`.
 - System service or hardware: the topical file (`desktop.nix`, `hardware.nix`, `dev.nix`,
   `system.nix`). Home Manager config for that feature goes in the same file under
   `home-manager.users.${vars.user.name}`, so a feature stays in one place.
