@@ -6,8 +6,6 @@ rec {
 
         sshKeys = {
             personal = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKKCQ78itQutj3zwTn6g+2RwSi8zl7+mssOGsQyeekZB kash-ssh-key";
-            kash-desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOi/1l6nA7bR2D13n/Te5Xk6E/VIUcp/+CSTMOD8CTve kash-desktop";
-            kash-laptop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHnIGFPN6Pc6pS34mlIJ3suQp8wZ6YTa6b9PdoHDLTqX kash-laptop";
         };
     };
 
