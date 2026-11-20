@@ -37,6 +37,7 @@ in
             omnisharp-roslyn
             fsautocomplete
 
+            jetbrains.webstorm
             nodejs
             pnpm
             typescript

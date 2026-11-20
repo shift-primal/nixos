@@ -7,11 +7,11 @@ return {
 		local oxfmt_root = util.root_file({ ".oxfmtrc.json", ".oxfmtrc.jsonc", "oxfmt.config.ts" })
 
 		opts.formatters_by_ft = vim.tbl_extend("force", opts.formatters_by_ft or {}, {
-			markdown = { "prettier" },
 			lua = { "stylua" },
 			cs = { "csharpier" },
 			toml = { "tombi" },
 			nix = { "treefmt_project", "nixfmt", stop_after_first = true },
+			markdown = web,
 			javascript = web,
 			javascriptreact = web,
 			typescript = web,

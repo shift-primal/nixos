@@ -109,7 +109,7 @@ hl.bind(
 -- App Launchers
 hl.bind(MOD .. " + RETURN", hl.dsp.exec_cmd(apps.terminal), { description = "Terminal" })
 
-hl.bind(MOD .. " + E", term(apps.explorer), { description = "File explorer" })
+hl.bind(MOD .. " + E", hl.dsp.exec_cmd(apps.explorer), { description = "File explorer" })
 
 hl.bind(MOD .. " + SHIFT + N", term(apps.editor), { description = "Text editor" })
 

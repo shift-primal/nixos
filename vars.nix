@@ -35,7 +35,7 @@ rec {
         terminal = "kitty";
         editor = "neovim";
         sysmonitor = "btop";
-        explorer = "yazi";
+        explorer = "luciole";
         browser = "google-chrome";
         discord = "vesktop";
         email = "thunderbird";

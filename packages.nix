@@ -99,5 +99,8 @@ in
             tree-sitter
             gcc
             wowup-cf
+
+            opencode
+            opencode-desktop
         ]);
 }

@@ -44,7 +44,10 @@ in
 
     nixpkgs = {
         config.allowUnfree = true;
-        overlays = [ inputs.self.overlays.default ];
+        overlays = [
+            inputs.self.overlays.default
+            inputs.luciole.overlays.default
+        ];
     };
 
     systemd.tmpfiles.rules = [ "L /etc/nixos - - - - ${vars.flakeDir}" ];

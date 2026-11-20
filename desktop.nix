@@ -46,6 +46,8 @@ in
     };
     services = {
 
+        gvfs.enable = true;
+
         upower.enable = true;
         power-profiles-daemon.enable = true;
 
@@ -110,9 +112,13 @@ in
     ];
 
     home-manager.users.${vars.user.name} = {
-        imports = [ inputs.noctalia.homeModules.default ];
+        imports = [
+            inputs.noctalia.homeModules.default
+            inputs.luciole.homeModules.default
+        ];
 
         programs.noctalia.enable = true;
+        programs.luciole.enable = true;
 
         home.sessionVariables.SUDO_ASKPASS = "${pkgs.writeShellScript "sudo-askpass" ''
             exec ${lib.getExe pkgs.zenity} --password --title="sudo"

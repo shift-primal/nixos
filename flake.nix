@@ -14,6 +14,11 @@
             inputs.nixpkgs.follows = "nixpkgs";
         };
 
+        luciole = {
+            url = "github:noctalia-dev/luciole";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+
         nix-claude-code = {
             url = "github:ryoppippi/nix-claude-code";
             inputs.nixpkgs.follows = "nixpkgs";
