@@ -26,7 +26,6 @@ in
         "wireshark"
     ];
     environment = {
-
         systemPackages = [
             dotnet
         ]
@@ -42,6 +41,7 @@ in
             pnpm
             typescript
             oxlint
+            oxfmt
             biome
             prettier
 

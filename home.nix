@@ -40,7 +40,6 @@ in
             in
             {
                 programs = {
-
                     home-manager.enable = true;
 
                     git = {
@@ -114,13 +113,7 @@ in
                     };
                 };
 
-                nix.gc = {
-                    automatic = true;
-                    dates = "weekly";
-                    options = "--delete-older-than 7d";
-                };
                 xdg = {
-
                     configFile =
                         lib.mapAttrs (_: path: { source = link path; }) {
                             "starship.toml" = "starship.toml";
@@ -146,14 +139,15 @@ in
                         force = true;
                     };
                 };
-                home = {
 
+                home = {
                     username = vars.user.name;
                     homeDirectory = vars.user.home;
                     inherit stateVersion;
 
                     file = {
                         ".oxfmtrc.json".source = link "oxc/oxfmtrc.json";
+                        # Let dotfiles/zsh/.zshrc stay live-editable; it sources hm-init.zsh for HM's generated zsh setup.
                         "${dotDirRel}/.zshrc".enable = lib.mkForce false;
                         "${dotDirRel}/hm-init.zsh".text = config.programs.zsh.initContent;
                     }

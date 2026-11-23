@@ -78,7 +78,8 @@ def save_totals(path, presses, doubles):
     ]
     for name in sorted(presses, key=lambda name: (-doubles[name], -presses[name])):
         lines.append(
-            f"{name:<14} {presses[name]:>10} {doubles[name]:>8} {rate(presses[name], doubles[name]):>8}"
+            f"{name:<14} {presses[name]:>10} "
+            f"{doubles[name]:>8} {rate(presses[name], doubles[name]):>8}"
         )
 
     temporary = path.with_suffix(".tmp")
@@ -87,14 +88,19 @@ def save_totals(path, presses, doubles):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument(
         "--threshold", type=float, default=50, help="max ms between presses (default 50)"
     )
-    parser.add_argument("--log", type=Path, default=Path.home() / "chatter.log")
-    parser.add_argument("--totals", type=Path, default=Path.home() / "chatter-totals.txt")
+    parser.add_argument("--log", type=Path, default=Path.home() / "chatter-logs" / "chatter.log")
+    parser.add_argument(
+        "--totals", type=Path, default=Path.home() / "chatter-logs" / "chatter-totals.txt"
+    )
     parser.add_argument("devices", nargs="*", help="default: every keyboard in /dev/input/by-id")
     args = parser.parse_args()
+
+    args.log.parent.mkdir(parents=True, exist_ok=True)
+    args.totals.parent.mkdir(parents=True, exist_ok=True)
 
     paths = args.devices or sorted(glob.glob("/dev/input/by-id/*-event-kbd"))
     if not paths:

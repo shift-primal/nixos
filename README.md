@@ -20,21 +20,22 @@ Plain NixOS modules, no frameworks. Each host's `default.nix` imports the shared
 ```
 flake.nix        inputs and the two machines
 vars.nix         user, locale, keyboard, cursor, default apps, SSH hosts
-packages.nix     apps and CLI tools: one list
+packages/        apps, AI, CLI, Wayland, gaming, and Nix/config tools split by group
 system.nix       nix settings, boot, locale, users, network, SSH, Tailscale, nix-ld
 desktop.nix      Hyprland, greeter, Noctalia, portal, keyring, plymouth, fonts, GTK/Qt theme
 hardware.nix     audio, Bluetooth, printing, Logitech, i2c, EasyEffects
-dev.nix          Docker, Wireshark, Rider and .NET, global dev tools
+dev.nix          Docker, Wireshark, Rider/WebStorm and .NET, global dev tools
 home.nix         Home Manager: zsh, git, every dotfile link, vars.lua for Hyprland
-hosts/<host>/    hostname, stateVersion, bootloader, GPU, hardware-configuration.nix
+hosts/<host>/    hostname, stateVersion, bootloader, GPU, machine-only config, hardware-configuration.nix
 pkgs/            packages not in nixpkgs (nixfmt wrapper)
 dotfiles/        configs linked into ~/.config, edited live
 ```
 
 ## Installing things
 
-- **An app or CLI tool:** add its nixpkgs name to `packages.nix`, then
-  `sudo nixos-rebuild switch`. Search names at <https://search.nixos.org/packages>.
+- **An app or CLI tool:** add its nixpkgs name to the matching file under `packages/` (`apps.nix`,
+  `ai.nix`, `cli.nix`, `wayland.nix`, `gaming.nix`, `nix.nix`), then `sudo nixos-rebuild switch`.
+  Search names at <https://search.nixos.org/packages>.
 - **A default app bound to a key** (terminal, editor, browser, ...): change it in `vars.nix`.
   The Hyprland keybinds follow.
 - **A dev tool** (runtime, language server, formatter, linter): add it to `dev.nix`, then
@@ -48,7 +49,7 @@ listed in `dev.nix`. They are on PATH everywhere, so a stray `foo.ts` gets its l
 and Neovim sees the same tools. `nix flake update` and a rebuild update them.
 
 - A project that needs its own versions gets a dev shell: `dev init node` in the project
-  (templates in `templates/`, else `the-nix-way/dev-templates`). For `node` it also copies the
+  (from `the-nix-way/dev-templates`). For `node` it also copies the
   global oxlint and oxfmt configs from `dotfiles/oxc` in, unless the project has its own.
   direnv enters the shell on `cd` (nix-direnv caches it), and its tools come before the global
   ones on PATH. Shortcuts (`dotfiles/zsh/.zshrc`): `dev new <name> <template>` makes
@@ -94,7 +95,7 @@ Change `user` in `vars.nix`, and the keyboard, locale and time zone if needed. T
 - `dotfiles/noctalia/hosts/*.toml` and `dotfiles/noctalia/settings/*.toml`: monitor names and
   wallpaper paths.
 - `dotfiles/hypr/hyprland/hosts/*.lua`: monitor layout.
-- `packages.nix`: drop what you don't use.
+- `packages/`: drop what you don't use.
 
 ## What lives outside the repo
 

@@ -37,7 +37,7 @@ rec {
         sysmonitor = "btop";
         explorer = "luciole";
         browser = "google-chrome";
-        discord = "vesktop";
+        discord = "discord";
         email = "thunderbird";
         spotify = "spotatui";
     };

@@ -6,28 +6,6 @@
     ...
 }:
 
-let
-    claude-desktop = pkgs.symlinkJoin {
-        name = "claude-desktop";
-        paths = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop ];
-        nativeBuildInputs = [ pkgs.makeWrapper ];
-        postBuild = ''
-            wrapProgram $out/bin/claude-desktop --add-flags "--password-store=gnome-libsecret"
-        '';
-    };
-
-    reboot-to = pkgs.writeShellScriptBin "reboot-to" ''
-        case "$1" in
-            windows) label="Windows Boot Manager" ;;
-            limine)  label="Limine" ;;
-            *) echo "usage: reboot-to windows|limine" >&2; exit 1 ;;
-        esac
-        num=$(${lib.getExe pkgs.efibootmgr} | ${lib.getExe pkgs.gnused} -n "s/^Boot\([0-9A-F]\{4\}\)\*\? $label.*/\1/p" | head -n1)
-        [ -n "$num" ] || { echo "no UEFI entry named '$label'" >&2; exit 1; }
-        ${lib.getExe pkgs.efibootmgr} --bootnext "$num" >/dev/null
-        systemctl reboot
-    '';
-in
 {
     programs = {
         hyprland = {
@@ -37,17 +15,15 @@ in
         };
         gpu-screen-recorder.enable = true;
         dconf.enable = true;
-        steam.enable = true;
     };
 
     environment.sessionVariables = {
         NIXOS_OZONE_WL = "1";
         XDG_SESSION_TYPE = "wayland";
     };
+
     services = {
-
         gvfs.enable = true;
-
         upower.enable = true;
         power-profiles-daemon.enable = true;
 
@@ -86,6 +62,7 @@ in
     };
 
     fonts.packages = with pkgs; [
+        (google-fonts.override { fonts = [ "Figtree" ]; })
         noto-fonts
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
@@ -94,31 +71,16 @@ in
         monaspace
     ];
 
-    environment.systemPackages = [
-        claude-desktop
-        reboot-to
-    ];
-
-    security.sudo.extraRules = [
-        {
-            users = [ vars.user.name ];
-            commands = [
-                {
-                    command = "/run/current-system/sw/bin/reboot-to";
-                    options = [ "NOPASSWD" ];
-                }
-            ];
-        }
-    ];
-
     home-manager.users.${vars.user.name} = {
         imports = [
             inputs.noctalia.homeModules.default
             inputs.luciole.homeModules.default
         ];
 
-        programs.noctalia.enable = true;
-        programs.luciole.enable = true;
+        programs = {
+            noctalia.enable = true;
+            luciole.enable = true;
+        };
 
         home.sessionVariables.SUDO_ASKPASS = "${pkgs.writeShellScript "sudo-askpass" ''
             exec ${lib.getExe pkgs.zenity} --password --title="sudo"
@@ -172,7 +134,6 @@ in
                 [
                     "qv4l2"
                     "qvidcap"
-                    "nvidia-settings"
                     "uuctl"
                 ]
                 (id: {

@@ -14,19 +14,19 @@ that works; do not add abstractions, options or helper layers.
 ```
 flake.nix        inputs; nixosConfigurations (specialArgs = { inputs, vars }), formatter, overlay
 vars.nix         plain attrset: user, flakeDir, hosts (ssh aliases), locale, keyboard, cursor, apps
-packages.nix     environment.systemPackages: apps, CLI tools, config-editing tools
+packages/        grouped package modules imported via packages/default.nix:
+                 apps.nix, ai.nix, cli.nix, wayland.nix, gaming.nix, nix.nix
 system.nix       nix settings, gc, /etc/nixos link, rebuild helper, boot, locale, users,
                  network, ssh, tailscale, zram, fwupd, nix-ld
-desktop.nix      Hyprland, greeter, Noctalia, portal, keyring, plymouth, fonts, steam,
-                 reboot-to, claude-desktop; HM: cursor, GTK/Qt theme, askpass, trash
+desktop.nix      Hyprland, greeter, Noctalia, portal, keyring, plymouth, fonts;
+                 HM: cursor, GTK/Qt theme, askpass, bitwarden service, trash
 hardware.nix     audio, bluetooth, i2c, solaar, printing; HM: easyeffects
-dev.nix          docker, wireshark, Rider + .NET SDK and tools, global language toolchains,
+dev.nix          docker, wireshark, Rider/WebStorm + .NET SDK and tools, global language toolchains,
                  LSPs, formatters and linters
 home.nix         Home Manager: zsh, git, direnv/zoxide/starship/fzf, every dotfile link,
                  vars.lua, claude skills
 hosts/<host>/    default.nix (imports, hostName, stateVersion, bootloader, GPU, machine-only
-                 config), hardware-configuration.nix
-templates/       own dev-shell templates for `dev init`
+                 config like reboot-to on desktop), hardware-configuration.nix
 pkgs/            overlay (pkgs/default.nix): nixfmt-wrapped
 dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia, oxc, tombi,
                  stylua, ruff, btop, claude
@@ -34,19 +34,20 @@ dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia
 
 ## Where things go
 
-- App or CLI tool: `packages.nix`. A default app bound to a key goes in `vars.apps` instead
-  (nixpkgs attribute name); the keybinds read it through `vars.lua`.
+- App or CLI tool: the matching group file in `packages/` (`apps.nix`, `ai.nix`, `cli.nix`,
+  `wayland.nix`, `gaming.nix`, `nix.nix`). A default app bound to a key goes in `vars.apps`
+  instead (nixpkgs attribute name); `packages/default.nix` installs it and the keybinds read it
+  through `vars.lua`.
 - Editor-only language server: Mason, installed through Lazy. Add it to `servers` in
   `dotfiles/nvim/lua/plugins/lsp/lsp.lua`; a server provided by Nix is marked
   `mason = false` there. Mason's `ensure_installed` stays empty
   (`dotfiles/nvim/lua/plugins/lsp/mason.lua`) so it does not duplicate Nix tools.
 - Other global dev tool for a language (runtime, formatter, linter, anything also run in a
-  terminal): `dev.nix`. Tools for editing this config stay in `packages.nix`. No mise.
+  terminal): `dev.nix`. Tools for editing this config stay in `packages/nix.nix`. No mise.
 - A project's JS tools (typescript, oxlint, oxfmt, vite): that project's `package.json`.
 - Per-project pinned tools: a `flake.nix` dev shell in that project, entered by direnv
-  `use flake`. `dev init <name>` (`dotfiles/zsh/.zshrc`) copies it from `templates/<name>` here
-  (registered in `flake.nix` `templates`, based on `the-nix-way/dev-templates`), else from
-  `the-nix-way/dev-templates` itself.
+  `use flake`. `dev init <name>` (`dotfiles/zsh/.zshrc`) copies it from
+  `the-nix-way/dev-templates`.
 - System service or hardware: the topical file (`desktop.nix`, `hardware.nix`, `dev.nix`,
   `system.nix`). Home Manager config for that feature goes in the same file under
   `home-manager.users.${vars.user.name}`, so a feature stays in one place.
@@ -80,8 +81,8 @@ dotfiles/        live-edited configs: hypr, kitty, nvim, zsh, starship, noctalia
    if unsure.
 5. **Noctalia drives every app's colors.** The scheme is picked in `dotfiles/noctalia/config.toml`
    (`[theme]`, currently built-in `Gruvbox`) and its templates (`[theme.templates]`) write
-   the colors into Hyprland, kitty, btop, GTK, Qt (qt5ct/qt6ct, `desktop.nix`), Vesktop,
-   Obsidian, Steam, Claude Code, fzf, lazygit and the Gruvbox Plus folder icons. Do not set
+   the colors into Hyprland, kitty, btop, GTK, Qt (qt5ct/qt6ct, `desktop.nix`), Discord,
+   Steam, Claude Code, fzf, lazygit and the Gruvbox Plus folder icons. Do not set
    colors directly in an app's config. Noctalia adds and removes its own include lines
    (`require("noctalia")` in `hyprland.lua`, `include themes/noctalia.conf` in `kitty.conf`,
    `color_theme` in `btop.conf`); leave them. The exception is Neovim: it uses

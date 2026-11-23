@@ -26,16 +26,14 @@ alias rb:switch='sudo rebuild switch'
 alias rb:boot='sudo rebuild boot'
 
 # dev <project> | dev new <name> <template> | dev init <template> | dev ls | dev
-# Projects live in ~/proj. Templates in ~/nixos/templates win over the-nix-way/dev-templates.
+# Projects live in ~/proj. Templates come from the-nix-way/dev-templates.
 # Inside a git repo the flake files must be git-added, or nix cannot see them.
 dev() {
   local repo=github:the-nix-way/dev-templates
   case $1 in
     init)
       [[ -n $2 ]] || { echo "usage: dev init <template>  (dev ls for the list)" >&2; return 1 }
-      local src=$repo
-      [[ -d /etc/nixos/templates/$2 ]] && src=/etc/nixos
-      nix flake init -t "$src#$2" || return
+      nix flake init -t "$repo#$2" || return
       if [[ $2 == node ]]; then
         for f in oxlintrc oxfmtrc; do cp --update=none /etc/nixos/dotfiles/oxc/$f.json .$f.json; done
       fi
@@ -49,7 +47,6 @@ dev() {
       dev init $3
       ;;
     ls)
-      echo "mine:" /etc/nixos/templates/*(/:t)
       nix flake show --json $repo 2>/dev/null | jq -r '.templates | keys[]' | column
       ;;
     "") nix develop ;;
@@ -63,7 +60,7 @@ _dev() {
 }
 compdef _dev dev
 
-# Pull and switch the homelab from here; rebuild.nix lets sudo run without a password, so no tty.
+# Pull and switch the homelab from here; system.nix lets sudo run rebuild without a password, so no tty.
 # Streams the build, then ends with a clear verdict; on failure repeats the log's end and keeps the file.
 homelab:switch() {
   local log

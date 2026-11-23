@@ -1,78 +1,5 @@
+# Desktop only: keys that differ from config.toml (monitors, wallpaper paths). Loaded after config.toml.
 config_version = 15
-
-[bar.default]
-background_opacity = 0.69999998435378075
-capsule_radius = 80
-capsule_thickness = 0.74999998696148396
-contact_shadow = true
-end = [
-	"media",
-	"group:dev",
-	"group:g3",
-	"group:g2",
-	"group:g1",
-	"notifications",
-	"tray",
-	"session",
-]
-font_family = "Monaspace Neon NF"
-font_weight = 600
-margin_ends = 0
-radius = 0
-start = ["launcher", "wallpaper", "workspaces", "sysmon"]
-thickness = 32
-widget_spacing = 12
-
-[[bar.default.capsule_group]]
-accordion = true
-accordion_direction = "end"
-border = ""
-border_width = 1.0
-enabled = true
-fill = "surface_variant"
-id = "dev"
-members = [
-	"nightwatch75/claude-cockpit:widget",
-	"raycursive/github-prs:bar",
-	"8bury/mini-docker:mini-docker",
-	"mindnbytes/nix-status:status",
-]
-opacity = 1.0
-padding = 8.0
-widget_spacing = 10
-
-[[bar.default.capsule_group]]
-accordion = false
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_variant"
-id = "g1"
-members = ["volume", "brightness", "battery"]
-opacity = 1.0
-padding = 6.0
-
-[[bar.default.capsule_group]]
-accordion = true
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_variant"
-id = "g2"
-members = ["network", "bluetooth"]
-opacity = 1.0
-padding = 6.0
-
-[[bar.default.capsule_group]]
-accordion = true
-accordion_direction = "end"
-border_width = 1.0
-enabled = true
-fill = "surface_variant"
-id = "g3"
-members = ["clipboard", "gamaraan/mx-control:mx"]
-opacity = 1.0
-padding = 6.0
 
 [lockscreen_widgets]
 enabled = false
@@ -169,65 +96,6 @@ show_session_buttons = true
 show_unlock_hint = true
 show_weather = true
 
-[plugins]
-enabled = [
-	"noctalia/bitwarden",
-	"nightwatch75/claude-cockpit",
-	"mindnbytes/nix-status",
-	"gamaraan/mx-control",
-	"raycursive/github-prs",
-	"8bury/mini-docker",
-	"cleboost/ssh-launcher",
-	"kenn/keybind-cheatsheet",
-	"tmelik/system-monitor",
-	"alexander/screen-toolkit",
-]
-
-[shell]
-font_family = "DejaVu Sans"
-
-[[shell.session.actions]]
-action = "lock"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "1"
-variant = "default"
-
-[[shell.session.actions]]
-action = "logout"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "2"
-variant = "default"
-
-[[shell.session.actions]]
-action = "lock_and_suspend"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "3"
-variant = "default"
-
-[[shell.session.actions]]
-action = "reboot"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "4"
-variant = "default"
-
-[[shell.session.actions]]
-action = "shutdown"
-countdown_seconds = 0.0
-enabled = true
-shortcut = "5"
-variant = "destructive"
-
-[[shell.session.actions]]
-action = "command"
-command = "notify-send 'Noctalia' 'Custom session entry'"
-countdown_seconds = 0.0
-enabled = true
-variant = "default"
-
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers-converted"
 
@@ -245,9 +113,3 @@ path = "/home/kasper/Pictures/wallpapers-converted/nix-1.png"
 
 [wallpaper.monitors.DP-3]
 path = "/home/kasper/Pictures/wallpapers-converted/nix-1.png"
-
-[widget.clock]
-tooltip_format = "{:%a %d. %b - %y}"
-
-[widget.tray]
-drawer = true

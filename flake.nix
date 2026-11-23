@@ -4,6 +4,11 @@
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+        antigravity-nix = {
+            url = "github:jacopone/antigravity-nix";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+
         home-manager = {
             url = "github:nix-community/home-manager";
             inputs.nixpkgs.follows = "nixpkgs";
@@ -19,23 +24,13 @@
             inputs.nixpkgs.follows = "nixpkgs";
         };
 
-        nix-claude-code = {
-            url = "github:ryoppippi/nix-claude-code";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
-
         llm-agents = {
             url = "github:numtide/llm-agents.nix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
 
-        ai-usagebar = {
-            url = "github:akitaonrails/ai-usagebar";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
-
-        grimoire = {
-            url = "github:Slush97/grimoire";
+        artcraft = {
+            url = "github:ipeglin/artcraft-nix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
     };
@@ -56,11 +51,6 @@
             nixosConfigurations = nixpkgs.lib.genAttrs [ "kash-desktop" "kash-laptop" ] host;
 
             overlays.default = import ./pkgs;
-
-            templates.node = {
-                path = ./templates/node;
-                description = "Node.js 24 + pnpm";
-            };
 
             formatter.x86_64-linux = pkgs.writeShellApplication {
                 name = "treefmt";

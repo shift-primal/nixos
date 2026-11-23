@@ -1,13 +1,3 @@
--- local opacity = {
--- 	active = 0.99,
--- 	inactive = 0.95,
--- }
-
-local opacity = {
-	active = 1,
-	inactive = 1,
-}
-
 local opaque_classes = {
 	"steam_app_.*",
 	".*celluloid.*",
@@ -31,11 +21,6 @@ local function merge(base, extra)
 	end
 	return result
 end
-
-hl.window_rule({
-	match = { class = "^(net-runelite-client-RuneLite)$", title = "^(win[0-9]+)$" },
-	no_initial_focus = true,
-})
 
 -- RuneLite menus and tooltips (win0, win1, ...)
 hl.window_rule({

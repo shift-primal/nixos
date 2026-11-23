@@ -10,7 +10,7 @@
     imports = [
         ./hardware-configuration.nix
         ../../system.nix
-        ../../packages.nix
+        ../../packages
         ../../desktop.nix
         ../../hardware.nix
         ../../dev.nix
@@ -40,7 +40,6 @@
     };
     environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
     services = {
-
         xserver.xkb.options = "caps:swapescape";
 
         greetd.settings.initial_session = {

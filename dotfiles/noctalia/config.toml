@@ -87,6 +87,7 @@ enabled = [
 	"cleboost/ssh-launcher",
 	"kenn/keybind-cheatsheet",
 	"tmelik/system-monitor",
+	"alexander/screen-toolkit",
 ]
 
 [shell]
@@ -126,13 +127,6 @@ countdown_seconds = 0.0
 enabled = true
 shortcut = "5"
 variant = "destructive"
-
-[[shell.session.actions]]
-action = "command"
-command = "notify-send 'Noctalia' 'Custom session entry'"
-countdown_seconds = 0.0
-enabled = true
-variant = "default"
 
 [widget.clock]
 tooltip_format = "{:%a %d. %b - %y}"
