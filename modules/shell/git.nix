@@ -1,6 +1,6 @@
 {
     flake.modules.nixos.git =
-        { pkgs, ... }:
+        { lib, pkgs, ... }:
         {
             environment.systemPackages = [ pkgs.git ];
 
@@ -13,6 +13,12 @@
                         "result-*"
                         "**/.claude/settings.local.json"
                     ];
+                    settings.credential = lib.genAttrs [ "https://github.com" "https://gist.github.com" ] (_: {
+                        helper = [
+                            ""
+                            "!${lib.getExe pkgs.gh} auth git-credential"
+                        ];
+                    });
                 };
 
                 home.packages = with pkgs; [

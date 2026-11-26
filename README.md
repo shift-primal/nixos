@@ -120,7 +120,7 @@ These have to be set up by hand after the first boot:
 | Bitwarden CLIs             | `rbw config set email <email>` then `rbw login`; `bw login` for the Noctalia Bitwarden plugin.                                  |
 | Secrets for scripts        | Bitwarden Secrets Manager through `bws`, with the access token supplied at runtime, never in a file here.                       |
 | Tailscale                  | `sudo tailscale up`                                                                                                             |
-| GitHub, Claude, Railway, … | `gh auth login`, `claude`, `railway login` and so on. Tokens stay in their own config dirs.                                     |
+| GitHub, Claude, Railway, … | `gh auth login` (answer **no** to "Authenticate Git with your GitHub credentials?": `modules/shell/git.nix` already points git at gh), `claude`, `railway login` and so on. Tokens stay in their own config dirs. |
 | Wallpapers                 | Not in the repo. The desktop expects them in `~/Pictures/wallpapers`.                                                           |
 | Neovim plugins             | Downloaded by lazy.nvim on first start, pinned by `dotfiles/nvim/lazy-lock.json`.                                               |
 | Noctalia plugins           | Downloaded by Noctalia from the list in `dotfiles/noctalia/config.toml`.                                                        |

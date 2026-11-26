@@ -78,6 +78,10 @@ modules/
   package needs the system (has a NixOS module, groups, udev, setcap, fonts, hardware) or is run
   with sudo or in a rescue shell (git, curl, wget, the editor). An env var GUI apps need goes in
   `environment.sessionVariables`; one only shells need goes in `hm.programs.zsh.sessionVariables`.
+- Never let a tool write a `/nix/store/...` path into a mutable file in `~` (for example
+  `gh auth setup-git` into `~/.gitconfig`): garbage collection deletes the old path and the file
+  breaks. Set such things in Nix instead, where the path stays alive (the gh credential helper is
+  in `shell/git.nix`).
 - Only use `hm.programs.<x>` when Home Manager should own that program's config. Otherwise
   install the package and link its config from `dotfiles/` (for example `gh`: a plain package,
   so `gh config set` still works).
