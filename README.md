@@ -15,44 +15,54 @@ Tracks `nixos-unstable`. Unfree packages are allowed.
 
 ## Layout
 
-Plain NixOS modules, no frameworks. Each host's `default.nix` imports the shared files.
+Dendritic: [flake-parts](https://flake.parts) with
+[import-tree](https://github.com/vic/import-tree). Every `.nix` file under `modules/` is loaded
+automatically and defines one named piece (`flake.modules.nixos.<name>`) holding everything for
+one feature: its system settings, its Home Manager config, its packages and its dotfile links.
+`modules/bundles.nix` groups the pieces by folder, and each host picks bundles plus a few
+host-only pieces.
 
 ```
-flake.nix        inputs and the two machines
+flake.nix        inputs; everything else comes from modules/
 vars.nix         user, locale, keyboard, cursor, default apps, SSH hosts
-packages/        apps, AI, CLI, Wayland, gaming, and Nix/config tools split by group
-system.nix       nix settings, boot, locale, users, network, SSH, Tailscale, nix-ld
-desktop.nix      Hyprland, greeter, Noctalia, portal, keyring, plymouth, fonts, GTK/Qt theme
-hardware.nix     audio, Bluetooth, printing, Logitech, i2c, EasyEffects
-dev.nix          Docker, Wireshark, Rider/WebStorm and .NET, global dev tools
-home.nix         Home Manager: zsh, git, every dotfile link, vars.lua for Hyprland
-hosts/<host>/    hostname, stateVersion, bootloader, GPU, machine-only config, hardware-configuration.nix
 pkgs/            packages not in nixpkgs (nixfmt wrapper)
 dotfiles/        configs linked into ~/.config, edited live
+modules/
+  flake/         flake-parts setup, overlay, formatter
+  bundles.nix    system, hardware, desktop, shell, dev, apps
+  hosts/<host>/  piece list, hardware config, hostname/bootloader/machine-only bits
+  system/        nix settings and rebuild helper, boot, locale, users, network, SSH
+  hardware/      audio, printing, Bluetooth/Logitech/monitor control/firmware, NVIDIA, Intel
+  desktop/       Hyprland, Noctalia, keyring, autologin, GTK/Qt theme, fonts, kitty, default apps
+  shell/         zsh, git, direnv/zoxide/starship/fzf, CLI tools
+  dev/           Docker, Wireshark, JetBrains, .NET, web, other languages, cloud CLIs, Neovim
+  apps/          AI tools, Bitwarden, media/office, gaming
 ```
 
 ## Installing things
 
-- **An app or CLI tool:** add its nixpkgs name to the matching file under `packages/` (`apps.nix`,
-  `ai.nix`, `cli.nix`, `wayland.nix`, `gaming.nix`, `nix.nix`), then `sudo nixos-rebuild switch`.
-  Search names at <https://search.nixos.org/packages>.
+- **An app or CLI tool:** add its nixpkgs name to the file for that feature under `modules/`
+  (for example `modules/shell/cli-tools.nix` or `modules/apps/general.nix`), then
+  `sudo nixos-rebuild switch`. Search names at <https://search.nixos.org/packages>.
+- **Something new that needs its own settings:** a new file in the matching `modules/` folder,
+  added to that folder's bundle in `modules/bundles.nix`. `git add` it before rebuilding.
 - **A default app bound to a key** (terminal, editor, browser, ...): change it in `vars.nix`.
   The Hyprland keybinds follow.
-- **A dev tool** (runtime, language server, formatter, linter): add it to `dev.nix`, then
-  rebuild.
+- **A dev tool** (runtime, language server, formatter, linter): the matching file in
+  `modules/dev/`, then rebuild.
 - **Something just for now:** `nix shell nixpkgs#<name>`.
 
 ## Dev tools
 
 Nix installs node, pnpm, python, uv, go, rust and the language servers, formatters and linters
-listed in `dev.nix`. They are on PATH everywhere, so a stray `foo.ts` gets its language server,
+listed in `modules/dev/`. They are on PATH everywhere, so a stray `foo.ts` gets its language server,
 and Neovim sees the same tools. `nix flake update` and a rebuild update them.
 
 - A project that needs its own versions gets a dev shell: `dev init node` in the project
   (from `the-nix-way/dev-templates`). For `node` it also copies the
   global oxlint and oxfmt configs from `dotfiles/oxc` in, unless the project has its own.
   direnv enters the shell on `cd` (nix-direnv caches it), and its tools come before the global
-  ones on PATH. Shortcuts (`dotfiles/zsh/.zshrc`): `dev new <name> <template>` makes
+  ones on PATH. Shortcuts (`dotfiles/zsh/rc.zsh`): `dev new <name> <template>` makes
   `~/proj/<name>` with a git repo and the shell, `dev <name>` jumps to a project, `dev ls` lists
   the templates, and plain `dev` runs `nix develop`.
 - A project's JS tools (typescript, oxlint, oxfmt) go in its `package.json` as devDependencies.
@@ -70,12 +80,15 @@ and Neovim sees the same tools. `nix flake update` and a rebuild update them.
    (`nix-shell -p git` if git is missing).
 3. **Add a host folder:**
     ```sh
-    cp -r ~/nixos/hosts/kash-laptop ~/nixos/hosts/<hostname>
-    nixos-generate-config --show-hardware-config > ~/nixos/hosts/<hostname>/hardware-configuration.nix
+    cp -r ~/nixos/modules/hosts/kash-laptop ~/nixos/modules/hosts/<hostname>
+    nixos-generate-config --show-hardware-config > ~/nixos/modules/hosts/<hostname>/_hardware-configuration.nix
     ```
-    - In its `default.nix`, set `networking.hostName`, `system.stateVersion` (from the
-      installer's `/etc/nixos/configuration.nix`), the bootloader and GPU settings.
-    - Add the hostname to the list in `flake.nix` and to `hosts` in `vars.nix`.
+    - In its `default.nix`, rename `flake.nixosConfigurations.kash-laptop` to the new hostname
+      and pick the pieces: the GPU piece (`intel-graphics` or `nvidia`), and `autologin` only
+      with LUKS.
+    - In its `_machine.nix`, set `networking.hostName`, `system.stateVersion` (from the
+      installer's `/etc/nixos/configuration.nix`) and the bootloader.
+    - Add the hostname to `hosts` in `vars.nix`.
     - If the installer set up LUKS, copy the `boot.initrd.luks.devices` lines from its
       `/etc/nixos/hardware-configuration.nix`.
     - Add `dotfiles/hypr/hyprland/hosts/<hostname>.lua` (monitors, input),
@@ -91,11 +104,11 @@ and Neovim sees the same tools. `nix flake update` and a rebuild update them.
 
 Change `user` in `vars.nix`, and the keyboard, locale and time zone if needed. Then check:
 
-- `hosts/kash-desktop/default.nix`: the Limine entries.
+- `modules/hosts/kash-desktop/_machine.nix`: the Limine entries.
 - `dotfiles/noctalia/hosts/*.toml` and `dotfiles/noctalia/settings/*.toml`: monitor names and
   wallpaper paths.
 - `dotfiles/hypr/hyprland/hosts/*.lua`: monitor layout.
-- `packages/`: drop what you don't use.
+- `modules/bundles.nix` and the files under `modules/`: drop what you don't use.
 
 ## What lives outside the repo
 

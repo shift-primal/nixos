@@ -1,5 +1,5 @@
 -- Values owned by ~/nixos/vars.nix (keyboard, cursor, default apps).
--- Home Manager generates the file below; edit that file and rebuild to change them.
+-- modules/desktop/hyprland.nix generates the file below; edit vars.nix and rebuild to change them.
 local path = os.getenv("HOME") .. "/.config/nixos-vars/vars.lua"
 
 local ok, vars = pcall(dofile, path)

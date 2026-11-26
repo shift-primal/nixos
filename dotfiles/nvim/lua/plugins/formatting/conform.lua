@@ -34,7 +34,7 @@ return {
 			oxfmt_project = {
 				inherit = "oxfmt",
 				require_cwd = true,
-				-- ~/.oxfmtrc.json is the global fallback linked by home.nix, not a project config
+				-- ~/.oxfmtrc.json is the global fallback linked by modules/dev/web.nix, not a project config
 				cwd = function(self, ctx)
 					local root = oxfmt_root(self, ctx)
 					if root ~= vim.uv.os_homedir() then
