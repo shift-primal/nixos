@@ -263,17 +263,21 @@ font_family = "DejaVu Sans"
     shortcut = "s"
     variant = "destructive"
 
+[theme]
+community_palette = "Gruvbox Material Hard"
+source = "community"
+
 [wallpaper]
 directory = "/home/kasper/Pictures/wallpapers"
 
     [wallpaper.default]
-    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-binary-black.png"
+    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-stripes-logo.png"
 
     [wallpaper.last]
-    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-binary-black.png"
+    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-stripes-logo.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-binary-black.png"
+    path = "/home/kasper/Pictures/wallpapers/nix-wallpaper-stripes-logo.png"
 
 [widget.clock]
 tooltip_format = "{:%a %d. %b - %y}"
