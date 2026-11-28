@@ -141,7 +141,7 @@ mode = "dark"
 
 [theme.templates]
 enable_builtin_templates = true
-builtin_ids = ["btop", "gtk3", "gtk4", "hyprland", "kitty", "qt"]
+builtin_ids = ["btop", "gtk3", "gtk4", "hyprland", "kitty", "niri", "qt"]
 enable_community_templates = true
 community_ids = [
 	"claude-code",
