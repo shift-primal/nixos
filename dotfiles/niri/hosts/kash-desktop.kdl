@@ -4,7 +4,7 @@ output "HP Inc. HP S270n 6CM9131QL2" {
     position x=0 y=0
 }
 
-output "AOC Q27G4ZR XZ1S1HA010862" {
+output "PNP(AOC) Q27G4ZR XZ1S1HA010862" {
     mode "2560x1440"
     scale 1
     position x=2560 y=0
@@ -21,12 +21,16 @@ workspace "1" {
     open-on-output "HP Inc. HP S270n 6CM9131QL2"
 }
 workspace "2" {
-    open-on-output "AOC Q27G4ZR XZ1S1HA010862"
+    open-on-output "PNP(AOC) Q27G4ZR XZ1S1HA010862"
 }
 workspace "3" {
     open-on-output "HP Inc. OMEN by HP 27 #ASN/n8z9QTPd"
 }
-workspace "4"
-workspace "5"
+workspace "4" {
+    open-on-output "PNP(AOC) Q27G4ZR XZ1S1HA010862"
+}
+workspace "5" {
+    open-on-output "PNP(AOC) Q27G4ZR XZ1S1HA010862"
+}
 
 spawn-sh-at-startup "v4l2-ctl -d /dev/video0 --set-ctrl=focus_automatic_continuous=0"

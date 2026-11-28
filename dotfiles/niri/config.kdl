@@ -22,6 +22,7 @@ input {
     }
 
     focus-follows-mouse max-scroll-amount="0%"
+    warp-mouse-to-focus mode="center-xy"
 }
 
 layout {
@@ -115,8 +116,10 @@ window-rule {
 }
 
 window-rule {
-    match app-id="^Bitwarden$"
+    match app-id="^bitwarden$"
     block-out-from "screencast"
+    open-on-workspace "5"
+    open-focused false
 }
 
 layer-rule {

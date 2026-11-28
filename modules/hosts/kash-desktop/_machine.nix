@@ -37,6 +37,8 @@ in
     networking.hostName = "kash-desktop";
     system.stateVersion = "26.05";
 
+    services.xserver.xkb.options = "caps:swapescape";
+
     boot.loader = {
         systemd-boot.enable = false;
         limine = {

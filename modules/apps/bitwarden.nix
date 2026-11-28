@@ -18,6 +18,24 @@
                     };
                     Service = {
                         ExecStart = lib.getExe pkgs.bitwarden-desktop;
+                        ExecStartPost = pkgs.writeShellScript "bitwarden-close-window" ''
+                            export PATH=${
+                                lib.makeBinPath [
+                                    pkgs.niri
+                                    pkgs.jq
+                                ]
+                            }:$PATH
+                            (
+                            for _ in $(seq 60); do
+                                id=$(niri msg --json windows | jq -r '[.[] | select(.app_id == "bitwarden")][0].id // empty')
+                                if [ -n "$id" ]; then
+                                    niri msg action close-window --id "$id"
+                                    exit 0
+                                fi
+                                sleep 0.5
+                            done
+                            ) &
+                        '';
                         Restart = "on-failure";
                         RestartSec = 3;
                     };
