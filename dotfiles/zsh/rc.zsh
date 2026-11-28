@@ -13,6 +13,8 @@ alias ff='fastfetch'
 alias ls='eza'
 alias rb:switch='sudo rebuild switch'
 alias rb:boot='sudo rebuild boot'
+alias e='(luciole . > /dev/null 2>&1 &)'
+
 
 # dev <project> | dev new <name> <template> | dev init <template> | dev ls | dev
 # Projects live in ~/proj. Templates come from the-nix-way/dev-templates.

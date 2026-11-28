@@ -35,3 +35,9 @@ hl.monitor({
 hl.workspace_rule({ workspace = "1", monitor = monitors.left, default = true })
 hl.workspace_rule({ workspace = "2", monitor = monitors.main, default = true })
 hl.workspace_rule({ workspace = "3", monitor = monitors.right, default = true })
+
+hl.config({
+	input = {
+		kb_options = "caps:swapescape",
+	},
+})
