@@ -19,6 +19,7 @@
 
         desktop.imports = [
             hyprland
+            niri
             wayland-tools
             noctalia
             keyring

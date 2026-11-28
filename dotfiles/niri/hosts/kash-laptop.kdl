@@ -1,0 +1,11 @@
+output "eDP-1" {
+    mode "1920x1200"
+    scale 1.25
+    position x=0 y=0
+}
+
+workspace "1"
+workspace "2"
+workspace "3"
+workspace "4"
+workspace "5"
